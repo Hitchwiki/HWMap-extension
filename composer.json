@@ -19,6 +19,8 @@
     }
   ],
   "support": {
-    "irc": "irc://irc.freenode.net/hitchhiking"
+    "irc": "irc://irc.freenode.net/hitchhiking",
+    "issues": "https://github.com/Hitchwiki/HWMap-extension/issues",
+    "source": "https://github.com/Hitchwiki/HWMap-extension"
   }
 }
