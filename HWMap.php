@@ -11,8 +11,13 @@ $wgExtensionCredits['hitchwikimap'][] = array(
 	'author' => 'Rémi Claude'
 );
 
-$wgAutoloadClasses['HWMap'] = $IP . '/extensions/HWMap/HWMap.php';
+//Register hook
 $wgHooks['ParserFirstCallInit'][] = 'onParserInit';
+
+
+// Register special pages
+$wgAutoloadClasses['SpecialHWMap'] = $IP . '/extensions/HWMap/SpecialHWMap.php';
+$wgSpecialPages['HWMap'] = 'SpecialHWMap';
 
 // Register modules
 $wgResourceModules['ext.HWMap'] = array(
@@ -29,7 +34,7 @@ $wgResourceModules['ext.HWMap'] = array(
 );
 
 /**
- * The registration function.
+ * The hook registration function.
  */
 function onParserInit( Parser $parser ) {
     global $wgOut;
