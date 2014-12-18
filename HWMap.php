@@ -32,8 +32,6 @@ $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 // Register modules
 $wgResourceModules['ext.HWMap'] = array(
 	'scripts' => array(
-<<<<<<< HEAD
-<<<<<<< HEAD
         'modules/vendor/leaflet/dist/leaflet.js',
         'modules/vendor/leaflet.markercluster/dist/leaflet.markercluster.js',
         'modules/ext.HWMap.js'
@@ -42,20 +40,6 @@ $wgResourceModules['ext.HWMap'] = array(
         'modules/vendor/leaflet/dist/leaflet.css',
         'modules/vendor/leaflet.markercluster/dist/MarkerCluster.css',
         'modules/vendor/leaflet.markercluster/dist/MarkerCluster.Default.css',
-=======
-    'modules/vendor/leaflet/dist/leaflet.js',
-    'modules/ext.HWMap.js'
-	),
-	'styles' => array(
-    'modules/vendor/leaflet/dist/leaflet.css',
->>>>>>> df08210dca6071d80579806c324eeb7397ac67aa
-=======
-    'modules/vendor/leaflet/dist/leaflet.js',
-    'modules/ext.HWMap.js'
-	),
-	'styles' => array(
-    'modules/vendor/leaflet/dist/leaflet.css',
->>>>>>> df08210dca6071d80579806c324eeb7397ac67aa
 		'modules/ext.HWMap.css'
 	),
 	'localBasePath' =>  __DIR__,
