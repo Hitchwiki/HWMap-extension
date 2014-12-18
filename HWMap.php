@@ -2,18 +2,28 @@
 if ( !defined( 'MEDIAWIKI' ) ) die();
 /**
  * hitchwikimap extension
- * <hitchmap></hitchmap>
+ * <hwmap></hwmap>
  */
 
+// Kudos
 $wgExtensionCredits['hitchwikimap'][] = array(
 	'path' => __FILE__,
 	'name' => 'HWMap',
-	'author' => 'Rémi Claude'
+	'descriptionmsg' => 'hwmaps-desc',
+	'author' => array('Rémi Claude', 'Mikael Korpela'),
+	'url' => 'https://github.com/Hitchwiki/HWMap-extension',
+	'version' => '2.0.0',
+	'license-name' => 'MIT'
 );
 
-//Register hook
+// Register hook
 $wgHooks['ParserFirstCallInit'][] = 'onParserInit';
 
+// Extension & magic words i18n
+$wgMessagesDirs['HWMap'] = __DIR__ . '/i18n';
+
+// Register aliases
+$wgExtensionMessagesFiles['HWMapAlias'] = __DIR__ . '/HWMap.alias.php';
 
 // Register special pages
 $wgAutoloadClasses['SpecialHWMap'] = $IP . '/extensions/HWMap/SpecialHWMap.php';
@@ -22,11 +32,11 @@ $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 // Register modules
 $wgResourceModules['ext.HWMap'] = array(
 	'scripts' => array(
-        'modules/vendor/leaflet/dist/leaflet.js',
-        'modules/ext.HWMap.js'
+    'modules/vendor/leaflet/dist/leaflet.js',
+    'modules/ext.HWMap.js'
 	),
 	'styles' => array(
-        'modules/vendor/leaflet/dist/leaflet.css',
+    'modules/vendor/leaflet/dist/leaflet.css',
 		'modules/ext.HWMap.css'
 	),
 	'localBasePath' =>  __DIR__,
@@ -37,12 +47,11 @@ $wgResourceModules['ext.HWMap'] = array(
  * The hook registration function.
  */
 function onParserInit( Parser $parser ) {
-    global $wgOut;
-    $parser->setHook( 'hwmap','HWMapRender'); 
-    $wgOut->addModules( 'ext.HWMap' );		
-    return true;
+  global $wgOut;
+  $parser->setHook( 'hwmap', 'HWMapRender');
+  $wgOut->addModules( 'ext.HWMap' );
+  return true;
 }
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-    return '<div id="hwmap"></div>';
+  return '<div id="hwmap"></div>';
 }
-
