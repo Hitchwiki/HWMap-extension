@@ -1,5 +1,5 @@
 {
-  "name": "mediawiki/HWMap",
+  "name": "HWMap",
   "type": "mediawiki-extension",
   "description": "Hitchwiki.org Map extension for MediaWiki. Requires Semantic MediaWiki.",
   "keywords": [
