@@ -2,7 +2,7 @@
 if ( !defined( 'MEDIAWIKI' ) ) die();
 /**
  * hitchwikimap extension
- * <hitchmap></hitchmap>
+ * <hwmap></hwmap>
  */
 
 $wgExtensionCredits['hitchwikimap'][] = array(
@@ -14,7 +14,6 @@ $wgExtensionCredits['hitchwikimap'][] = array(
 //Register hook
 $wgHooks['ParserFirstCallInit'][] = 'onParserInit';
 
-
 // Register special pages
 $wgAutoloadClasses['SpecialHWMap'] = $IP . '/extensions/HWMap/SpecialHWMap.php';
 $wgSpecialPages['HWMap'] = 'SpecialHWMap';
@@ -23,10 +22,13 @@ $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 $wgResourceModules['ext.HWMap'] = array(
 	'scripts' => array(
         'modules/vendor/leaflet/dist/leaflet.js',
+        'modules/vendor/leaflet.markercluster/dist/leaflet.markercluster.js',
         'modules/ext.HWMap.js'
 	),
 	'styles' => array(
         'modules/vendor/leaflet/dist/leaflet.css',
+        'modules/vendor/leaflet.markercluster/dist/MarkerCluster.css',
+        'modules/vendor/leaflet.markercluster/dist/MarkerCluster.Default.css',
 		'modules/ext.HWMap.css'
 	),
 	'localBasePath' =>  __DIR__,

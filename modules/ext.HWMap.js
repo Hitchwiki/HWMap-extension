@@ -4,10 +4,21 @@ var extension_root = mw.config.get("wgExtensionAssetsPath") + "/HWMap/";
 
 //Setting up the map
 var hwmap = L.map('hwmap');
-var markersLayer = new L.LayerGroup();
+var markersLayer = new L.MarkerClusterGroup();
 
 //Title of the current page
 var pageTitle = mw.config.get("wgTitle");
+
+//Icons
+var cityIcon = L.icon({
+    iconUrl:  extension_root + 'icons/city.png',
+    iconRetinaUrl: extension_root + 'icons/city.png@2x'
+});
+var veryGoodIcon = L.icon({
+    iconUrl:  extension_root + 'icons/1-very-good.png',
+    iconRetinaUrl: extension_root + 'icons/1-very-good.png@2x'
+});
+
 
 L.Icon.Default.imagePath = extension_root + 'modules/vendor/leaflet/dist/images';
 
@@ -27,7 +38,7 @@ var last_bounds = {
 var last_zoom = 0;
 
 //Function to get marker in the current boundings
-var getboxspot = function () {
+var getBoxSpots = function () {
     bounds = hwmap.getBounds();
     if(bounds._northEast.lat > last_bounds.NElat || bounds._northEast.lng > last_bounds.NElng || bounds._southWest.lat < last_bounds.SWlat || bounds._southWest.lng < last_bounds.SWlng) {
 
@@ -43,8 +54,14 @@ var getboxspot = function () {
             markersLayer.clearLayers();
             //Add the new markers
             for (var i in data.spots) {
-                var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]]);
-                markersLayer.addLayer(marker);
+                if(data.spots[i].category == 'Spots') {
+                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: veryGoodIcon});
+                    markersLayer.addLayer(marker);
+                }
+                else if(data.spots[i].category == 'Cities') {
+                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: cityIcon});
+                    markersLayer.addLayer(marker);
+                }
             }
         });
     }
@@ -56,31 +73,26 @@ if (mw.config.get('wgCanonicalSpecialPageName') == "HWMap") {
     hwmap.setView([45, 10], 6);
 
     //Getting spots in bounding box
-    getboxspot();
+    getBoxSpots();
 
     //Fire event to check when map move
     hwmap.on('moveend', function() {
+        console.log(markersLayer);
+        console.log(markersLayer._topClusterLevel._childcount);
         //Get spots when zoom is bigger than 6
         if(hwmap.getZoom() > 5) {
-            getboxspot();
+            getBoxSpots();
         }
-        //When zoom is smaller than 6 we clear the markers
-        else {
-            //Check if the markers were already cleared
-            for (key in markersLayer._layers) {
-                if (!markersLayer._layers.hasOwnProperty(key)) break;
-                else {
-                    //Clear the markers and last boundings
-                    markersLayer.clearLayers();
-                    last_bounds = {
-                        NElat:'0',
-                        NElng:'0',
-                        SWlat:'0',
-                        SWlng:'0'
-                    };
-                    break;
-                }
-            }
+        //When zoom is smaller than 6 we clear the markers if not already cleared
+        else if(markersLayer._topClusterLevel._childCount > 0){
+            //Clear the markers and last boundings
+            markersLayer.clearLayers();
+            last_bounds = {
+                NElat:'0',
+                NElng:'0',
+                SWlat:'0',
+                SWlng:'0'
+            };
         }
     });
 }
@@ -94,7 +106,7 @@ else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
             break;
         }
         //Add city marker
-        L.marker([page.coordinates[0].lat, page.coordinates[0].lon]).addTo(hwmap);
+        L.marker([page.coordinates[0].lat, page.coordinates[0].lon], {icon: cityIcon}).addTo(hwmap);
         //Set Map View
         hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 10);
     });
@@ -104,7 +116,7 @@ else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
     $.get( api_root + "/api.php?action=ask&query=[[Category:Spots]][[Cities::" + pageTitle + "]]|%3FLocation&format=json", function( data ) {
         //Add Markers to the map
         for (var i in data.query.results) {
-            L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon]).addTo(hwmap);
+            L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon], {icon: veryGoodIcon}).addTo(hwmap);
         }
     });
 }
