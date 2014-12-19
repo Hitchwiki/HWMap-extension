@@ -10,23 +10,52 @@ var markersLayer = new L.MarkerClusterGroup();
 var pageTitle = mw.config.get("wgTitle");
 
 //Icons
-var cityIcon = L.icon({
+var icons = {};
+icons.country = L.icon({
+  iconUrl:  extension_root + 'icons/city.png',
+  iconRetinaUrl: extension_root + 'icons/city.png@2x'
+});
+icons.city = L.icon({
     iconUrl:  extension_root + 'icons/city.png',
     iconRetinaUrl: extension_root + 'icons/city.png@2x'
 });
-var veryGoodIcon = L.icon({
-    iconUrl:  extension_root + 'icons/1-very-good.png',
-    iconRetinaUrl: extension_root + 'icons/1-very-good.png@2x'
+icons.unknown = L.icon({
+  iconUrl:  extension_root + 'icons/0-unknown.png',
+  iconRetinaUrl: extension_root + 'icons/0-unknown.png@2x'
 });
-
+icons.verygood = L.icon({
+  iconUrl:  extension_root + 'icons/1-very-good.png',
+  iconRetinaUrl: extension_root + 'icons/1-very-good.png@2x'
+});
+icons.good = L.icon({
+    iconUrl:  extension_root + 'icons/2-good.png',
+    iconRetinaUrl: extension_root + 'icons/2-good.png@2x'
+});
+icons.average = L.icon({
+  iconUrl:  extension_root + 'icons/3-average.png',
+  iconRetinaUrl: extension_root + 'icons/3-average.png@2x'
+});
+icons.bad = L.icon({
+  iconUrl:  extension_root + 'icons/4-bad.png',
+  iconRetinaUrl: extension_root + 'icons/4-bad.png@2x'
+});
+icons.senseless = L.icon({
+  iconUrl:  extension_root + 'icons/5-senseless.png',
+  iconRetinaUrl: extension_root + 'icons/5-senseless.png@2x'
+});
 
 L.Icon.Default.imagePath = extension_root + 'modules/vendor/leaflet/dist/images';
 
-L.tileLayer('http://{s}.tiles.mapbox.com/v3/remigr.jol982fa/{z}/{x}/{y}.png', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18
+// Using a map tiles developed for Trustroots/Hitchwiki
+// https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
+// If we ever start using https, add this to the tiles url: &secure=1
+L.tileLayer('//{s}.tiles.mapbox.com/v4/trustroots.ce8bb774/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidHJ1c3Ryb290cyIsImEiOiJVWFFGa19BIn0.4e59q4-7e8yvgvcd1jzF4g', {
+    attribution: '<a href="http://www.openstreetmap.org/">OSM</a>',
+    maxZoom: 18,
+    continuousWorld: true
 }).addTo(hwmap);
-markersLayer.addTo(hwmap);
+
+markersLayer.addTo(hwmap
 
 //Initialize last bounds and last_zoom
 var last_bounds = {
@@ -55,11 +84,11 @@ var getBoxSpots = function () {
             //Add the new markers
             for (var i in data.spots) {
                 if(data.spots[i].category == 'Spots') {
-                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: veryGoodIcon});
+                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: icons.verygood});
                     markersLayer.addLayer(marker);
                 }
                 else if(data.spots[i].category == 'Cities') {
-                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: cityIcon});
+                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: icons.city});
                     markersLayer.addLayer(marker);
                 }
             }
@@ -106,7 +135,7 @@ else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
             break;
         }
         //Add city marker
-        L.marker([page.coordinates[0].lat, page.coordinates[0].lon], {icon: cityIcon}).addTo(hwmap);
+        L.marker([page.coordinates[0].lat, page.coordinates[0].lon], {icon: icons.city}).addTo(hwmap);
         //Set Map View
         hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 10);
     });
@@ -116,10 +145,7 @@ else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
     $.get( api_root + "/api.php?action=ask&query=[[Category:Spots]][[Cities::" + pageTitle + "]]|%3FLocation&format=json", function( data ) {
         //Add Markers to the map
         for (var i in data.query.results) {
-            L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon], {icon: veryGoodIcon}).addTo(hwmap);
+            L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon], {icon: icons.verygood}).addTo(hwmap);
         }
     });
 }
-
-
-
