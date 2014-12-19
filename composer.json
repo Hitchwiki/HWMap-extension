@@ -22,5 +22,9 @@
     "irc": "irc://irc.freenode.net/hitchhiking",
     "issues": "https://github.com/Hitchwiki/HWMap-extension/issues",
     "source": "https://github.com/Hitchwiki/HWMap-extension"
+  },
+  "scripts": {
+    "post-update-cmd": "bower update",
+    "post-install-cmd": "bower install"
   }
 }
