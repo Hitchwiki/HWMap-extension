@@ -55,7 +55,7 @@ L.tileLayer('//{s}.tiles.mapbox.com/v4/trustroots.ce8bb774/{z}/{x}/{y}.png?acces
     continuousWorld: true
 }).addTo(hwmap);
 
-markersLayer.addTo(hwmap
+markersLayer.addTo(hwmap);
 
 //Initialize last bounds and last_zoom
 var last_bounds = {
@@ -82,13 +82,14 @@ var getBoxSpots = function () {
             //Clear the current markers
             markersLayer.clearLayers();
             //Add the new markers
-            for (var i in data.spots) {
-                if(data.spots[i].category == 'Spots') {
-                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: icons.verygood});
+            var spots = data.query.spots;
+            for (var i in spots) {
+                if(spots[i].category == 'Spots') {
+                    var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.verygood});
                     markersLayer.addLayer(marker);
                 }
-                else if(data.spots[i].category == 'Cities') {
-                    var marker = L.marker([data.spots[i].location[0],data.spots[i].location[1]], {icon: icons.city});
+                else if(spots[i].category == 'Cities') {
+                    var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.city});
                     markersLayer.addLayer(marker);
                 }
             }
