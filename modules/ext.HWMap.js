@@ -129,24 +129,26 @@ if (mw.config.get('wgCanonicalSpecialPageName') == "HWMap") {
 //Check if map is called from a city page
 else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
 
-    //Getting the current coordinate
-    $.get( api_root + "/api.php?action=query&prop=coordinates&titles=" + pageTitle + "&format=json", function( data ) {
-        for (var i in data.query.pages) {
-            page = data.query.pages[i];
-            break;
-        }
-        //Add city marker
-        L.marker([page.coordinates[0].lat, page.coordinates[0].lon], {icon: icons.city}).addTo(hwmap);
-        //Set Map View
-        hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 10);
-    });
+  //Getting the current coordinate
+  $.get( api_root + "/api.php?action=query&prop=coordinates&titles=" + pageTitle + "&format=json", function( data ) {
+    for (var i in data.query.pages) {
+      page = data.query.pages[i];
+      break;
+    }
+    //Add city marker
+    var marker = L.marker([page.coordinates[0].lat, page.coordinates[0].lon], {icon: icons.city});
+    markersLayer.addLayer(marker);
+    //Set Map View
+    hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 12);
+  });
 
 
-    //Getting related spots
-    $.get( api_root + "/api.php?action=ask&query=[[Category:Spots]][[Cities::" + pageTitle + "]]|%3FLocation&format=json", function( data ) {
-        //Add Markers to the map
-        for (var i in data.query.results) {
-            L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon], {icon: icons.verygood}).addTo(hwmap);
-        }
-    });
+  //Getting related spots
+  $.get( api_root + "/api.php?action=ask&query=[[Category:Spots]][[Cities::" + pageTitle + "]]|%3FLocation&format=json", function( data ) {
+    //Add Markers to the map
+    for (var i in data.query.results) {
+      var marker = L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon], {icon: icons.verygood});
+      markersLayer.addLayer(marker);
+    }
+  });
 }
