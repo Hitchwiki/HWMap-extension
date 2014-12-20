@@ -1,7 +1,7 @@
 <?php
 if ( !defined( 'MEDIAWIKI' ) ) die();
 /**
- * hitchwikimap extension
+ * hitchwiki map extension
  * <hwmap></hwmap>
  */
 
@@ -39,7 +39,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
   'leaflet' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/leaflet/dist/leaflet.js',
-    ),
+    )       ,
     'styles' => array(
       'modules/vendor/leaflet/dist/leaflet.css',
     ),
@@ -87,5 +87,5 @@ function onParserInit( Parser $parser ) {
   return true;
 }
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-  return '<div id="hwmap"></div>';
+  return '<div id="hwmap-container"><div id="hwmap"></div></div>';
 }
