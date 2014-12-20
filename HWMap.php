@@ -7,13 +7,13 @@ if ( !defined( 'MEDIAWIKI' ) ) die();
 
 // Kudos
 $wgExtensionCredits['hitchwikimap'][] = array(
-	'path' => __FILE__,
-	'name' => 'HWMap',
-	'descriptionmsg' => 'hwmaps-desc',
-	'author' => array('Rémi Claude', 'Mikael Korpela'),
-	'url' => 'https://github.com/Hitchwiki/HWMap-extension',
-	'version' => '2.0.0',
-	'license-name' => 'MIT'
+  'path' => __FILE__,
+  'name' => 'HWMap',
+  'descriptionmsg' => 'hwmaps-desc',
+  'author' => array('Rémi Claude', 'Mikael Korpela'),
+  'url' => 'https://github.com/Hitchwiki/HWMap-extension',
+  'version' => '2.0.0',
+  'license-name' => 'MIT'
 );
 
 // Register hook
@@ -29,22 +29,53 @@ $wgExtensionMessagesFiles['HWMapAlias'] = __DIR__ . '/HWMap.alias.php';
 $wgAutoloadClasses['SpecialHWMap'] = $IP . '/extensions/HWMap/SpecialHWMap.php';
 $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 
-// Register modules
-$wgResourceModules['ext.HWMap'] = array(
-	'scripts' => array(
-        'modules/vendor/leaflet/dist/leaflet.js',
-        'modules/vendor/leaflet.markercluster/dist/leaflet.markercluster.js',
-        'modules/ext.HWMap.js'
-	),
-	'styles' => array(
-        'modules/vendor/leaflet/dist/leaflet.css',
-        'modules/vendor/leaflet.markercluster/dist/MarkerCluster.css',
-        'modules/vendor/leaflet.markercluster/dist/MarkerCluster.Default.css',
-		'modules/ext.HWMap.css'
-	),
-	'localBasePath' =>  __DIR__,
-	'remoteExtPath' => 'HWMap'
+// Register assets
+$wgHWMapResourceBoilerplate = array(
+  'localBasePath' =>  __DIR__,
+  'remoteExtPath' => 'HWMap',
 );
+$wgResourceModules = array_merge( $wgResourceModules, array(
+
+  'leaflet' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/vendor/leaflet/dist/leaflet.js',
+    ),
+    'styles' => array(
+      'modules/vendor/leaflet/dist/leaflet.css',
+    ),
+  ),
+
+  'leaflet-markercluster' => $wgHWMapResourceBoilerplate + array(
+    'dependencies' => array(
+      'leaflet',
+    ),
+    'scripts' => array(
+      'modules/vendor/leaflet.markercluster/dist/leaflet.markercluster.js',
+    ),
+    'styles' => array(
+      'modules/vendor/leaflet.markercluster/dist/MarkerCluster.css',
+      'modules/vendor/leaflet.markercluster/dist/MarkerCluster.Default.css',
+    ),
+  ),
+
+  'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
+    'dependencies' => array(
+    	'leaflet',
+      'leaflet-markercluster'
+    ),
+    'scripts' => array(
+      'modules/ext.HWMap.js',
+    ),
+    'styles' => array(
+      'modules/ext.HWMap.less',
+    ),
+    // Other ensures this loads after the Vector skin styles
+    'group' => 'other',
+    'position' => 'bottom',
+  ),
+
+) );
+
 
 /**
  * The hook registration function.

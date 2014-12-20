@@ -1,6 +1,7 @@
+
 //Root locations
-var api_root = mw.config.get("wgServer") + mw.config.get("wgScriptPath");
-var extension_root = mw.config.get("wgExtensionAssetsPath") + "/HWMap/";
+var apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath");
+var extensionRoot = mw.config.get("wgExtensionAssetsPath") + "/HWMap/";
 
 //Setting up the map
 var hwmap = L.map('hwmap');
@@ -12,39 +13,39 @@ var pageTitle = mw.config.get("wgTitle");
 //Icons
 var icons = {};
 icons.country = L.icon({
-  iconUrl:  extension_root + 'icons/city.png',
-  iconRetinaUrl: extension_root + 'icons/city.png@2x'
+  iconUrl:  extensionRoot + 'icons/city.png',
+  iconRetinaUrl: extensionRoot + 'icons/city.png@2x'
 });
 icons.city = L.icon({
-    iconUrl:  extension_root + 'icons/city.png',
-    iconRetinaUrl: extension_root + 'icons/city.png@2x'
+    iconUrl:  extensionRoot + 'icons/city.png',
+    iconRetinaUrl: extensionRoot + 'icons/city.png@2x'
 });
 icons.unknown = L.icon({
-  iconUrl:  extension_root + 'icons/0-unknown.png',
-  iconRetinaUrl: extension_root + 'icons/0-unknown.png@2x'
+  iconUrl:  extensionRoot + 'icons/0-unknown.png',
+  iconRetinaUrl: extensionRoot + 'icons/0-unknown.png@2x'
 });
 icons.verygood = L.icon({
-  iconUrl:  extension_root + 'icons/1-very-good.png',
-  iconRetinaUrl: extension_root + 'icons/1-very-good.png@2x'
+  iconUrl:  extensionRoot + 'icons/1-very-good.png',
+  iconRetinaUrl: extensionRoot + 'icons/1-very-good.png@2x'
 });
 icons.good = L.icon({
-    iconUrl:  extension_root + 'icons/2-good.png',
-    iconRetinaUrl: extension_root + 'icons/2-good.png@2x'
+    iconUrl:  extensionRoot + 'icons/2-good.png',
+    iconRetinaUrl: extensionRoot + 'icons/2-good.png@2x'
 });
 icons.average = L.icon({
-  iconUrl:  extension_root + 'icons/3-average.png',
-  iconRetinaUrl: extension_root + 'icons/3-average.png@2x'
+  iconUrl:  extensionRoot + 'icons/3-average.png',
+  iconRetinaUrl: extensionRoot + 'icons/3-average.png@2x'
 });
 icons.bad = L.icon({
-  iconUrl:  extension_root + 'icons/4-bad.png',
-  iconRetinaUrl: extension_root + 'icons/4-bad.png@2x'
+  iconUrl:  extensionRoot + 'icons/4-bad.png',
+  iconRetinaUrl: extensionRoot + 'icons/4-bad.png@2x'
 });
 icons.senseless = L.icon({
-  iconUrl:  extension_root + 'icons/5-senseless.png',
-  iconRetinaUrl: extension_root + 'icons/5-senseless.png@2x'
+  iconUrl:  extensionRoot + 'icons/5-senseless.png',
+  iconRetinaUrl: extensionRoot + 'icons/5-senseless.png@2x'
 });
 
-L.Icon.Default.imagePath = extension_root + 'modules/vendor/leaflet/dist/images';
+L.Icon.Default.imagePath = extensionRoot + 'modules/vendor/leaflet/dist/images';
 
 // Using a map tiles developed for Trustroots/Hitchwiki
 // https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
@@ -78,7 +79,7 @@ var getBoxSpots = function () {
         last_bounds.SWlng = parseInt(bounds._southWest.lng) - 1;
 
         //Query HWCoordinateAPI
-        $.get( api_root + "/api.php?action=hwcoordapi&SWlat=" + last_bounds.SWlat + "&SWlon=" + last_bounds.SWlng + "&NElat=" + last_bounds.NElat + "&NElon=" + last_bounds.NElng + "&format=json", function( data ) {
+        $.get( apiRoot + "/api.php?action=hwcoordapi&SWlat=" + last_bounds.SWlat + "&SWlon=" + last_bounds.SWlng + "&NElat=" + last_bounds.NElat + "&NElon=" + last_bounds.NElng + "&format=json", function( data ) {
             //Clear the current markers
             markersLayer.clearLayers();
             //Add the new markers
@@ -130,7 +131,7 @@ if (mw.config.get('wgCanonicalSpecialPageName') == "HWMap") {
 else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
 
   //Getting the current coordinate
-  $.get( api_root + "/api.php?action=query&prop=coordinates&titles=" + pageTitle + "&format=json", function( data ) {
+  $.get( apiRoot + "/api.php?action=query&prop=coordinates&titles=" + pageTitle + "&format=json", function( data ) {
     for (var i in data.query.pages) {
       page = data.query.pages[i];
       break;
@@ -144,7 +145,7 @@ else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
 
 
   //Getting related spots
-  $.get( api_root + "/api.php?action=ask&query=[[Category:Spots]][[Cities::" + pageTitle + "]]|%3FLocation&format=json", function( data ) {
+  $.get( apiRoot + "/api.php?action=ask&query=[[Category:Spots]][[Cities::" + pageTitle + "]]|%3FLocation&format=json", function( data ) {
     //Add Markers to the map
     for (var i in data.query.results) {
       var marker = L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon], {icon: icons.verygood});
