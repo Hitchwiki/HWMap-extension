@@ -1,30 +1,30 @@
 /*
-* Hitchwiki Maps
-*/
+ * Hitchwiki Maps
+ */
 
 // Defaults
 var defaultCenter = [48.6908333333, 9.14055555556], // Europe
-defaultZoom = 5;
+    defaultZoom = 5;
 
 // Mapbox settings
 var mapboxUser = "trustroots",
-mapboxStyle = "ce8bb774",
-mapboxAccessToken = "pk.eyJ1IjoidHJ1c3Ryb290cyIsImEiOiJVWFFGa19BIn0.4e59q4-7e8yvgvcd1jzF4g";
+    mapboxStyle = "ce8bb774",
+    mapboxAccessToken = "pk.eyJ1IjoidHJ1c3Ryb290cyIsImEiOiJVWFFGa19BIn0.4e59q4-7e8yvgvcd1jzF4g";
 
 // Setup variables
 var hwmap,
-spotsLayer,
-newSpotMarker,
-newSpotLayer,
-icons = {},
-lastZoom = 0,
-lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
-apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
-extensionRoot = mw.config.get("wgExtensionAssetsPath") + "/HWMap/";
+    spotsLayer,
+    newSpotMarker,
+    newSpotLayer,
+    icons = {},
+    lastZoom = 0,
+    lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
+    apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
+    extensionRoot = mw.config.get("wgExtensionAssetsPath") + "/HWMap/";
 
 /*
-* Initialize map
-*/
+ * Initialize map
+ */
 function initHWMap() {
   mw.log('->HWMap->initHWMap');
 
@@ -41,16 +41,16 @@ function initHWMap() {
   icons.city = L.icon({
     iconUrl:  extensionRoot + 'icons/city.png',
     iconRetinaUrl: extensionRoot + 'icons/city@2x.png'
-});
-icons.unknown = L.icon({
-  iconUrl:  extensionRoot + 'icons/0-none.png',
-  iconRetinaUrl: extensionRoot + 'icons/0-none@2x.png'
-});
-icons.verygood = L.icon({
-  iconUrl:  extensionRoot + 'icons/1-very-good.png',
-  iconRetinaUrl: extensionRoot + 'icons/1-very-good@2x.png'
-});
-icons.good = L.icon({
+  });
+  icons.unknown = L.icon({
+    iconUrl:  extensionRoot + 'icons/0-none.png',
+    iconRetinaUrl: extensionRoot + 'icons/0-none@2x.png'
+  });
+  icons.verygood = L.icon({
+    iconUrl:  extensionRoot + 'icons/1-very-good.png',
+    iconRetinaUrl: extensionRoot + 'icons/1-very-good@2x.png'
+  });
+  icons.good = L.icon({
     iconUrl:  extensionRoot + 'icons/2-good.png',
     iconRetinaUrl: extensionRoot + 'icons/2-good@2x.png'
   });
@@ -111,12 +111,11 @@ icons.good = L.icon({
   else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     setupCountryMap();
   }
-  return marker;
 }
 
 /*
-* Setup big map at Special:HWMap
-*/
+ * Setup big map at Special:HWMap
+ */
 function setupSpecialPageMap() {
   mw.log('->HWMap->setupSpecialPageMap');
   //Set map view
@@ -148,8 +147,8 @@ function setupSpecialPageMap() {
 }
 
 /*
-* Setup big map at city article
-*/
+ * Setup big map at city article
+ */
 function setupCityMap() {
   mw.log('->HWMap->setupCityMap');
 
@@ -179,16 +178,17 @@ function setupCityMap() {
 }
 
 /*
-* Setup big map at city article
-*/
+ * Setup big map at city article
+ */
 function setupCountryMap() {
   // @todo
 }
 
 /*
-*
-* return L.marker
-*/
+ * Marker builder
+ *
+ * @return L.marker
+ */
 var buildSpotMarker = function (averageRating, latLon) {
   if(averageRating == 5) {
     return L.marker(latLon, {icon: icons.verygood});
