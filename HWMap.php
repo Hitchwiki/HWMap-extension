@@ -29,6 +29,10 @@ $wgExtensionMessagesFiles['HWMapAlias'] = __DIR__ . '/HWMap.alias.php';
 $wgAutoloadClasses['SpecialHWMap'] = $IP . '/extensions/HWMap/SpecialHWMap.php';
 $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 
+//Register API
+$wgAutoloadClasses['HWMapApi'] = __DIR__ . '/api/HWMapApi.php';
+$wgAPIModules['hwmapapi'] = 'HWMapApi';
+
 // Register assets
 $wgHWMapResourceBoilerplate = array(
   'localBasePath' =>  __DIR__,

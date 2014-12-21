@@ -78,21 +78,23 @@ var getBoxSpots = function () {
         last_bounds.SWlat = parseInt(bounds._southWest.lat) - 1;
         last_bounds.SWlng = parseInt(bounds._southWest.lng) - 1;
 
-        //Query HWCoordinateAPI
-        $.get( apiRoot + "/api.php?action=hwcoordapi&SWlat=" + last_bounds.SWlat + "&SWlon=" + last_bounds.SWlng + "&NElat=" + last_bounds.NElat + "&NElon=" + last_bounds.NElng + "&format=json", function( data ) {
+        //Query HWMapAPI
+        $.get( apiRoot + "/api.php?action=hwmapapi&SWlat=" + last_bounds.SWlat + "&SWlon=" + last_bounds.SWlng + "&NElat=" + last_bounds.NElat + "&NElon=" + last_bounds.NElng + "&format=json", function( data ) {
             //Clear the current markers
             markersLayer.clearLayers();
             //Add the new markers
+            if(data.query) {
             var spots = data.query.spots;
-            for (var i in spots) {
-                if(spots[i].category == 'Spots') {
-                    var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.verygood});
-                    markersLayer.addLayer(marker);
-                }
-                else if(spots[i].category == 'Cities') {
-                    var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.city});
-                    markersLayer.addLayer(marker);
-                }
+              for (var i in spots) {
+                  if(spots[i].category == 'Spots') {
+                      var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.verygood});
+                      markersLayer.addLayer(marker);
+                  }
+                  else if(spots[i].category == 'Cities') {
+                      var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.city});
+                      markersLayer.addLayer(marker);
+                  }
+              }
             }
         });
     }
@@ -108,8 +110,6 @@ if (mw.config.get('wgCanonicalSpecialPageName') == "HWMap") {
 
     //Fire event to check when map move
     hwmap.on('moveend', function() {
-        console.log(markersLayer);
-        console.log(markersLayer._topClusterLevel._childcount);
         //Get spots when zoom is bigger than 6
         if(hwmap.getZoom() > 5) {
             getBoxSpots();
