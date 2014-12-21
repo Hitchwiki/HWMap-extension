@@ -6,7 +6,7 @@ if ( !defined( 'MEDIAWIKI' ) ) die();
  */
 
 // Kudos
-$wgExtensionCredits['hitchwikimap'][] = array(
+$wgExtensionCredits['HWMap'][] = array(
   'path' => __FILE__,
   'name' => 'HWMap',
   'descriptionmsg' => 'hwmaps-desc',
@@ -64,7 +64,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
-    	'leaflet',
+      'leaflet',
       'leaflet-markercluster'
     ),
     'scripts' => array(

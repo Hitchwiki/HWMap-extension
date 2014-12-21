@@ -84,11 +84,11 @@ var getBoxSpots = function () {
             markersLayer.clearLayers();
             //Add the new markers
             if(data.query) {
-            var spots = data.query.spots;
+              var spots = data.query.spots;
               for (var i in spots) {
                   if(spots[i].category == 'Spots') {
-                      var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.verygood});
-                      markersLayer.addLayer(marker);
+                    var marker = buildSpotMarker(spots[i].average_rating, spots[i].location[0], spots[i].location[1]);
+                    markersLayer.addLayer(marker);
                   }
                   else if(spots[i].category == 'Cities') {
                       var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.city});
@@ -99,6 +99,28 @@ var getBoxSpots = function () {
         });
     }
 }
+
+var buildSpotMarker = function (average_rating, lat, lon) {
+  if(average_rating == 5) {
+    var marker = L.marker([lat, lon], {icon: icons.verygood});
+  }
+  else if(average_rating == 4) {
+    var marker = L.marker([lat, lon], {icon: icons.good});
+  }
+  else if(average_rating == 3) {
+    var marker = L.marker([lat, lon], {icon: icons.average});
+  }
+  else if(average_rating == 2) {
+    var marker = L.marker([lat, lon], {icon: icons.bad});
+  }
+  else if(average_rating == 1) {
+    var marker = L.marker([lat, lon], {icon: icons.senseless});
+  }
+  else if(average_rating == null) {
+    var marker = L.marker([lat, lon], {icon: icons.unknown});
+  }
+  return marker;
+};
 
 //Check if map is called from the special page
 if (mw.config.get('wgCanonicalSpecialPageName') == "HWMap") {
