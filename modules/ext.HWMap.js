@@ -104,11 +104,11 @@ function initHWMap() {
     setupSpecialPageMap();
   }
   //Check if map is called from a city page
-  else if($.inArray("Cities", mw.config.get('wgCategories')) != -1) {
+  else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     setupCityMap();
   }
   //Check if map is called from a country page
-  else if($.inArray("Countries", mw.config.get('wgCategories')) != -1) {
+  else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     setupCountryMap();
   }
 }
