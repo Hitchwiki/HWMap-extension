@@ -29,7 +29,7 @@ function initHWMap() {
   mw.log('->HWMap->initHWMap');
 
   // Give up if no element on the page
-  if(!document.getElementById("hwmap") || mw.config.get('wgAction') != "view") return;
+  if(!document.getElementById("hwmap") || ($.inArray(mw.config.get("wgAction"), ["view", "purge", "submit"]) == -1) ) return;
 
   L.Icon.Default.imagePath = extensionRoot + 'modules/vendor/leaflet/dist/images';
 
