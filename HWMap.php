@@ -31,7 +31,9 @@ $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 
 //Register API
 $wgAutoloadClasses['HWMapApi'] = __DIR__ . '/api/HWMapApi.php';
+$wgAutoloadClasses['HWMapCityApi'] = __DIR__ . '/api/HWMapCityApi.php';
 $wgAPIModules['hwmapapi'] = 'HWMapApi';
+$wgAPIModules['hwmapcityapi'] = 'HWMapCityApi';
 
 // Register assets
 $wgHWMapResourceBoilerplate = array(

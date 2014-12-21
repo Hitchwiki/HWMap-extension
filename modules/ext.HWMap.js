@@ -21,8 +21,8 @@ icons.city = L.icon({
     iconRetinaUrl: extensionRoot + 'icons/city.png@2x'
 });
 icons.unknown = L.icon({
-  iconUrl:  extensionRoot + 'icons/0-unknown.png',
-  iconRetinaUrl: extensionRoot + 'icons/0-unknown.png@2x'
+  iconUrl:  extensionRoot + 'icons/0-none.png',
+  iconRetinaUrl: extensionRoot + 'icons/0-none.png@2x'
 });
 icons.verygood = L.icon({
   iconUrl:  extensionRoot + 'icons/1-very-good.png',
@@ -116,7 +116,7 @@ var buildSpotMarker = function (average_rating, lat, lon) {
   else if(average_rating == 1) {
     var marker = L.marker([lat, lon], {icon: icons.senseless});
   }
-  else if(average_rating == null) {
+  else {
     var marker = L.marker([lat, lon], {icon: icons.unknown});
   }
   return marker;
@@ -167,10 +167,11 @@ else if($.inArray("Cities", mw.config.get('wgCategories')) != -1){
 
 
   //Getting related spots
-  $.get( apiRoot + "/api.php?action=ask&query=[[Category:Spots]][[Cities::" + pageTitle + "]]|%3FLocation&format=json", function( data ) {
+  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + pageTitle, function( data ) {
+    console.log(data);
     //Add Markers to the map
-    for (var i in data.query.results) {
-      var marker = L.marker([data.query.results[i].printouts.Location[0].lat,data.query.results[i].printouts.Location[0].lon], {icon: icons.verygood});
+    for (var i in data.query.spots) {
+      var marker = buildSpotMarker(data.query.spots[i].average, data.query.spots[i].location[0].lat, data.query.spots[i].location[0].lon);
       markersLayer.addLayer(marker);
     }
   });
