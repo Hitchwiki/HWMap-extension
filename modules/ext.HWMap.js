@@ -111,12 +111,6 @@ icons.good = L.icon({
   else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     setupCountryMap();
   }
-  else if(average_rating == 1) {
-    var marker = L.marker([lat, lon], {icon: icons.senseless});
-  }
-  else {
-    var marker = L.marker([lat, lon], {icon: icons.unknown});
-  }
   return marker;
 }
 
@@ -174,12 +168,12 @@ function setupCityMap() {
 
 
   //Getting related spots
-  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + pageTitle, function( data ) {
-    console.log(data);
+  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + mw.config.get("wgTitle"), function( data ) {
+
     //Add Markers to the map
     for (var i in data.query.spots) {
-      var marker = buildSpotMarker(data.query.spots[i].average, data.query.spots[i].location[0].lat, data.query.spots[i].location[0].lon);
-      markersLayer.addLayer(marker);
+      var marker = buildSpotMarker(data.query.spots[i].average, [data.query.spots[i].location[0].lat, data.query.spots[i].location[0].lon]);
+      spotsLayer.addLayer(marker);
     }
   });
 }
@@ -221,6 +215,7 @@ var buildSpotMarker = function (averageRating, latLon) {
 var getBoxSpots = function () {
   mw.log('->HWMap->getBoxSpots');
   bounds = hwmap.getBounds();
+  console.log(bounds);
   if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng) {
 
     //Make the bounds a bit bigger
@@ -230,12 +225,12 @@ var getBoxSpots = function () {
     lastBounds.SWlng = parseInt(bounds._southWest.lng) - 1;
 
     // Query HWCoordinateAPI
-    $.get( apiRoot + "/api.php?action=hwcoordapi&SWlat=" + lastBounds.SWlat + "&SWlon=" + lastBounds.SWlng + "&NElat=" + lastBounds.NElat + "&NElon=" + lastBounds.NElng + "&format=json", function( data ) {
+    $.get( apiRoot + "/api.php?action=hwmapapi&SWlat=" + lastBounds.SWlat + "&SWlon=" + lastBounds.SWlng + "&NElat=" + lastBounds.NElat + "&NElon=" + lastBounds.NElng + "&format=json", function( data ) {
 
       if(data.error) {
         mw.log.warn(data.error);
       }
-      else {
+      else if(data.query) {
         //Clear the current markers
         spotsLayer.clearLayers();
 
@@ -243,11 +238,12 @@ var getBoxSpots = function () {
         var spots = data.query.spots;
         for (var i in spots) {
           if(spots[i].category == 'Spots') {
-            return L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.verygood});
+            var marker = buildSpotMarker(spots[i].average_rating, [spots[i].location[0],spots[i].location[1]]);
+            console.log(marker);
             spotsLayer.addLayer(marker);
           }
           else if(spots[i].category == 'Cities') {
-            return L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.city});
+            var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.city});
             spotsLayer.addLayer(marker);
           }
         }
