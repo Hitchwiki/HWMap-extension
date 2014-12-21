@@ -8,6 +8,6 @@ class SpecialHWMap extends SpecialPage {
     $output = $this->getOutput();
     $output->setPageTitle( 'Hitchwiki Map' );
     $output->addModules( 'ext.HWMap' );
-    $output->addWikiText('<div id="hwmap-container"><div id="hwmap"></div></div>');
+    $output->addHTML('<div class="hwmap-container"><div id="hwmap"></div></div>');
   }
 }

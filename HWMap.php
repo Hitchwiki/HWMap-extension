@@ -93,5 +93,5 @@ function onParserInit( Parser $parser ) {
   return true;
 }
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-  return '<div id="hwmap-container"><div id="hwmap"></div></div>';
+  return '<div class="hwmap-container"><div id="hwmap"></div></div>';
 }
