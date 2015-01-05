@@ -1,16 +1,16 @@
- @import 'variables';
+@import 'variables';
 
 /*
  * Hitchwiki Maps
  */
 #hwmap {
-  min-height: 400px;
+  min-height: 300px;
 }
 
- /*
+/*
  * Hitchwiki Maps Special page
  */
- .page-Special_HWMap {
+.page-Special_HWMap {
 
   // Make the map BIG
   .mw-body-content {
@@ -19,25 +19,25 @@
     bottom: 0;
     width: 100%;
   }
-    #mw-content-text {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
-      .hwmap-container {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-      }
-        #hwmap {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          min-height: 200px;
-          border-left: 1px solid @hw-orange-border;
-        }
+  #mw-content-text {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  .hwmap-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  #hwmap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-left: 1px solid @hw-orange-border;
+  }
 
   // Hide certain contents
   #contentSub,

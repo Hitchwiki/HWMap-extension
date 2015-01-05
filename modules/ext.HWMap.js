@@ -111,6 +111,10 @@ function initHWMap() {
   else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     setupCountryMap();
   }
+
+  // Make sure map sits properly in its surrounding div
+  hwmap.invalidateSize(false);
+
 }
 
 /*
@@ -253,7 +257,8 @@ var getBoxSpots = function () {
   }
 }
 
-jQuery( function( $ ) {
+jQuery(document).ready(function($){
+//jQuery( function( $ ) {
 
   // Let's roll!
   initHWMap();
