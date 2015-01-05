@@ -1,9 +1,11 @@
-//This Api is made to query the informations (average ratings and location) to show spots that are related to a city on a map.
-//To do this we need the get the linked spots by calling the semanytc wiki ask api.
-//It only returns the name of the spots, so we have to make a second api call to get the id.
-//And we can finally get the average ratings with the HWRatingAPi.
-//If you have a better idea on how to do this, go for it !
 <?php
+/*
+ * This Api is made to query the informations (average ratings and location) to show spots that are related to a city on a map.
+ * To do this we need the get the linked spots by calling the semanytc wiki ask api.
+ * It only returns the name of the spots, so we have to make a second api call to get the id.
+ * And we can finally get the average ratings with the HWRatingAPi.
+ * If you have a better idea on how to do this, go for it !
+ */
 class HWMapCityApi extends ApiBase {
 	public function execute() {
       // Get parameters
