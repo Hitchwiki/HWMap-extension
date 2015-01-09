@@ -226,15 +226,22 @@ function setupCityMap() {
 
   //Getting related spots
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + mw.config.get("wgTitle"), function( data ) {
+    var ractive = new Ractive({
+      el: 'incity-spots',
+      template: '{{#spots}}<h3>{{title}}</h3><p>Rating: {{average}}/5</p><p>{{description}}</p>{{/spots}}',
+      data: data.query
+    });
 
-    for (var i in data.query.spots) {
+    var citySpots = data.query.spots;
+
+    for (var i in citySpots) {
       //Build spot marker
       var marker = new PruneCluster.Marker(
-        data.query.spots[i].location[0].lat,
-        data.query.spots[i].location[0].lon
+        citySpots[i].location[0].lat,
+        citySpots[i].location[0].lon
       );
       //Add icon
-      marker.data.icon = iconSpot(data.query.spots[i].average);
+      marker.data.icon = iconSpot(citySpots[i].average);
       //Register marker
       spotsLayer.RegisterMarker(marker);
     }

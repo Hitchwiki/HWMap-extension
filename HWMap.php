@@ -63,10 +63,17 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
   ),
 
+  'ractive' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/vendor/ractive/ractive.js',
+    )
+  ),
+
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'leaflet',
-      'PruneCluster'
+      'PruneCluster',
+      'ractive'
     ),
     'scripts' => array(
       'modules/ext.HWMap.js',
@@ -92,5 +99,6 @@ function onParserInit( Parser $parser ) {
   return true;
 }
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-  return '<div class="hwmap-container"><div id="hwmap"></div></div>';
+  $result = file_get_contents(__DIR__ .'/modules/ext.HWMap.City.template.html');
+  return $result;
 }
