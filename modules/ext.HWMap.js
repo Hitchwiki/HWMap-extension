@@ -101,12 +101,6 @@ function initHWMap() {
     title: "Drag me!"
   });
 
-  newSpotMarker.on("dragend",function(e){
-    var newSpotLocation = e.target.getLatLng();
-    console.log( newSpotLocation );
-    $newSpotForm.find("input[name='Spot[Location]']").val(newSpotLocation.lat + ',' + newSpotLocation.lng);
-  });
-
   // Layers
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
   spotsLayer = new PruneClusterForLeaflet();
