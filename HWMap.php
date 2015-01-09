@@ -51,23 +51,22 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
   ),
 
-  'leaflet-markercluster' => $wgHWMapResourceBoilerplate + array(
+  'PruneCluster' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'leaflet',
     ),
     'scripts' => array(
-      'modules/vendor/leaflet.markercluster/dist/leaflet.markercluster.js',
+      'modules/vendor/PruneCluster/dist/PruneCluster.js',
     ),
     'styles' => array(
-      'modules/vendor/leaflet.markercluster/dist/MarkerCluster.css',
-      'modules/vendor/leaflet.markercluster/dist/MarkerCluster.Default.css',
+      'modules/vendor/PruneCluster/dist/LeafletStyleSheet.css',
     ),
   ),
 
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'leaflet',
-      'leaflet-markercluster'
+      'PruneCluster'
     ),
     'scripts' => array(
       'modules/ext.HWMap.js',

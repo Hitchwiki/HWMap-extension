@@ -97,7 +97,8 @@ function initHWMap() {
 
   // Layers
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
-  spotsLayer = new L.MarkerClusterGroup().addTo(hwmap);
+  spotsLayer = new PruneClusterForLeaflet();
+  hwmap.addLayer(spotsLayer);
 
   //Check if map is called from the special page
   if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
@@ -131,15 +132,15 @@ function setupSpecialPageMap() {
   //Fire event to check when map move
   hwmap.on('moveend', function() {
     mw.log(spotsLayer);
-    mw.log(spotsLayer._topClusterLevel._childcount);
+    //mw.log(spotsLayer._topClusterLevel._childcount);
     //Get spots when zoom is bigger than 6
     if(hwmap.getZoom() > 5) {
       getBoxSpots();
     }
     //When zoom is smaller than 6 we clear the markers if not already cleared
-    else if(spotsLayer._topClusterLevel._childCount > 0){
+    else if(spotsLayer._objectsOnMap.length > 0){
       //Clear the markers and last boundings
-      spotsLayer.clearLayers();
+      spotsLayer.RemoveMarkers();
       lastBounds = {
         NElat:'0',
         NElng:'0',
@@ -162,22 +163,37 @@ function setupCityMap() {
       page = data.query.pages[i];
       break;
     }
-    //Add city marker
-    var marker = L.marker([page.coordinates[0].lat, page.coordinates[0].lon], {icon: icons.city});
-    spotsLayer.addLayer(marker);
+    //Build city marker
+    var marker = new PruneCluster.Marker(
+      page.coordinates[0].lat,
+      page.coordinates[0].lon
+    );
+    //Add icon
+    marker.data.icon = icons.city;
+    //Register marker
+    spotsLayer.RegisterMarker(marker);
+
     //Set Map View
     hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 12);
+    spotsLayer.ProcessView();
   });
 
 
   //Getting related spots
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + mw.config.get("wgTitle"), function( data ) {
 
-    //Add Markers to the map
     for (var i in data.query.spots) {
-      var marker = buildSpotMarker(data.query.spots[i].average, [data.query.spots[i].location[0].lat, data.query.spots[i].location[0].lon]);
-      spotsLayer.addLayer(marker);
+      //Build spot marker
+      var marker = new PruneCluster.Marker(
+        data.query.spots[i].location[0].lat,
+        data.query.spots[i].location[0].lon
+      );
+      //Add icon
+      marker.data.icon = iconSpot(data.query.spots[i].average);
+      //Register marker
+      spotsLayer.RegisterMarker(marker);
     }
+    spotsLayer.ProcessView();
   });
 }
 
@@ -189,28 +205,28 @@ function setupCountryMap() {
 }
 
 /*
- * Marker builder
+ * Spot icon builder
  *
  * @return L.marker
  */
-var buildSpotMarker = function (averageRating, latLon) {
+var iconSpot = function (averageRating) {
   if(averageRating == 5) {
-    return L.marker(latLon, {icon: icons.verygood});
+    return icons.verygood;
   }
   else if(averageRating == 4) {
-    return L.marker(latLon, {icon: icons.good});
+    return icons.good;
   }
   else if(averageRating == 3) {
-    return L.marker(latLon, {icon: icons.average});
+    return icons.average;
   }
   else if(averageRating == 2) {
-    return L.marker(latLon, {icon: icons.bad});
+    return icons.bad;
   }
   else if(averageRating == 1) {
-    return L.marker(latLon, {icon: icons.senseless});
+    return icons.senseless;
   }
   else if(averageRating == null) {
-    return L.marker(latLon, {icon: icons.unknown});
+    return icons.unknown;
   }
 };
 
@@ -236,21 +252,36 @@ var getBoxSpots = function () {
       }
       else if(data.query) {
         //Clear the current markers
-        spotsLayer.clearLayers();
+        spotsLayer.RemoveMarkers();
 
         //Add the new markers
         var spots = data.query.spots;
         for (var i in spots) {
           if(spots[i].category == 'Spots') {
-            var marker = buildSpotMarker(spots[i].average_rating, [spots[i].location[0],spots[i].location[1]]);
-            console.log(marker);
-            spotsLayer.addLayer(marker);
+            //Build marker
+            var marker = new PruneCluster.Marker(
+              spots[i].location[0],
+              spots[i].location[1]
+            );
+            //Add icon
+            marker.data.icon = iconSpot(spots[i].average_rating);
+
+            //Register marker
+            spotsLayer.RegisterMarker(marker);
           }
           else if(spots[i].category == 'Cities') {
-            var marker = L.marker([spots[i].location[0],spots[i].location[1]], {icon: icons.city});
-            spotsLayer.addLayer(marker);
+            //Build marker
+            var marker = new PruneCluster.Marker(
+              spots[i].location[0],
+              spots[i].location[1]
+            );
+            //Add icon
+            marker.data.icon = icons.city;
+            //Register marker
+            spotsLayer.RegisterMarker(marker);
           }
         }
+        spotsLayer.ProcessView();
       }
 
     });
