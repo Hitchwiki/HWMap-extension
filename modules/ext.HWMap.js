@@ -17,6 +17,7 @@ var hwmap,
     newSpotMarker,
     newSpotLayer,
     icons = {},
+    $addForm = $("#hwmap-add-wrap form"),
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
     apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
@@ -67,6 +68,7 @@ function initHWMap() {
     iconRetinaUrl: extensionRoot + 'icons/5-senseless@2x.png'
   });
   icons.new = L.icon({
+    className: 'no-anim', //due bug in PruneCluster https://github.com/SINTEF-9012/PruneCluster/issues/42
     iconUrl:  extensionRoot + 'icons/new.png',
     iconRetinaUrl: extensionRoot + 'icons/new@2x.png',
     shadowUrl: extensionRoot + 'icons/new-shadow.png',
@@ -93,7 +95,17 @@ function initHWMap() {
   }).addTo(hwmap);
 
   // New spot marker
-  newSpotMarker = L.marker(defaultCenter, {icon: icons.new}).bindPopup('Drag me!');
+  newSpotMarker = L.marker(defaultCenter, {
+    icon: icons.new,
+    draggable: true,
+    title: "Drag me!"
+  });
+
+  newSpotMarker.on("dragend",function(e){
+    var newSpotLocation = e.target.getLatLng();
+    console.log( newSpotLocation );
+    $addForm.find("input[name='Spot[Location]']").val(newSpotLocation.lat + ',' + newSpotLocation.lng);
+  });
 
   // Layers
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
@@ -123,11 +135,18 @@ function initHWMap() {
  */
 function setupSpecialPageMap() {
   mw.log('->HWMap->setupSpecialPageMap');
+
   //Set map view
-  hwmap.setView([45, 10], 6);
+  hwmap.setView(defaultCenter, defaultZoom);
 
   //Getting spots in bounding box
   getBoxSpots();
+
+  newSpotMarker.on("dragend",function(e){
+
+    console.log( e.target.getLatLng() );
+    $addForm.find("input[name='Spot[Location]']").val(e.target.getLatLng().join(','));
+  });
 
   //Fire event to check when map move
   hwmap.on('moveend', function() {
