@@ -19,7 +19,7 @@ class HWMapCityApi extends ApiBase {
         $this->getRequest(),
         array(
           'action' => 'ask',
-          'query' => '[[Category:Spots]][[Cities::'.$page_title.']]|?Location'
+          'query' => '[[Category:Spots]][[Cities::'.$page_title.']]|?Location|?Description'
         ),
         true
       );
@@ -32,6 +32,7 @@ class HWMapCityApi extends ApiBase {
         $titles = $titles.$key;
         $spots[$index]->title = $key;
         $spots[$index]->location = $result['printouts']['Location'];
+        $spots[$index]->description = $result['printouts']['Description'][0]['fulltext'];
         $index++;
       }
 
