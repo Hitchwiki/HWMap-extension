@@ -17,7 +17,7 @@ var hwmap,
     newSpotMarker,
     newSpotLayer,
     icons = {},
-    $addForm = $("#hwmap-add-wrap form"),
+    $newSpotForm = $("#hwmap-add-wrap form"),
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
     apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
@@ -104,7 +104,7 @@ function initHWMap() {
   newSpotMarker.on("dragend",function(e){
     var newSpotLocation = e.target.getLatLng();
     console.log( newSpotLocation );
-    $addForm.find("input[name='Spot[Location]']").val(newSpotLocation.lat + ',' + newSpotLocation.lng);
+    $newSpotForm.find("input[name='Spot[Location]']").val(newSpotLocation.lat + ',' + newSpotLocation.lng);
   });
 
   // Layers
@@ -131,6 +131,38 @@ function initHWMap() {
 }
 
 /*
+ * Reverse Geocoder
+ * @param lat: Float
+ * @param lng: Float
+ */
+ /*
+function reverseGeocode(lat, lng) {
+  $.ajax({
+    url: "http://api.geonames.org/findNearbyPlaceName",
+    dataType: "jsonp",
+    data: {
+      lat: lat,
+      lng: lng,
+      featureClass: "P",
+      style: "full",
+      maxRows: 1,
+      lang: 'en'
+    },
+    success: function( data ) {
+      response( $.map( data.geonames, function( item ) {
+        return {
+          label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
+          value: item.name + ", " + item.countryName
+        }
+      }));
+    }
+  });
+
+}
+*/
+
+
+/*
  * Setup big map at Special:HWMap
  */
 function setupSpecialPageMap() {
@@ -142,10 +174,10 @@ function setupSpecialPageMap() {
   //Getting spots in bounding box
   getBoxSpots();
 
+  // Dragged location of the new spot
   newSpotMarker.on("dragend",function(e){
-
-    console.log( e.target.getLatLng() );
-    $addForm.find("input[name='Spot[Location]']").val(e.target.getLatLng().join(','));
+    var newSpotLocation = e.target.getLatLng();
+    $newSpotForm.find("input[name='Spot[Location]']").val( newSpotLocation.lat + ',' + newSpotLocation.lng );
   });
 
   //Fire event to check when map move
