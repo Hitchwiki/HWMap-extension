@@ -124,37 +124,6 @@ function initHWMap() {
 
 }
 
-/*
- * Reverse Geocoder
- * @param lat: Float
- * @param lng: Float
- */
- /*
-function reverseGeocode(lat, lng) {
-  $.ajax({
-    url: "http://api.geonames.org/findNearbyPlaceName",
-    dataType: "jsonp",
-    data: {
-      lat: lat,
-      lng: lng,
-      featureClass: "P",
-      style: "full",
-      maxRows: 1,
-      lang: 'en'
-    },
-    success: function( data ) {
-      response( $.map( data.geonames, function( item ) {
-        return {
-          label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
-          value: item.name + ", " + item.countryName
-        }
-      }));
-    }
-  });
-
-}
-*/
-
 
 /*
  * Setup big map at Special:HWMap
@@ -169,9 +138,48 @@ function setupSpecialPageMap() {
   getBoxSpots();
 
   // Dragged location of the new spot
+  // Preset some values at the form
   newSpotMarker.on("dragend",function(e){
+
+    $newSpotForm.find("input[type='submit']").attr('disabled', 'disabled');
+
+    // Spot coordinates
     var newSpotLocation = e.target.getLatLng();
     $newSpotForm.find("input[name='Spot[Location]']").val( newSpotLocation.lat + ',' + newSpotLocation.lng );
+
+    // Spot name
+    $.ajax({
+      url: "http://api.geonames.org/findNearbyPlaceNameJSON",
+      dataType: "jsonp",
+      data: {
+        lat: newSpotLocation.lat,
+        lng: newSpotLocation.lng,
+        featureClass: "P",
+        style: "full",
+        maxRows: 1,
+        lang: 'en',
+        username: 'hitchwiki'
+      },
+      success: function( data ) {
+        mw.log( data );
+
+        var placeName = 'Hitchhiking spot in ';
+
+        if(data.geonames[0].adminName1 && data.geonames[0].adminName1 !== '') placeName += data.geonames[0].adminName1 + ', ';
+
+        if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') placeName += data.geonames[0].adminName2 + ', ';
+
+        if(data.geonames[0].adminName3 && data.geonames[0].adminName3 !== '') placeName += data.geonames[0].adminName3 + ', ';
+
+        if(data.geonames[0].countryName && data.geonames[0].countryName !== '') placeName += data.geonames[0].countryName;
+
+        $newSpotForm.find("input[name='page_name']").val(placeName);
+
+        // Enable the form again
+        $newSpotForm.find("input[type='submit']").removeAttr('disabled');
+      }
+    });
+
   });
 
   //Fire event to check when map move
