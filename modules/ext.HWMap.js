@@ -17,7 +17,8 @@ var hwmap,
     newSpotMarker,
     newSpotLayer,
     icons = {},
-    $newSpotForm = $("#hwmap-add-wrap form"),
+    $newSpotWrap = $("#hwmap-add-wrap"),
+    $newSpotForm = $newSpotWrap.find("form"),
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
     apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
@@ -94,15 +95,7 @@ function initHWMap() {
     continuousWorld: true
   }).addTo(hwmap);
 
-  // New spot marker
-  newSpotMarker = L.marker(defaultCenter, {
-    icon: icons.new,
-    draggable: true,
-    title: "Drag me!"
-  });
-
   // Layers
-  newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
   spotsLayer = new PruneClusterForLeaflet();
   hwmap.addLayer(spotsLayer);
 
@@ -125,6 +118,72 @@ function initHWMap() {
 }
 
 
+function setupNewSpot() {
+
+  // Craete new spot marker + layer
+  newSpotMarker = L.marker(hwmap.getCenter(), {
+    icon: icons.new,
+    draggable: true,
+    title: "Drag me!"
+  });
+  newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
+
+  newSpotReverseGeocode();
+
+  $newSpotWrap.fadeIn('fast');
+
+  // Dragged location of the new spot
+  // Preset some values at the form
+  newSpotMarker.on("dragend", function(event){
+    newSpotReverseGeocode(event);
+  });
+}
+
+
+function newSpotReverseGeocode(event) {
+
+  $newSpotForm.find("input[type='submit']").attr('disabled', 'disabled');
+
+  var newSpotLocation = (event) ? event.target.getLatLng() : hwmap.getCenter();
+
+  // Spot coordinates
+  $newSpotForm.find("input[name='Spot[Location]']").val( newSpotLocation.lat + ',' + newSpotLocation.lng );
+
+  // Spot name
+  $.ajax({
+    url: 'http://api.geonames.org/findNearbyPlaceNameJSON',
+    dataType: 'jsonp',
+    data: {
+      lat: newSpotLocation.lat,
+      lng: newSpotLocation.lng,
+      featureClass: 'P',
+      style: 'full',
+      maxRows: 1,
+      lang: 'en',
+      username: 'hitchwiki'
+    },
+    success: function( data ) {
+      mw.log( data );
+
+      var placeName = 'Hitchhiking spot in ';
+
+      if(data.geonames[0].adminName1 && data.geonames[0].adminName1 !== '') placeName += data.geonames[0].adminName1 + ', ';
+
+      if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') placeName += data.geonames[0].adminName2 + ', ';
+
+      if(data.geonames[0].adminName3 && data.geonames[0].adminName3 !== '') placeName += data.geonames[0].adminName3 + ', ';
+
+      if(data.geonames[0].countryName && data.geonames[0].countryName !== '') placeName += data.geonames[0].countryName;
+
+      $newSpotForm.find("input[name='page_name']").val(placeName);
+
+      // Enable the form again
+      $newSpotForm.find("input[type='submit']").removeAttr('disabled');
+    }
+  });
+
+}
+
 /*
  * Setup big map at Special:HWMap
  */
@@ -137,54 +196,14 @@ function setupSpecialPageMap() {
   //Getting spots in bounding box
   getBoxSpots();
 
-  // Dragged location of the new spot
-  // Preset some values at the form
-  newSpotMarker.on("dragend",function(e){
-
-    $newSpotForm.find("input[type='submit']").attr('disabled', 'disabled');
-
-    // Spot coordinates
-    var newSpotLocation = e.target.getLatLng();
-    $newSpotForm.find("input[name='Spot[Location]']").val( newSpotLocation.lat + ',' + newSpotLocation.lng );
-
-    // Spot name
-    $.ajax({
-      url: "http://api.geonames.org/findNearbyPlaceNameJSON",
-      dataType: "jsonp",
-      data: {
-        lat: newSpotLocation.lat,
-        lng: newSpotLocation.lng,
-        featureClass: "P",
-        style: "full",
-        maxRows: 1,
-        lang: 'en',
-        username: 'hitchwiki'
-      },
-      success: function( data ) {
-        mw.log( data );
-
-        var placeName = 'Hitchhiking spot in ';
-
-        if(data.geonames[0].adminName1 && data.geonames[0].adminName1 !== '') placeName += data.geonames[0].adminName1 + ', ';
-
-        if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') placeName += data.geonames[0].adminName2 + ', ';
-
-        if(data.geonames[0].adminName3 && data.geonames[0].adminName3 !== '') placeName += data.geonames[0].adminName3 + ', ';
-
-        if(data.geonames[0].countryName && data.geonames[0].countryName !== '') placeName += data.geonames[0].countryName;
-
-        $newSpotForm.find("input[name='page_name']").val(placeName);
-
-        // Enable the form again
-        $newSpotForm.find("input[type='submit']").removeAttr('disabled');
-      }
-    });
-
+  $("#hwmap-add").click(function(e){
+    e.preventDefault();
+    $(this).hide();
+    setupNewSpot();
   });
 
   //Fire event to check when map move
   hwmap.on('moveend', function() {
-    mw.log(spotsLayer);
     //mw.log(spotsLayer._topClusterLevel._childcount);
     //Get spots when zoom is bigger than 6
     if(hwmap.getZoom() > 5) {

@@ -51,15 +51,40 @@
     padding: 0;
   }
 
-  // Adding hitching spot
-  #hwmap-add-wrap {
+  // Button to init the adding
+  #hwmap-add {
+    display: inline-block;
     position: fixed;
-    bottom: 0;
-    right: 0;
+    bottom: 50px;
+    right: 20px;
     z-index:100000;
-    background:#eee;
+    font-size: 14px;
+    line-height: 14px;
+    background: @hw-orange;
+    border: 1px solid @hw-orange-border;
+    color: @hw-orange-text;
+    padding: 5px;
   }
 
+  // Button to init the form for adding
+  #hwmap-add-wrap {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    z-index:100000;
+    background:#eee;
+    padding: 5px;
+    input[type='submit'] {
+      padding: 5px;
+      background: @hw-orange;
+      font-size: 14px;
+      line-height: 14px;
+      border: 1px solid @hw-orange-border;
+      color: @hw-orange-text;
+    }
+  }
+
+  // Adding the spot -popup
   .popupform-container {
     border: 0;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
@@ -84,5 +109,3 @@
   }
 
 }
-
-
