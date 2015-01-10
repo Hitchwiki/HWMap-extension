@@ -186,17 +186,31 @@ function newSpotReverseGeocode(event) {
     success: function( data ) {
       mw.log( data );
 
-      var placeName = 'Hitchhiking spot in ';
+      // Mandatory name for the MW article
+      var placeName = '';//'Hitchhiking spot in ';
 
+      // Name must be unique, add coordinates to it
+      placeName += newSpotLocation.lat + ',' + newSpotLocation.lng + ' ';
+
+      // Add municipality name to it
       if(data.geonames[0].adminName1 && data.geonames[0].adminName1 !== '') placeName += data.geonames[0].adminName1 + ', ';
 
-      if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') placeName += data.geonames[0].adminName2 + ', ';
+      //if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') placeName += data.geonames[0].adminName2 + ', ';
 
-      if(data.geonames[0].adminName3 && data.geonames[0].adminName3 !== '') placeName += data.geonames[0].adminName3 + ', ';
+      //if(data.geonames[0].adminName3 && data.geonames[0].adminName3 !== '') placeName += data.geonames[0].adminName3 + ', ';
 
-      if(data.geonames[0].countryName && data.geonames[0].countryName !== '') placeName += data.geonames[0].countryName;
-
+      // Prefil name
       $newSpotForm.find("input[name='page_name']").val(placeName);
+
+      // Prefill country info
+      if(data.geonames[0].countryName && data.geonames[0].countryName !== '') {
+        $newSpotForm.find("input[name='Spot[Country]']").val( data.geonames[0].countryName );
+      }
+      
+      // Prefill city info
+      if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') {
+        $newSpotForm.find("input[name='Spot[Cities]']").val( data.geonames[0].adminName2 );
+      }
 
       // Enable the form again
       $newSpotForm.find("input[type='submit']").removeAttr('disabled');

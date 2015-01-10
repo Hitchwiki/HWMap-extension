@@ -51,37 +51,47 @@
     padding: 0;
   }
 
-  // Button to init the adding
-  #hwmap-add {
-    display: inline-block;
-    position: fixed;
-    bottom: 50px;
-    right: 20px;
-    z-index:100000;
-    font-size: 14px;
-    line-height: 14px;
-    background: @hw-orange;
-    border: 1px solid @hw-orange-border;
-    color: @hw-orange-text;
-    padding: 5px;
-  }
-
   // Button to init the form for adding
   #hwmap-add-wrap {
     position: fixed;
-    bottom: 50px;
-    right: 20px;
-    z-index:100000;
-    background:#eee;
-    padding: 5px;
-    input[type='submit'] {
-      padding: 5px;
-      background: @hw-orange;
-      font-size: 14px;
-      line-height: 14px;
-      border: 1px solid @hw-orange-border;
-      color: @hw-orange-text;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    z-index: 1000;
+    background: rgba(0,0,0,0.5);
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    padding: 15px;
+    font-size: 18px;
+    line-height: 23px;
+    font-weight: normal;
+    color: #fff;
+    text-align: center;
+    input[name='page_name'] {
+      display: none;
     }
+  }
+
+  // Buttosn for adding new spot
+  #hwmap-add,
+  #hwmap-add-wrap input[type='submit'] {
+    padding: 10px 15px;
+    background: @hw-orange;
+    font-size: 14px;
+    line-height: 15px;
+    border: 0;
+    color: @hw-orange-text;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  // Button to init the adding new spot
+  #hwmap-add {
+    display: inline-block;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 15px 25px;
   }
 
   // Adding the spot -popup

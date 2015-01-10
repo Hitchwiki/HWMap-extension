@@ -14,7 +14,8 @@ class SpecialHWMap extends SpecialPage {
 
     $output->addWikiText(
       '<div id="hwmap-add-wrap" style="display:none;">' .
-      str_replace('%username%', '', '{{#forminput:form=Spot|size=|default value=%username%|button text=Next step|page name=%username%|query string=Spot[Location]=51,23|popup}}') .
+        '<p>Drag marker to the hitchhiking spot. Zoom in closer to see better and use satellite maps to confirm location.</p>' .
+        '{{#forminput:form=Spot|size=|default value=|button text=Continue|page name=|query string=Spot[Location]=51,23&Spot[Country]=&Spot[Cities]=|popup}}' .
       '</div>'
     );
 
