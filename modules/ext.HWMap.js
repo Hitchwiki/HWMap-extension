@@ -110,6 +110,23 @@ function initHWMap() {
   // Layers
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
   spotsLayer = new PruneClusterForLeaflet();
+
+  spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
+    leafletMarker.on('click', function(){
+      console.log("youpi click");
+    });
+    leafletMarker.on('mouseover', function(){
+      console.log("youpi mouseover");
+      $('#spot_'+data.id).css('background-color', '#c4c4c4');
+    });
+    leafletMarker.on('mouseout', function(){
+      console.log("youpi mouseover");
+      $('#spot_'+data.id).css('background-color', 'transparent');
+    });
+    leafletMarker.setIcon(data.icon);
+  };
+
+
   hwmap.addLayer(spotsLayer);
 
   //Check if map is called from the special page
@@ -202,7 +219,7 @@ function setupCityMap() {
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + mw.config.get("wgTitle"), function( data ) {
     var ractive = new Ractive({
       el: 'incity-spots',
-      template: '{{#spots}}<h3>{{title}}</h3><p>Rating: {{average}}/5</p><p>{{description}}</p>{{/spots}}',
+      template: '{{#spots}}<div id="spot_{{id}}"><h3>{{title}}</h3><p>Rating: {{average}}/5</p><p>{{description}}</p></div>{{/spots}}',
       data: data.query
     });
 
@@ -216,6 +233,8 @@ function setupCityMap() {
       );
       //Add icon
       marker.data.icon = iconSpot(citySpots[i].average);
+      //Add id
+      marker.data.id = citySpots[i].id;
       //Register marker
       spotsLayer.RegisterMarker(marker);
     }
