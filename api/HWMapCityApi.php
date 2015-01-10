@@ -19,7 +19,7 @@ class HWMapCityApi extends ApiBase {
         $this->getRequest(),
         array(
           'action' => 'ask',
-          'query' => '[[Category:Spots]][[Cities::'.$page_title.']]|?Location|?Description'
+          'query' => '[[Category:Spots]][[Cities::'.$page_title.']]|?Location|?Country|?CardinalDirection|?CitiesDirection|?RoadsDirection'
         ),
         true
       );
@@ -32,7 +32,20 @@ class HWMapCityApi extends ApiBase {
         $titles = $titles.$key;
         $spots[$index]->title = $key;
         $spots[$index]->location = $result['printouts']['Location'];
-        $spots[$index]->description = $result['printouts']['Description'][0]['fulltext'];
+        $spots[$index]->Country = $result['printouts']['Country'][0]['fulltext'];
+        $spots[$index]->CardinalDirection = "";
+        for($i = 0; $i < count($result['printouts']['CardinalDirection']); ++$i) {
+            if($i > 0) {
+                $spots[$index]->CardinalDirection = $spots[$index]->CardinalDirection.", ";
+            }
+            $spots[$index]->CardinalDirection = $spots[$index]->CardinalDirection.$result['printouts']['CardinalDirection'][$i]['fulltext'];
+        }
+        for($i = 0; $i < count($result['printouts']['CitiesDirection']); ++$i) {
+            $spots[$index]->CitiesDirection[$i] = $result['printouts']['CitiesDirection'][$i]['fulltext'];
+        }
+        for($i = 0; $i < count($result['printouts']['RoadsDirection']); ++$i) {
+            $spots[$index]->RoadsDirection[$i] = $result['printouts']['RoadsDirection'][$i]['fulltext'];
+        }
         $index++;
       }
 
