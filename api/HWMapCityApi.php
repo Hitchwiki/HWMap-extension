@@ -13,7 +13,6 @@ class HWMapCityApi extends ApiBase {
       $page_title = $params['page_title'];
 
       $spots = array();
-
       //Get Spots that are linked to the city
       $linked_spots = new DerivativeRequest(
         $this->getRequest(),
@@ -35,9 +34,6 @@ class HWMapCityApi extends ApiBase {
         $spots[$index]->Country = $result['printouts']['Country'][0]['fulltext'];
         $spots[$index]->CardinalDirection = "";
         for($i = 0; $i < count($result['printouts']['CardinalDirection']); ++$i) {
-            if($i > 0) {
-                $spots[$index]->CardinalDirection = $spots[$index]->CardinalDirection.", ";
-            }
             $spots[$index]->CardinalDirection = $spots[$index]->CardinalDirection.$result['printouts']['CardinalDirection'][$i]['fulltext'];
         }
         for($i = 0; $i < count($result['printouts']['CitiesDirection']); ++$i) {
@@ -46,8 +42,25 @@ class HWMapCityApi extends ApiBase {
         for($i = 0; $i < count($result['printouts']['RoadsDirection']); ++$i) {
             $spots[$index]->RoadsDirection[$i] = $result['printouts']['RoadsDirection'][$i]['fulltext'];
         }
+
+        $spot_text = new DerivativeRequest(
+          $this->getRequest(),
+          array(
+            'action' => 'parse',
+            'page' => $key,
+            'prop' => 'text'
+          ),
+          true
+        );
+        $spot_text_api = new ApiMain( $spot_text );
+        $spot_text_api->execute();
+        $spot_text_data = $spot_text_api->getResultData();
+        $spots[$index]->Description = $spot_text_data['parse']['text']['*'];
+
+
         $index++;
       }
+
 
       //Get Ids of the spots
       $title_id = new DerivativeRequest(

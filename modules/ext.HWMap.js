@@ -101,6 +101,10 @@ function initHWMap() {
   spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
     leafletMarker.on('click', function(){
       console.log("youpi click");
+
+      $('html, body').animate({
+        scrollTop:$('#spot_'+data.id).offset().top -48
+      }, 'fast');
     });
     leafletMarker.on('mouseover', function(){
       console.log("youpi mouseover");
@@ -270,10 +274,35 @@ function setupCityMap() {
 
   //Getting related spots
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + mw.config.get("wgTitle"), function( data ) {
-    var ractive = new Ractive({
-      el: 'incity-spots',
-      template: '{{#spots}}<div id="spot_{{id}}"><h3>{{title}}</h3><p>Rating: {{average}}/5</p><p>{{description}}</p></div>{{/spots}}',
-      data: data.query
+    var spotsData = {
+      groupSpots:{}
+    };
+    //Let's group the different spots by cardinal direction
+    for(var i = 0; i < data.query.spots.length; i++) {
+      //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
+      if(data.query.spots[i].CardinalDirection == "") {
+        if(!spotsData.groupSpots['Other directions']) {
+          spotsData.groupSpots['Other directions'] = [];
+        }
+        spotsData.groupSpots['Other directions'].push(data.query.spots[i]);
+      }
+      else {
+        if(!spotsData.groupSpots[data.query.spots[i].CardinalDirection]) {
+          spotsData.groupSpots[data.query.spots[i].CardinalDirection] = [];
+        }
+        spotsData.groupSpots[data.query.spots[i].CardinalDirection].push(data.query.spots[i]);
+      }
+    }
+
+    console.log(spotsData);
+
+    $.get( extensionRoot +'modules/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
+      var ractive = new Ractive({
+        el: 'incity-spots',
+        template: template,
+        data: spotsData
+      });
+
     });
 
     var citySpots = data.query.spots;

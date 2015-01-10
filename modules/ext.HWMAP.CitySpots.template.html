@@ -1,0 +1,26 @@
+{{#groupSpots:direction}}
+
+<h2>
+  {{direction}}
+</h2>
+
+{{#this}}
+<div id="spot_{{id}}">
+  <h3>{{title}}</h3>
+  <h4>
+    {{#CitiesDirection}}
+    <span>Cities: </span>
+    <a href="#">{{this}}</a>&nbsp;
+    {{/CitiesDirection}}
+    {{#RoadsDirection}}
+    <span> Roads: </span>
+    <a href="#">{{this}}</a>&nbsp;
+    {{/RoadsDirection}}
+  </h4>
+  {{#average}}<span>Average rating: {{average}}</span>{{/average}}
+  {{^average}}<span>No ratings yet</span>{{/average}}
+  <p>{{{Description}}}</p>
+</div>
+{{/this}}
+
+{{/groupSpots}}
