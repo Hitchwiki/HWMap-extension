@@ -202,6 +202,11 @@ function newSpotReverseGeocode(event) {
       if(data.geonames[0].countryName && data.geonames[0].countryName !== '') {
         $newSpotForm.find("input[name='Spot[Country]']").val( data.geonames[0].countryName );
       }
+      
+      // Prefill city info
+      if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') {
+        $newSpotForm.find("input[name='Spot[Cities]']").val( data.geonames[0].adminName2 );
+      }
 
       // Enable the form again
       $newSpotForm.find("input[type='submit']").removeAttr('disabled');
