@@ -8,8 +8,12 @@ var defaultCenter = [48.6908333333, 9.14055555556], // Europe
 
 // Mapbox settings
 var mapboxUser = "trustroots",
-    mapboxStyle = "ce8bb774",
+    mapboxStyleStreets = "ce8bb774", //Trustroots maps
+    mapboxStyleSatellite = 'kil7hee6', //Trustroots maps
     mapboxAccessToken = "pk.eyJ1IjoidHJ1c3Ryb290cyIsImEiOiJVWFFGa19BIn0.4e59q4-7e8yvgvcd1jzF4g";
+
+// Geonames settings
+var geonamesUsername = 'hitchwiki';
 
 // Setup variables
 var hwmap,
@@ -127,20 +131,37 @@ function initHWMap() {
     popupAnchor:  [-3, -17] // point from which the popup should open relative to the iconAnchor
   });
 
+  // Using Mapbox tiles developed for Trustroots+Hitchwiki
+
+  var mapBoxUrl = '//{s}.tiles.mapbox.com/v4/{user}.{map}/{z}/{x}/{y}.png' + L.Util.getParamString({
+    //secure: 1, // Uncomment if we ever start using https
+    access_token: mapboxAccessToken
+  });
+  var mapBoxAttribution = '<a href="https://www.mapbox.com/map-feedback/#' + mapboxUser + '.' + mapboxStyleStreets + '/' + defaultCenter[0] + '/' + defaultCenter[1] + '/' + defaultZoom + '">Improve this map</a></strong>';
+
+  // https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
+  var mapLayerStreets = L.tileLayer(mapBoxUrl, {
+    attribution: mapBoxAttribution,
+    maxZoom: 18,
+    continuousWorld: true,
+    user: mapboxUser,
+    map: mapboxStyleStreets
+  });
+  // Satellite layer
+  var mapLayerSatellite = L.tileLayer(mapBoxUrl, {
+    attribution: mapBoxAttribution,
+    maxZoom: 18,
+    continuousWorld: true,
+    user: mapboxUser,
+    map: mapboxStyleSatellite
+  });
+
   //Setting up the map
   hwmap = L.map('hwmap', {
     center: defaultCenter,
-    zoom: defaultZoom
+    zoom: defaultZoom,
+    layers: [mapLayerStreets]
   });
-
-  // Using a map tiles developed for Trustroots/Hitchwiki
-  // https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
-  // If we ever start using https, add this to the tiles url: &secure=1
-  L.tileLayer('//{s}.tiles.mapbox.com/v4/'+mapboxUser+'.'+mapboxStyle+'/{z}/{x}/{y}.png?access_token=' + mapboxAccessToken, {
-    attribution: '<a href="http://www.openstreetmap.org/" target="_blank">OSM</a>',
-    maxZoom: 18,
-    continuousWorld: true
-  }).addTo(hwmap);
 
   // Layers
   spotsLayer = new PruneClusterForLeaflet();
@@ -164,8 +185,19 @@ function initHWMap() {
     leafletMarker.setIcon(data.icon);
   };
 
-
   hwmap.addLayer(spotsLayer);
+
+  // Add layers
+  var baseMaps = {
+    "Streets": mapLayerStreets,
+    "Satellite": mapLayerSatellite
+  };
+  var overlayMaps = {
+    "Spots": spotsLayer
+  };
+  L.control.layers(baseMaps, overlayMaps).addTo(hwmap);
+
+  L.control.scale().addTo(hwmap);
 
   //Check if map is called from the special page
   if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
@@ -228,7 +260,7 @@ function newSpotReverseGeocode(event) {
       style: 'full',
       maxRows: 1,
       lang: 'en',
-      username: 'hitchwiki'
+      username: geonamesUsername
     },
     success: function( data ) {
       mw.log( data );
