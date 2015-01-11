@@ -17,12 +17,59 @@ var hwmap,
     newSpotMarker,
     newSpotLayer,
     icons = {},
+    spotsData = {
+      groupSpots: {},
+    },
     $newSpotWrap = $("#hwmap-add-wrap"),
     $newSpotForm = $newSpotWrap.find("form"),
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
     apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
-    extensionRoot = mw.config.get("wgExtensionAssetsPath") + "/HWMap/";
+    extensionRoot = mw.config.get("wgExtensionAssetsPath") + "/HWMap/",
+    userId = mw.config.get("wgUserId"),
+    token,
+    ractive;
+
+//Function to get edit token
+var getToken = function (callback) {
+  if(userId) {
+    $.get( apiRoot + "/api.php?action=query&meta=tokens&format=json", function( data ) {
+      callback(data.query.tokens.csrftoken);
+    });
+  }
+  else {
+    callback(null);
+  }
+};
+
+
+//addRating
+var addRatings = function(newRating, id) {
+  console.log(ractive);
+  //Get token
+  getToken(function(token) {
+    console.log(ractive);
+    if(token != "") {
+      //Post new rating
+      $.post(  apiRoot + "/api.php?action=hwaddrating&format=json", { rating: newRating, pageid: id, token: token})
+      .done(function( data ) {
+        console.log(ractive);
+        //Update spot with new average
+        for (var key in spotsData.groupSpots) {
+          var spots = spotsData.groupSpots[key];
+          for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
+          if(i < spots.length) {
+            ractive.set('groupSpots.'+key+'.'+i+'.average', data.query.average );
+            break;
+          }
+        }
+      });
+    }
+    else {
+      console.log('not logged in ');
+    }
+  });
+}
 
 /*
  * Initialize map
@@ -206,7 +253,7 @@ function newSpotReverseGeocode(event) {
       if(data.geonames[0].countryName && data.geonames[0].countryName !== '') {
         $newSpotForm.find("input[name='Spot[Country]']").val( data.geonames[0].countryName );
       }
-      
+
       // Prefill city info
       if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') {
         $newSpotForm.find("input[name='Spot[Cities]']").val( data.geonames[0].adminName2 );
@@ -288,9 +335,6 @@ function setupCityMap() {
 
   //Getting related spots
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + mw.config.get("wgTitle"), function( data ) {
-    var spotsData = {
-      groupSpots:{}
-    };
     //Let's group the different spots by cardinal direction
     for(var i = 0; i < data.query.spots.length; i++) {
       //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
@@ -311,12 +355,11 @@ function setupCityMap() {
     console.log(spotsData);
 
     $.get( extensionRoot +'modules/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
-      var ractive = new Ractive({
+      ractive = new Ractive({
         el: 'incity-spots',
         template: template,
         data: spotsData
       });
-
     });
 
     var citySpots = data.query.spots;
@@ -428,6 +471,8 @@ var getBoxSpots = function () {
     });
   }
 }
+
+
 
 jQuery(document).ready(function($){
 //jQuery( function( $ ) {

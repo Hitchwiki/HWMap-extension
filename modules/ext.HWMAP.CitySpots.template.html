@@ -6,19 +6,26 @@
 
 {{#this}}
 <div id="spot_{{id}}">
-  <h3>{{title}}</h3>
+  <h3><a href="{{title}}">{{title}}</a></h3>
   <h4>
-    {{#CitiesDirection}}
     <span>Cities: </span>
-    <a href="#">{{this}}</a>&nbsp;
+    {{#CitiesDirection}}
+    <a href="{{this}}">{{this}}</a>&nbsp;
     {{/CitiesDirection}}
-    {{#RoadsDirection}}
     <span> Roads: </span>
-    <a href="#">{{this}}</a>&nbsp;
+    {{#RoadsDirection}}
+    <a href="{{this}}">{{this}}</a>&nbsp;
     {{/RoadsDirection}}
   </h4>
-  {{#average}}<span>Average rating: {{average}}</span>{{/average}}
-  {{^average}}<span>No ratings yet</span>{{/average}}
+  <div class="ratings">
+    {{#average}}<span>Average rating: {{average}}</span>{{/average}}
+    {{^average}}<span>No ratings yet</span>{{/average}}
+    <i class="fa fa-plus-square" onclick="$('#rating_input_{{id}}').show()"></i>
+    <span id="rating_input_{{id}}" class="rating-input" >
+      <input type="number" min="1" max="5" value='{{newRating}}'>
+      <button onclick="addRatings({{newRating}}, {{id}})">add</button>
+    </span>
+  </div>
   <p>{{{Description}}}</p>
 </div>
 {{/this}}
