@@ -85,9 +85,12 @@ class HWMapCityApi extends ApiBase {
       //Get the averages of all the ids
       $dbr = wfGetDB( DB_SLAVE );
       $res = $dbr->select(
-        'hw_ratings_avg',
-        array('hw_average_rating', 'hw_page_id'),
-        $ids
+        array('hw_ratings_avg', 'hw_comments_count'),
+        array('hw_average_rating', 'hw_comments_count', 'hw_page_id'),
+        array(),
+         __METHOD__,
+         array(),
+         array('hw_ratings_avg' => array( 'NATURAL JOIN'))
       );
       foreach( $res as $row ) {
         for($index = 0; $index < count($spots) && $spots[$index]->id != $row->hw_page_id; $index++) {
@@ -95,6 +98,7 @@ class HWMapCityApi extends ApiBase {
         }
         if($index < count($spots)) {
           $spots[$index]->average = $row->hw_average_rating;
+          $spots[$index]->comments_count = $row->hw_comments_count;
         }
       }
 

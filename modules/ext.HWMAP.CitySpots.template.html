@@ -26,6 +26,10 @@
       <button onclick="addRatings({{newRating}}, {{id}})">add</button>
     </span>
   </div>
+  <div class="comments">
+    {{#comments_count}}<span>Number of comments: {{comments_count}}</span>{{/comments_count}}
+    {{^comments_count}}<span>No comments yet</span>{{/comments_count}}
+  </div>
   <p>{{{Description}}}</p>
 </div>
 {{/this}}
