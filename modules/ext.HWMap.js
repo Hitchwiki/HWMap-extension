@@ -89,7 +89,8 @@ function initHWMap() {
   });
   icons.city = L.icon({
     iconUrl:  extensionRoot + 'icons/city.png',
-    iconRetinaUrl: extensionRoot + 'icons/city@2x.png'
+    iconRetinaUrl: extensionRoot + 'icons/city@2x.png',
+    iconAnchor: [14, 14]
   });
   icons.unknown = L.icon({
     iconUrl:  extensionRoot + 'icons/0-none.png',
