@@ -121,7 +121,6 @@ function initHWMap() {
     iconRetinaUrl: extensionRoot + 'icons/5-senseless@2x.png'
   });
   icons.new = L.icon({
-    className: 'no-anim', //due bug in PruneCluster https://github.com/SINTEF-9012/PruneCluster/issues/42
     iconUrl:  extensionRoot + 'icons/new.png',
     iconRetinaUrl: extensionRoot + 'icons/new@2x.png',
     shadowUrl: extensionRoot + 'icons/new-shadow.png',
