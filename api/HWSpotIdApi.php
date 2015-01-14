@@ -77,8 +77,9 @@ class HWSpotIdApi extends ApiBase {
       $spot_text_data = $spot_text_api->getResultData();
       $spot->Description = $spot_text_data['parse']['text']['*'];
 
-      //If the rating extension is set, get the rating average
+      //If the rating extension is set
       if ( class_exists( 'HWAvgRatingApi' ) ) {
+        //Get the rating average and count
         $spot_average_rating = new DerivativeRequest(
           $this->getRequest(),
           array(
@@ -92,10 +93,26 @@ class HWSpotIdApi extends ApiBase {
         $spot_average_rating_data = $spot_average_rating_api->getResultData();
         $spot->rating_average = $spot_average_rating_data['query']['ratings'][0]['rating_average'];
         $spot->rating_count = $spot_average_rating_data['query']['ratings'][0]['rating_count'];
+
+        //And get the average detail
+        $spot_average_detail = new DerivativeRequest(
+          $this->getRequest(),
+          array(
+            'action' => 'hwgetratings',
+            'pageid' => $page_id
+          ),
+          true
+        );
+        $spot_average_detail_api = new ApiMain( $spot_average_detail );
+        $spot_average_detail_api->execute();
+        $spot_average_detail_data = $spot_average_detail_api->getResultData();
+        $spot->ratings = $spot_average_detail_data['query']['ratings'];
+
       }
 
-      //If the comment extension is set, get the comments count
+      //If the comment extension is set
       if ( class_exists( 'HWGetCommentsCountApi' ) ) {
+        //Get the comments count
         $spot_comment_count = new DerivativeRequest(
           $this->getRequest(),
           array(
@@ -108,6 +125,20 @@ class HWSpotIdApi extends ApiBase {
         $spot_comment_count_api->execute();
         $spot_comment_count_data = $spot_comment_count_api->getResultData();
         $spot->comments_count = $spot_comment_count_data['query']['comment_counts'][0]['comments_count'];
+
+        //And get the comments details
+        $spot_comment_detail = new DerivativeRequest(
+          $this->getRequest(),
+          array(
+            'action' => 'hwgetcomments',
+            'pageid' => $page_id
+          ),
+          true
+        );
+        $spot_comment_detail_api = new ApiMain( $spot_comment_detail );
+        $spot_comment_detail_api->execute();
+        $spot_comment_detail_data = $spot_comment_detail_api->getResultData();
+        $spot->comments = $spot_comment_detail_data['query']['comments'];
       }
 
       $this->getResult()->addValue('query', 'spot',  $spot);
