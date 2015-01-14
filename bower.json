@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "leaflet": "~0.7.3",
-    "PruneCluster": "~1.0.0",
+    "PruneCluster": "~1.1.0",
     "ractive": "~0.6.1"
   }
 }
