@@ -49,22 +49,21 @@ var getToken = function (callback) {
 
 //addRating
 var addRatings = function(newRating, id) {
-  console.log(ractive);
   //Get token
   getToken(function(token) {
-    console.log(ractive);
-    if(token != "") {
+    if(token) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddrating&format=json", { rating: newRating, pageid: id, token: token})
       .done(function( data ) {
-        console.log(ractive);
-        //Update spot with new average
-        for (var key in spotsData.groupSpots) {
-          var spots = spotsData.groupSpots[key];
-          for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-          if(i < spots.length) {
-            ractive.set('groupSpots.'+key+'.'+i+'.average', data.query.average );
-            break;
+        if(data.query.average) {
+          //Update spot with new average
+          for (var key in spotsData.groupSpots) {
+            var spots = spotsData.groupSpots[key];
+            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
+            if(i < spots.length) {
+              ractive.set('groupSpots.'+key+'.'+i+'.average', data.query.average );
+              break;
+            }
           }
         }
       });
@@ -442,7 +441,7 @@ var iconSpot = function (averageRating) {
   else if(averageRating == 1) {
     return icons.senseless;
   }
-  else if(averageRating == null) {
+  else {
     return icons.unknown;
   }
 };

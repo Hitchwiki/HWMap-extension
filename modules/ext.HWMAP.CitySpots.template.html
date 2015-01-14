@@ -5,18 +5,19 @@
 </h2>
 
 {{#this}}
-<div id="spot_{{id}}">
-  <h3><a href="{{title}}">{{title}}</a></h3>
-  <h4>
-    <span>Cities: </span>
+<div class="spot" id="spot_{{id}}">
+
+  <h3>
+    {{#if CitiesDirection}}<span>Cities: </span>{{/if}}
     {{#CitiesDirection}}
     <a href="{{this}}">{{this}}</a>&nbsp;
     {{/CitiesDirection}}
-    <span> Roads: </span>
+    {{#if RoadsDirection}}<span> Roads: </span>{{/if}}
     {{#RoadsDirection}}
     <a href="{{this}}">{{this}}</a>&nbsp;
     {{/RoadsDirection}}
-  </h4>
+  </h3>
+  <i><a href="{{title}}">{{title}}</a></i>
   <div class="ratings">
     {{#average}}<span>Average rating: {{average}}</span>{{/average}}
     {{^average}}<span>No ratings yet</span>{{/average}}
