@@ -365,7 +365,8 @@ function setupCityMap() {
 
 
   //Getting related spots
-  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&page_title=" + mw.config.get("wgTitle"), function( data ) {
+  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
+    console.log(data);
     //Let's group the different spots by cardinal direction
     for(var i = 0; i < data.query.spots.length; i++) {
       //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
@@ -376,10 +377,11 @@ function setupCityMap() {
         spotsData.groupSpots['Other directions'].push(data.query.spots[i]);
       }
       else {
-        if(!spotsData.groupSpots[data.query.spots[i].CardinalDirection]) {
-          spotsData.groupSpots[data.query.spots[i].CardinalDirection] = [];
+        var CardinalDirection = data.query.spots[i].CardinalDirection.join(', ');
+        if(!spotsData.groupSpots[CardinalDirection]) {
+          spotsData.groupSpots[CardinalDirection] = [];
         }
-        spotsData.groupSpots[data.query.spots[i].CardinalDirection].push(data.query.spots[i]);
+        spotsData.groupSpots[CardinalDirection].push(data.query.spots[i]);
       }
     }
 
@@ -398,8 +400,8 @@ function setupCityMap() {
     for (var i in citySpots) {
       //Build spot marker
       var marker = new PruneCluster.Marker(
-        citySpots[i].location[0].lat,
-        citySpots[i].location[0].lon
+        citySpots[i].Location[0].lat,
+        citySpots[i].Location[0].lon
       );
       //Add icon
       marker.data.icon = iconSpot(citySpots[i].average);
