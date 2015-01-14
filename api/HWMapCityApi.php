@@ -47,9 +47,9 @@ class HWMapCityApi extends ApiBase {
         foreach($properties_array as $propertie) {
           //Check if the propertie have multiple value
           if($result['printouts'][$propertie][0]['fulltext']) {
-            $spots[$index]->$propertie = null;
+            $spots[$index]->$propertie = [];
             for($i = 0; $i < count($result['printouts'][$propertie]); ++$i) {
-              $spots[$index]->$propertie = $spots[$index]->$propertie.$result['printouts'][$propertie][$i]['fulltext'];
+              array_push($spots[$index]->$propertie, $result['printouts'][$propertie][$i]['fulltext']);
             }
           }
           else{
@@ -95,7 +95,6 @@ class HWMapCityApi extends ApiBase {
         $spots[$index]->id = $key;
         $index++;
       }
-      $this->getResult()->addValue( array( 'query', 'ids' ), null,  $ids);
 
       //If the rating extension is set, get the rating average
       if ( class_exists( 'HWAvgRatingApi' ) ) {
@@ -145,7 +144,9 @@ class HWMapCityApi extends ApiBase {
       }
 
       //Build the api result
-      $this->getResult()->addValue( array( 'query', 'spots' ), null,  $spots);
+      for($index = 0; $index < count($spots); $index++) {
+        $this->getResult()->addValue( array( 'query', 'spots' ), null, $spots[$index]);
+      }
 
       return true;
 	}
