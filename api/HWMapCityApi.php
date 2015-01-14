@@ -11,44 +11,60 @@ class HWMapCityApi extends ApiBase {
       // Get parameters
       $params = $this->extractRequestParams();
       $page_title = $params['page_title'];
-
+      $properties = $params['properties'];
       $spots = array();
+
+      //Make an array from the properties
+      $properties_array = explode(',', $properties);
+
+      //Prepare propeties for the query
+      $properties_query = '|?'.str_replace(',', '|?', $properties);
+
       //Get Spots that are linked to the city
       $linked_spots = new DerivativeRequest(
         $this->getRequest(),
         array(
           'action' => 'ask',
-          'query' => '[[Category:Spots]][[Cities::'.$page_title.']]|?Location|?Country|?CardinalDirection|?CitiesDirection|?RoadsDirection'
+          'query' => '[[Category:Spots]][[Cities::'.$page_title.']]'.$properties_query
         ),
         true
       );
       $linked_spots_api = new ApiMain( $linked_spots );
       $linked_spots_api->execute();
       $linked_spots_data = $linked_spots_api->getResultData();
+
+      //Go through the result
       $titles = ''; $index = 0;
       foreach($linked_spots_data['query']['results'] as  $key => $result) {
+        //Add the titles together to get Ids later
         if($titles!='') $titles = $titles.'|';
         $titles = $titles.$key;
+
+        //Get title
         $spots[$index]->title = $key;
-        $spots[$index]->location = $result['printouts']['Location'];
-        $spots[$index]->Country = $result['printouts']['Country'][0]['fulltext'];
-        $spots[$index]->CardinalDirection = "";
-        for($i = 0; $i < count($result['printouts']['CardinalDirection']); ++$i) {
-            $spots[$index]->CardinalDirection = $spots[$index]->CardinalDirection.$result['printouts']['CardinalDirection'][$i]['fulltext'];
-        }
-        for($i = 0; $i < count($result['printouts']['CitiesDirection']); ++$i) {
-            $spots[$index]->CitiesDirection[$i] = $result['printouts']['CitiesDirection'][$i]['fulltext'];
-        }
-        for($i = 0; $i < count($result['printouts']['RoadsDirection']); ++$i) {
-            $spots[$index]->RoadsDirection[$i] = $result['printouts']['RoadsDirection'][$i]['fulltext'];
+
+        //Get the properties
+        foreach($properties_array as $propertie) {
+          //Check if the propertie have multiple value
+          if($result['printouts'][$propertie][0]['fulltext']) {
+            $spots[$index]->$propertie = null;
+            for($i = 0; $i < count($result['printouts'][$propertie]); ++$i) {
+              $spots[$index]->$propertie = $spots[$index]->$propertie.$result['printouts'][$propertie][$i]['fulltext'];
+            }
+          }
+          else{
+            $spots[$index]->$propertie =  $result['printouts'][$propertie];
+          }
         }
 
+        //Get text of the article
         $spot_text = new DerivativeRequest(
           $this->getRequest(),
           array(
             'action' => 'parse',
             'page' => $key,
-            'prop' => 'text'
+            'prop' => 'text',
+            'disablepp' => ''
           ),
           true
         );
@@ -57,10 +73,8 @@ class HWMapCityApi extends ApiBase {
         $spot_text_data = $spot_text_api->getResultData();
         $spots[$index]->Description = $spot_text_data['parse']['text']['*'];
 
-
         $index++;
       }
-
 
       //Get Ids of the spots
       $title_id = new DerivativeRequest(
@@ -76,36 +90,62 @@ class HWMapCityApi extends ApiBase {
       $title_id_data = $title_id_api->getResultData();
       $ids = ''; $index = 0;
       foreach($title_id_data['query']['pages'] as  $key => $result) {
-        if($ids!='') $ids = $ids.' OR ';
-        $ids = $ids.'hw_page_id='.$key;
+        if($ids!='') $ids = $ids.','.$key;
+        else $ids = $key;
         $spots[$index]->id = $key;
         $index++;
       }
+      $this->getResult()->addValue( array( 'query', 'ids' ), null,  $ids);
 
-      //Get the averages of all the ids
-      $dbr = wfGetDB( DB_SLAVE );
-      $res = $dbr->select(
-        array('hw_ratings_avg', 'hw_comments_count'),
-        array('hw_average_rating', 'hw_comments_count', 'hw_page_id'),
-        array(),
-         __METHOD__,
-         array(),
-         array('hw_ratings_avg' => array( 'NATURAL JOIN'))
-      );
-      foreach( $res as $row ) {
-        for($index = 0; $index < count($spots) && $spots[$index]->id != $row->hw_page_id; $index++) {
-          //Looking for the spot ...
+      //If the rating extension is set, get the rating average
+      if ( class_exists( 'HWAvgRatingApi' ) ) {
+        $spot_average_rating = new DerivativeRequest(
+          $this->getRequest(),
+          array(
+            'action' => 'hwavgrating',
+            'pageid' => $ids
+          ),
+          true
+        );
+        $spot_average_rating_api = new ApiMain( $spot_average_rating );
+        $spot_average_rating_api->execute();
+        $spot_average_rating_data = $spot_average_rating_api->getResultData();
+        foreach($spot_average_rating_data['query']['ratings'] as $rating_res) {
+          for($index = 0; $index < count($spots) && $spots[$index]->id != $rating_res['pageid']; $index++) {
+            //Looking for the spot ...
+          }
+          if($index < count($spots)) {
+            $spots[$index]->rating_average = $rating_res['rating_average'];
+            $spots[$index]->rating_count = $rating_res['rating_count'];
+          }
         }
-        if($index < count($spots)) {
-          $spots[$index]->average = $row->hw_average_rating;
-          $spots[$index]->comments_count = $row->hw_comments_count;
+      }
+
+      //If the comment extension is set, get the comments count
+      if ( class_exists( 'HWGetCommentsCountApi' ) ) {
+        $spot_comment_count = new DerivativeRequest(
+          $this->getRequest(),
+          array(
+            'action' => 'hwgetcommentscount',
+            'pageids' => $ids
+          ),
+          true
+        );
+        $spot_comment_count_api = new ApiMain( $spot_comment_count );
+        $spot_comment_count_api->execute();
+        $spot_comment_count_data = $spot_comment_count_api->getResultData();
+        foreach($spot_comment_count_data['query']['comment_counts'] as $count_res) {
+          for($index = 0; $index < count($spots) && $spots[$index]->id != $count_res['pageid']; $index++) {
+            //Looking for the spot ...
+          }
+          if($index < count($spots)) {
+            $spots[$index]->comments_count = $count_res['comments_count'];
+          }
         }
       }
 
       //Build the api result
-      for($index = 0; $index < count($spots); $index++) {
-        $this->getResult()->addValue( array( 'query', 'spots' ), null,  $spots[$index]);
-      }
+      $this->getResult()->addValue( array( 'query', 'spots' ), null,  $spots);
 
       return true;
 	}
@@ -121,6 +161,10 @@ class HWMapCityApi extends ApiBase {
 			'page_title' => array (
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true
+			),
+			'properties' => array (
+				ApiBase::PARAM_TYPE => 'string',
+				ApiBase::PARAM_REQUIRED => true
 			)
 		);
 	}
@@ -128,7 +172,8 @@ class HWMapCityApi extends ApiBase {
 	// Describe the parameter
 	public function getParamDescription() {
 		return array_merge( parent::getParamDescription(), array(
-			'page_title' => 'Page title'
+			'page_title' => 'Page title',
+			'properties' => 'Page propeties to query'
 		) );
 	}
 }
