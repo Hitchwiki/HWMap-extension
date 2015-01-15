@@ -1,37 +1,39 @@
 {{#groupSpots:direction}}
 
-<h2>
+<span class="cardinal-direction">
   {{direction}}
-</h2>
+</span>
 
 {{#this}}
 <div class="spot" id="spot_{{id}}">
 
   <h3>
-    {{#if CitiesDirection}}<span>Cities: </span>{{/if}}
+    {{#if CitiesDirection}}<span>Towards </span>{{/if}}
     {{#CitiesDirection}}
-    <a href="{{this}}">{{this}}</a>&nbsp;
+    <a href="{{this}}">{{this}}</a>,&nbsp;
     {{/CitiesDirection}}
-    {{#if RoadsDirection}}<span> Roads: </span>{{/if}}
     {{#RoadsDirection}}
-    <a href="{{this}}">{{this}}</a>&nbsp;
+    <a href="{{this}}">{{this}}</a>,&nbsp;
     {{/RoadsDirection}}
   </h3>
-  <i><a href="{{title}}">{{title}}</a></i>
-  <div class="ratings">
-    {{#average}}<span>Average rating: {{average}}</span>{{/average}}
-    {{^average}}<span>No ratings yet</span>{{/average}}
-    <i class="fa fa-plus-square" onclick="$('#rating_input_{{id}}').show()"></i>
-    <span id="rating_input_{{id}}" class="rating-input" >
-      <input type="number" min="1" max="5" value='{{newRating}}'>
-      <button onclick="addRatings({{newRating}}, {{id}})">add</button>
-    </span>
-  </div>
-  <div class="comments">
-    {{#comments_count}}<span>Number of comments: {{comments_count}}</span>{{/comments_count}}
-    {{^comments_count}}<span>No comments yet</span>{{/comments_count}}
+  <div class="spot-right">
+    {{#comments_count}}<div class="commens-box">{{comments_count}}</div>{{/comments_count}}
+    {{^comments_count}}<div class="commens-box">+</div>{{/comments_count}}
   </div>
   <p>{{{Description}}}</p>
+  <div class="ratings">
+    <span class="rating-widget">
+      <span class="average average-{{rating_average}}">{{average_label}}</span><span id="rate_{{id}}" class="rate">Rate <i class="fa fa-caret-down"></i></span>
+      <span id="your_rate_{{id}}" class="your-rate">
+        <span class="rating-choice-head">Your rating</span>
+        <span class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>
+        <span class="rating-choice"><span class="bubble bubble-good"></span> Good</span>
+        <span class="rating-choice"><span class="bubble bubble-average"></span> Average</span>
+        <span class="rating-choice"><span class="bubble bubble-bad"></span> Bad</span>
+        <span class="rating-choice"><span class="bubble bubble-senseless"></span> Senseless</span>
+      </span>
+    </span>
+  </div>
 </div>
 {{/this}}
 

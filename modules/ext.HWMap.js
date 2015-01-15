@@ -383,17 +383,36 @@ function setupCityMap() {
         }
         spotsData.groupSpots[CardinalDirection].push(data.query.spots[i]);
       }
+
+      switch (data.query.spots[i].rating_average) {
+        case '1':
+          data.query.spots[i].average_label = "Senseless"
+          break;
+        case '2':
+          data.query.spots[i].average_label = "Bad"
+          break;
+        case '3':
+          data.query.spots[i].average_label = "Average"
+          break;
+        case '4':
+          data.query.spots[i].average_label = "Good"
+          break;
+        case '5':
+          data.query.spots[i].average_label = "Very good"
+          break;
+        default:
+          data.query.spots[i].average_label = "Unknown"
+      }
+      if(!data.query.spots[i].rating_average) {
+        data.query.spots[i].rating_average = '0';
+      }
+
     }
 
     console.log(spotsData);
 
-    $.get( extensionRoot +'modules/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
-      ractive = new Ractive({
-        el: 'incity-spots',
-        template: template,
-        data: spotsData
-      });
-    });
+    //Init template from ext.HWMAP.CitySpots.js
+    initTemplate();
 
     var citySpots = data.query.spots;
 

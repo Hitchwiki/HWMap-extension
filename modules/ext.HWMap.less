@@ -112,12 +112,137 @@
     float: left;
     width: 55%;
 
+    //!------ Spot Layout ------!//
+    .cardinal-direction{
+      text-transform: uppercase;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+    .spot{
+      border-bottom: 2px solid @hw-grey-border-light;
+      margin-right: 40px;
+    }
+    .spot-right{
+      float:right;
+        .commens-box{
+        height: 20px;
+        min-width: 20px;
+        padding: 2px;
+        background-color: @hw-grey-border-light;
+        border-radius: 3px;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+        }
+    }
+
+    //!------ Ratings ------!//
     .ratings{
-      .fa-plus-square{
-        cursor: pointer;
-      }
-      .rating-input {
-        display: none;
+      .rating-widget{
+        font-size: 12px;
+        display: inline-block;
+        height: @hw-rating-height;
+        line-height: @hw-rating-height;
+        .average, .rate {
+          padding: 0 5px;
+          display: inline-block;
+          height: @hw-rating-height;
+          line-height: @hw-rating-height;
+        }
+        .average {
+          border: 1px solid @hw-grey-border;
+          border-radius: 2px 0 0 2px;
+          color: white;
+        }
+        .average-0 {
+          background-color: @hw-color-unknown;
+          color: white;
+        }
+        .average-1 {
+          background-color: @hw-color-senseless;
+          color: white;
+        }
+        .average-2 {
+          background-color: @hw-color-bad;
+          color: white;
+        }
+        .average-3 {
+          background-color: @hw-color-average;
+          color: white;
+        }
+        .average-4 {
+          background-color: @hw-color-good;
+          color: white;
+        }
+        .average-5 {
+          background-color: @hw-color-verygood;
+          color: white;
+        }
+        .rate, .your-rate{
+          color: @hw-grey-texte;
+        }
+        .rate{
+          cursor: pointer;
+          background-color: @hw-grey-rate;
+          border-bottom: 1px solid;
+          border-right: 1px solid;
+          border-top: 1px solid;
+          border-color: @hw-grey-border;
+          border-radius: 0 2px 2px 0;
+        }
+        .your-rate{
+          position: relative;
+          float: right;
+          z-index: 20;
+          //margin-top: -1px;
+          //margin-left: 38px;
+          width: 150px;
+          border: 1px solid @hw-grey-border-light;
+          background-color: @hw-grey-rate-light;
+          border-radius: 0 2px 2px;
+          .rating-choice-head{
+            border-bottom: 1px solid @hw-grey-border-light;
+            color: @hw-grey-border-light;
+            margin: 1px 7px 2px 7px;
+            display: block;
+            height: @hw-rating-height;
+            line-height: @hw-rating-height;
+          }
+          .rating-choice{
+            cursor: pointer;
+            padding: 1px 7px 1px 7px;
+            display: block;
+            height: @hw-rating-height;
+            line-height: @hw-rating-height;
+            .bubble{
+              display: inline-block;
+              width: 8px;
+              height: 8px;
+              border-radius: 8px;
+              border: 1px solid @hw-grey-border;
+            }
+            .bubble-verygood{
+              background-color: @hw-color-verygood;
+            }
+            .bubble-good{
+              background-color: @hw-color-good;
+            }
+            .bubble-average{
+              background-color: @hw-color-average;
+            }
+            .bubble-bad{
+              background-color: @hw-color-bad;
+            }
+            .bubble-senseless{
+              background-color: @hw-color-senseless;
+            }
+          }
+          .rating-choice:hover{
+            background: @hw-grey-rate;
+          }
+        }
       }
     }
   }

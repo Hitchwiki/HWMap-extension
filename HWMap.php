@@ -79,6 +79,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
     'scripts' => array(
       'modules/ext.HWMap.js',
+      'modules/ext.HWMAP.CitySpots.js'
     ),
     'styles' => array(
       'modules/ext.HWMap.less',
