@@ -101,32 +101,36 @@
           background-color: @hw-color-unknown;
           color: white;
         }
-        .average-1 {
+        .rate-0 {
+          background-color: @hw-grey-rate;
+          color: @hw-grey-texte;
+        }
+        .average-1, .rate-1 {
           background-color: @hw-color-senseless;
           color: white;
         }
-        .average-2 {
+        .average-2, .rate-2 {
           background-color: @hw-color-bad;
           color: white;
         }
-        .average-3 {
+        .average-3, .rate-3 {
           background-color: @hw-color-average;
           color: white;
         }
-        .average-4 {
+        .average-4, .rate-4 {
           background-color: @hw-color-good;
           color: white;
         }
-        .average-5 {
+        .average-5, .rate-5 {
           background-color: @hw-color-verygood;
           color: white;
         }
         .rate, .your-rate{
-          color: @hw-grey-texte;
+          //color: @hw-grey-texte;
         }
         .rate{
           cursor: pointer;
-          background-color: @hw-grey-rate;
+          //background-color: @hw-grey-rate;
           border-bottom: 1px solid;
           border-right: 1px solid;
           border-top: 1px solid;
@@ -182,6 +186,25 @@
           }
           .rating-choice:hover{
             background: @hw-grey-rate;
+          }
+          .rating-choice-timestamp{
+            border-top: 1px solid @hw-grey-border-light;
+            color: @hw-grey-border-light;
+            margin: 2px 7px 1px 7px;
+            display: block;
+            height: @hw-rating-height;
+            line-height: @hw-rating-height;
+          }
+          .rating-choice-remove{
+            color: @hw-grey-border-light;
+            margin: 1px 7px 2px 7px;
+            display: block;
+            height: @hw-rating-height;
+            line-height: @hw-rating-height;
+            cursor: pointer;
+          }
+          .rating-choice-remove:hover{
+            text-decoration: underline;
           }
         }
         .rating-count{

@@ -63,27 +63,12 @@ var addRatings = function(newRating, id) {
             var spots = spotsData.groupSpots[key];
             for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
             if(i < spots.length) {
+              ractive.set('groupSpots.'+key+'.'+i+'.timestamp_user', parseTimestamp(data.query.timestamp) );
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_user', newRating);
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_user_label', getRatingLabel(newRating.toString()));
               ractive.set('groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
               ractive.set('groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              switch (data.query.average) {
-                case '1':
-                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Senseless");
-                  break;
-                case '2':
-                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Bad");
-                  break;
-                case '3':
-                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Average");
-                  break;
-                case '4':
-                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Good");
-                  break;
-                case '5':
-                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Very good");
-                  break;
-                default:
-                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Unknown");
-              }
+              ractive.set('groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
               break;
             }
           }
@@ -95,6 +80,67 @@ var addRatings = function(newRating, id) {
     }
   });
 }
+
+//addRating
+var deleteRating = function(id) {
+  //Get token
+  getToken(function(token) {
+    if(token) {
+      //Post new rating
+      $.post(  apiRoot + "/api.php?action=hwdeleterating&format=json", {pageid: id, token: token})
+      .done(function( data ) {
+        console.log(data);
+        if(data.query) {
+          //Update spot with new average
+          for (var key in spotsData.groupSpots) {
+            var spots = spotsData.groupSpots[key];
+            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
+            if(i < spots.length) {
+              ractive.set('groupSpots.'+key+'.'+i+'.timestamp_user', 0);
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_user', 0);
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_user_label', null);
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_average', data.query.average.toString() );
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
+              ractive.set('groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average.toString()));
+              break;
+            }
+          }
+        }
+      });
+    }
+    else {
+      mw.log('Not logged in ');
+    }
+  });
+}
+
+var parseTimestamp = function (timestamp) {
+    return timestamp.slice(6, 8)+'.'+timestamp.slice(4, 6)+'.'+timestamp.slice(0, 4);
+};
+
+var getRatingLabel = function (rating) {
+  var label;
+  switch (rating) {
+    case '1':
+      label = "Senseless";
+      break;
+    case '2':
+      label = "Bad";
+      break;
+    case '3':
+      label = "Average";
+      break;
+    case '4':
+      label = "Good";
+      break;
+    case '5':
+      label = "Very good";
+      break;
+    default:
+      label = "Unknown";
+  }
+  return label;
+};
 
 /*
  * Initialize map
@@ -415,6 +461,17 @@ function setupCityMap() {
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
     //Let's group the different spots by cardinal direction
     for(var i = 0; i < data.query.spots.length; i++) {
+      data.query.spots[i].average_label = getRatingLabel(data.query.spots[i].rating_average);
+      if(!data.query.spots[i].rating_average) {
+        data.query.spots[i].rating_average = '0';
+      }
+      if(data.query.spots[i].timestamp_user){
+        data.query.spots[i].timestamp_user = parseTimestamp(data.query.spots[i].timestamp_user);
+      }
+      if(data.query.spots[i].rating_user){
+        data.query.spots[i].rating_user_label = getRatingLabel(data.query.spots[i].rating_user);
+      }
+
       //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
       if(data.query.spots[i].CardinalDirection == "") {
         if(!spotsData.groupSpots['Other directions']) {
@@ -428,29 +485,6 @@ function setupCityMap() {
           spotsData.groupSpots[CardinalDirection] = [];
         }
         spotsData.groupSpots[CardinalDirection].push(data.query.spots[i]);
-      }
-
-      switch (data.query.spots[i].rating_average) {
-        case '1':
-          data.query.spots[i].average_label = "Senseless"
-          break;
-        case '2':
-          data.query.spots[i].average_label = "Bad"
-          break;
-        case '3':
-          data.query.spots[i].average_label = "Average"
-          break;
-        case '4':
-          data.query.spots[i].average_label = "Good"
-          break;
-        case '5':
-          data.query.spots[i].average_label = "Very good"
-          break;
-        default:
-          data.query.spots[i].average_label = "Unknown"
-      }
-      if(!data.query.spots[i].rating_average) {
-        data.query.spots[i].rating_average = '0';
       }
 
     }

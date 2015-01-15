@@ -119,6 +119,8 @@ class HWMapCityApi extends ApiBase {
             $index = $spot_indices[$rating_res['pageid']];
             $spots[$index]->rating_average = $rating_res['rating_average'];
             $spots[$index]->rating_count = $rating_res['rating_count'];
+            $spots[$index]->rating_user = $rating_res['rating_user'];
+            $spots[$index]->timestamp_user = $rating_res['timestamp_user'];
           }
         }
       }
