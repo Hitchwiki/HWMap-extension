@@ -79,6 +79,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'ractive'
     ),
     'scripts' => array(
+      'modules/vendor/geopoint/geopoint.js',
       'modules/js/ext.HWMap.js',
       'modules/js/ext.HWMAP.CitySpots.js'
     ),

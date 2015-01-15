@@ -14,6 +14,8 @@ var mapboxUser = "trustroots",
 
 // Geonames settings
 var geonamesUsername = 'hitchwiki';
+var spotCityDistance = 40; // in kilometers
+var minPopulationNonCapital = 500000;
 
 // Setup variables
 var hwmap,
@@ -280,6 +282,39 @@ function tearApartNewSpot() {
 
 function newSpotReverseGeocode(event) {
 
+  var city = '', country = '', isBigCity = false;
+
+  function fillSpotForm() {
+    var placeName = '';
+
+    // Prefill city input at the form
+    if (city != '') {
+      placeName += city;
+      if (isBigCity) {
+        $newSpotForm.find("input[name='Spot[Cities]']").val( city );
+      }
+    }
+
+    // Prefill country input at the form
+    if (country != '') {
+      if (placeName != '')
+        placeName += ', ';
+      placeName += country;
+      $newSpotForm.find("input[name='Spot[Country]']").val( country );
+    }
+
+    // Add coordinates to the spot title to ensure its uniqueness
+    if (placeName != '')
+      placeName += ' ';
+    placeName += '(' + Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6)) + ')';
+
+    // Prefill name input at the form
+    $newSpotForm.find("input[name='page_name']").val(placeName);
+
+    // Enable the form again
+    $newSpotForm.find("input[type='submit']").removeAttr('disabled');
+  }
+
   $newSpotForm.find("input[type='submit']").attr('disabled', 'disabled');
 
   var newSpotLocation = (event) ? event.target.getLatLng() : hwmap.getCenter();
@@ -287,58 +322,70 @@ function newSpotReverseGeocode(event) {
   // Spot coordinates
   $newSpotForm.find("input[name='Spot[Location]']").val( newSpotLocation.lat + ',' + newSpotLocation.lng );
 
+  var point = new GeoPoint(newSpotLocation.lat, newSpotLocation.lng);
+  var bbox = point.boundingCoordinates(20, null, true);
+
   // Spot name
   $.ajax({
-    url: 'http://api.geonames.org/findNearbyPlaceNameJSON',
+    url: 'http://api.geonames.org/citiesJSON',
     dataType: 'jsonp',
     data: {
-      lat: newSpotLocation.lat,
-      lng: newSpotLocation.lng,
-      featureClass: 'P',
+      north: bbox[1].latitude(),
+      east: bbox[1].longitude(),
+      south: bbox[0].latitude(),
+      west: bbox[0].longitude(),
       style: 'full',
       maxRows: 1,
       lang: 'en',
       username: geonamesUsername
     },
     success: function( data ) {
-      mw.log( data );
+      if (data.geonames && data.geonames.length != 0) {
+        place = data.geonames[0];
 
-      // Mandatory name for the MW article
-      var placeName = '';//'Hitchhiking spot in ';
+        isBigCity = (
+          (place.fcode && $.inArray(place.fcode, ['PPLC', 'PPLA']) != -1) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
+          (place.population && place.population >= minPopulationNonCapital) // populated city (eg. Rotterdam)
+        );
 
-      var municipality = (data.geonames[0].adminName2 && data.geonames[0].adminName2 != '') ? data.geonames[0].adminName2 : false;
+        if(place.name) {
+          city = place.name;
+        }
 
-      var country = (data.geonames[0].countryName && data.geonames[0].countryName !== '') ? data.geonames[0].countryName : false;
-
-      if(municipality) {
-        // Add municipality name to article name
-        placeName += municipality;
-
-        // Prefill city input at the form
-        $newSpotForm.find("input[name='Spot[Cities]']").val( municipality );
+        var countryCode = data.geonames[0].countrycode;
+        if (countryCode && countryCode != '') {
+          $.ajax({
+            url: 'http://api.geonames.org/countryInfoJSON',
+            dataType: 'jsonp',
+            data: {
+              country: countryCode,
+              style: 'full',
+              maxRows: 1,
+              lang: 'en',
+              username: geonamesUsername
+            },
+            success: function ( data ) {
+              if (data.geonames && data.geonames.length != 0) {
+                var countryInfo = data.geonames[0];
+                if (countryInfo && countryInfo.countryName) {
+                  country = countryInfo.countryName;
+                }
+              }
+              fillSpotForm();
+            },
+            error: function () { // country info lookup request failed
+              fillSpotForm();
+            }
+          });
+        } else { // no country code in city search response
+          fillSpotForm();
+        }
+      } else { // no closeby cities found
+          fillSpotForm();
       }
-
-      // Divicer
-      if(municipality && country) {
-           placeName += ', ';
-      }
-
-      if(country) {
-        // Add country name to article name
-        placeName += country;
-
-        // Prefill country input at the form
-        $newSpotForm.find("input[name='Spot[Country]']").val( country );
-      }
-
-      // Name must be unique, add coordinates to article name
-      placeName += ' (' + Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6)) + ')';
-
-      // Prefil name input at the form
-      $newSpotForm.find("input[name='page_name']").val(placeName);
-
-      // Enable the form again
-      $newSpotForm.find("input[type='submit']").removeAttr('disabled');
+    },
+    error: function () { // city search request failed
+      fillSpotForm();
     }
   });
 
