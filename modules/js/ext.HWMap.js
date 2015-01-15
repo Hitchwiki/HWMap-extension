@@ -56,13 +56,34 @@ var addRatings = function(newRating, id) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddrating&format=json", { rating: newRating, pageid: id, token: token})
       .done(function( data ) {
+        console.log(data);
         if(data.query.average) {
           //Update spot with new average
           for (var key in spotsData.groupSpots) {
             var spots = spotsData.groupSpots[key];
             for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
             if(i < spots.length) {
-              ractive.set('groupSpots.'+key+'.'+i+'.average', data.query.average );
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
+              ractive.set('groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
+              switch (data.query.average) {
+                case '1':
+                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Senseless");
+                  break;
+                case '2':
+                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Bad");
+                  break;
+                case '3':
+                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Average");
+                  break;
+                case '4':
+                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Good");
+                  break;
+                case '5':
+                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Very good");
+                  break;
+                default:
+                  ractive.set('groupSpots.'+key+'.'+i+'.average_label', "Unknown");
+              }
               break;
             }
           }

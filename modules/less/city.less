@@ -11,29 +11,74 @@
     //!------ Spot Layout ------!//
     .cardinal-direction{
       text-transform: uppercase;
-      font-size: 1.5em;
+      font-size: 22px;
       font-weight: bold;
-      margin-top: 1em;
-      margin-bottom: 1em;
+      margin-top: 10px;
+      margin-bottom: 5px;
     }
     .spot{
       border-bottom: 2px solid @hw-grey-border-light;
       margin-right: 40px;
-    }
-    .spot-right{
-      float:right;
-        .commens-box{
-        height: 20px;
-        min-width: 20px;
-        padding: 2px;
-        background-color: @hw-grey-border-light;
-        border-radius: 3px;
-        color: white;
-        text-align: center;
-        font-weight: bold;
+      margin-bottom: 10px;
+      padding-top: 5px;
+      padding-bottom: 20px;
+      .spot-head{
+        //float:left;
+        span, a {
+          font-size: 16px;
+          font-weight: bold;
+          margin-bottom: 10px;
         }
+      }
+      .spot-right{
+        float:right;
+        text-align: right;
+        .edit-button, .comments-box {
+          display: inline-block;
+          border-radius: 3px;
+          margin: 2px;
+          text-align: center;
+          cursor: pointer;
+        }
+        .edit-button{
+          text-transform: uppercase;
+          height: 17px;
+          line-height: 17px;
+          padding: 1px 5px;
+          border: 1px solid @hw-grey-border-light;
+          font-size: 10px;
+        }
+        .comments-box{
+          position: relative;
+          height: 20px;
+          line-height: 20px;
+          min-width: 20px;
+          padding: 2px;
+          background-color: @hw-grey-border-light;
+          color: white;
+          font-weight: bold;
+        }
+        .comments-box:after {
+          content: "";
+          display: block; /* reduce the damage in FF3.0 */
+          position: absolute;
+          bottom: -6px;
+          left: 7px;
+          width: 0;
+          height: 0;
+          border-top: 7px solid @hw-grey-border-light;
+          border-right: 6px solid transparent;
+        }
+      }
     }
+    .spot-footer{
 
+        height: 50px;
+      line-height: 50px;
+      .ratings, .waiting-time{
+        margin-bottom: 10px;
+      }
+    }
     //!------ Ratings ------!//
     .ratings{
       .rating-widget{
@@ -139,7 +184,15 @@
             background: @hw-grey-rate;
           }
         }
+        .rating-count{
+          position: absolute;
+          text-size: 7px;
+          color: @hw-grey-border;
+        }
       }
+    }
+    //!------ Waiting time ------!//
+    .waiting-time{
     }
   }
 
