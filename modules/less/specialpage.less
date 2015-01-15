@@ -1,0 +1,95 @@
+
+/*
+ * Hitchwiki Maps Special page
+ */
+.page-Special_HWMap {
+
+  // Make the map BIG
+  .mw-body-content {
+    position: absolute;
+    top: @header-height;
+    bottom: 0;
+    width: 100%;
+  }
+  #mw-content-text {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  .hwmap-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  #hwmap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-left: 1px solid @hw-orange-border;
+  }
+
+  // Hide certain contents
+  #contentSub,
+  #jump-to-nav,
+  #footer, // No footer at map page :-(
+  .mw-menu,
+  .mw-body #firstHeading {
+    display: none;
+  }
+  div#content {
+    padding: 0;
+  }
+
+  // Button to init the form for adding
+  #hwmap-add-wrap {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    z-index: 1000;
+    background: rgba(0,0,0,0.5);
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    padding: 15px;
+    font-size: 18px;
+    line-height: 23px;
+    font-weight: normal;
+    color: #fff;
+    text-align: center;
+    input[name='page_name'] {
+      display: none;
+    }
+  }
+
+  // Buttons for adding a new spot
+  #hwmap-add,
+  #hwmap-add-wrap input[type='submit'] {
+    .hwbutton();
+  }
+
+  #hwmap-cancel-adding {
+    text-decoration: none;
+    color: #fff;
+    font-size: 12px;
+    line-height: 12px;
+  }
+
+  // Button to init the adding a new spot
+  #hwmap-add {
+    display: inline-block;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 15px 25px;
+  }
+
+  // Adding the spot -modal
+  .popupform-container {
+    border: 0;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+    border-radius: 5px;
+  }
+
+}
