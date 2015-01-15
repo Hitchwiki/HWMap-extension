@@ -109,11 +109,13 @@ class HWMapCityApi extends ApiBase {
         $spot_average_rating_api = new ApiMain( $spot_average_rating );
         $spot_average_rating_api->execute();
         $spot_average_rating_data = $spot_average_rating_api->getResultData();
+
+        foreach($spots as $index => $spot) {
+          $spot_indices[$spot->id] = $index;
+        }
         foreach($spot_average_rating_data['query']['ratings'] as $rating_res) {
-          for($index = 0; $index < count($spots) && $spots[$index]->id != $rating_res['pageid']; $index++) {
-            //Looking for the spot ...
-          }
-          if($index < count($spots)) {
+          if(array_key_exists($rating_res['pageid'], $spot_indices)) {
+            $index = $spot_indices[$rating_res['pageid']];
             $spots[$index]->rating_average = $rating_res['rating_average'];
             $spots[$index]->rating_count = $rating_res['rating_count'];
           }
