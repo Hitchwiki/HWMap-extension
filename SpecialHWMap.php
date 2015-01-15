@@ -7,13 +7,14 @@ class SpecialHWMap extends SpecialPage {
   function execute( $par ) {
     $output = $this->getOutput();
     $output->setPageTitle( 'Hitchwiki Map' );
+    $output->isPrintable(false);
     $output->addModules( 'ext.HWMap' );
 
     // The Map
     $output->addHTML('<div class="hwmap-container"><div id="hwmap"></div></div>');
 
     // Add new spot HTML
-    $output->addHTML('<a id="hwmap-add" href="#">Add new spot</a>');
+    $output->addHTML('<a href="#" id="hwmap-add">Add new spot</a>');
     $output->addHTML('<div id="hwmap-add-wrap" style="display:none;">');
     $output->addHTML('<p>Drag marker to the hitchhiking spot. Zoom in closer to see better and use satellite maps to confirm location.</p>');
 

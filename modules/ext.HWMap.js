@@ -70,7 +70,7 @@ var addRatings = function(newRating, id) {
       });
     }
     else {
-      console.log('not logged in ');
+      mw.log('Not logged in ');
     }
   });
 }
@@ -168,18 +168,14 @@ function initHWMap() {
 
   spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
     leafletMarker.on('click', function(){
-      console.log("youpi click");
-
       $('html, body').animate({
         scrollTop:$('#spot_'+data.id).offset().top -48
       }, 'fast');
     });
     leafletMarker.on('mouseover', function(){
-      console.log("youpi mouseover");
       $('#spot_'+data.id).css('background-color', '#c4c4c4');
     });
     leafletMarker.on('mouseout', function(){
-      console.log("youpi mouseover");
       $('#spot_'+data.id).css('background-color', 'transparent');
     });
     leafletMarker.setIcon(data.icon);
@@ -363,13 +359,16 @@ function setupCityMap() {
       page = data.query.pages[i];
       break;
     }
+
     //Build city marker
     var marker = new PruneCluster.Marker(
       page.coordinates[0].lat,
       page.coordinates[0].lon
     );
+
     //Add icon
     marker.data.icon = icons.city;
+
     //Register marker
     spotsLayer.RegisterMarker(marker);
 
@@ -381,7 +380,6 @@ function setupCityMap() {
 
   //Getting related spots
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
-    console.log(data);
     //Let's group the different spots by cardinal direction
     for(var i = 0; i < data.query.spots.length; i++) {
       //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
@@ -399,8 +397,6 @@ function setupCityMap() {
         spotsData.groupSpots[CardinalDirection].push(data.query.spots[i]);
       }
     }
-
-    console.log(spotsData);
 
     $.get( extensionRoot +'modules/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
       ractive = new Ractive({
@@ -465,9 +461,8 @@ var iconSpot = function (averageRating) {
 
 // Get markers in the current bbox
 var getBoxSpots = function () {
-  mw.log('->HWMap->getBoxSpots');
   bounds = hwmap.getBounds();
-  console.log(bounds);
+
   if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng) {
 
     //Make the bounds a bit bigger
