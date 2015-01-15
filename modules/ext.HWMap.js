@@ -163,6 +163,10 @@ function initHWMap() {
     layers: [mapLayerStreets]
   });
 
+  hwmap.whenReady(function(){
+
+  });
+
   // Layers
   spotsLayer = new PruneClusterForLeaflet();
 
@@ -278,28 +282,36 @@ function newSpotReverseGeocode(event) {
       // Mandatory name for the MW article
       var placeName = '';//'Hitchhiking spot in ';
 
-      // Name must be unique, add coordinates to it
-      placeName += newSpotLocation.lat + ',' + newSpotLocation.lng + ' ';
+      var municipality = (data.geonames[0].adminName2 && data.geonames[0].adminName2 != '') ? data.geonames[0].adminName2 : false;
 
-      // Add municipality name to it
-      if(data.geonames[0].adminName1 && data.geonames[0].adminName1 !== '') placeName += data.geonames[0].adminName1 + ', ';
+      var country = (data.geonames[0].countryName && data.geonames[0].countryName !== '') ? data.geonames[0].countryName : false;
 
-      //if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') placeName += data.geonames[0].adminName2 + ', ';
+      if(municipality) {
+        // Add municipality name to article name
+        placeName += municipality;
 
-      //if(data.geonames[0].adminName3 && data.geonames[0].adminName3 !== '') placeName += data.geonames[0].adminName3 + ', ';
+        // Prefill city input at the form
+        $newSpotForm.find("input[name='Spot[Cities]']").val( municipality );
+      }
 
-      // Prefil name
+      // Divicer
+      if(municipality && country) {
+           placeName += ', ';
+      }
+
+      if(country) {
+        // Add country name to article name
+        placeName += country;
+
+        // Prefill country input at the form
+        $newSpotForm.find("input[name='Spot[Country]']").val( country );
+      }
+
+      // Name must be unique, add coordinates to article name
+      placeName += ' (' + Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6)) + ')';
+
+      // Prefil name input at the form
       $newSpotForm.find("input[name='page_name']").val(placeName);
-
-      // Prefill country info
-      if(data.geonames[0].countryName && data.geonames[0].countryName !== '') {
-        $newSpotForm.find("input[name='Spot[Country]']").val( data.geonames[0].countryName );
-      }
-
-      // Prefill city info
-      if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') {
-        $newSpotForm.find("input[name='Spot[Cities]']").val( data.geonames[0].adminName2 );
-      }
 
       // Enable the form again
       $newSpotForm.find("input[type='submit']").removeAttr('disabled');
