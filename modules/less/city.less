@@ -196,9 +196,23 @@
     }
   }
 
-  .city-map{
-    float: left;
-    width: 45%;
-  }
+}
 
+// Content on left, map on right
+@media screen and (min-width: 768px) {
+  body.hwmap-page {
+    .city-map {
+      position: fixed;
+      top: @header-height;
+      right: 0;
+      bottom: 0;
+      height: 100%;
+      width: 400px;
+    }
+    div#footer,
+    #left-navigation,
+    div#content {
+      margin-right: 400px;
+    }
+  }
 }

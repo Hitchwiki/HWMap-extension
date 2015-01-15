@@ -265,6 +265,9 @@ function setupNewSpot() {
 
 }
 
+/*
+ * Clean out adding new spot form/buttons etc
+ */
 function tearApartNewSpot() {
   mw.log('->tearApartNewSpot');
   $newSpotWrap.fadeOut('fast');
@@ -386,6 +389,8 @@ function setupSpecialPageMap() {
 function setupCityMap() {
   mw.log('->HWMap->setupCityMap');
 
+  $("body").addClass("hwmap-page");
+
   //Getting the current coordinate
   $.get( apiRoot + "/api.php?action=query&prop=coordinates&titles=" + mw.config.get("wgTitle") + "&format=json", function( data ) {
     for (var i in data.query.pages) {
@@ -483,6 +488,7 @@ function setupCityMap() {
  * Setup big map at city article
  */
 function setupCountryMap() {
+  $("body").addClass("hwmap-page");
   // @todo
 }
 
