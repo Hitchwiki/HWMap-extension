@@ -26,6 +26,7 @@ var hwmap,
     },
     $newSpotWrap = $("#hwmap-add-wrap"),
     $newSpotForm = $newSpotWrap.find("form"),
+    $newSpotInit = $("#hwmap-add"),
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
     apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
@@ -216,8 +217,8 @@ function initHWMap() {
 
 }
 
-
 function setupNewSpot() {
+  mw.log('->setupNewSpot');
 
   // Craete new spot marker + layer
   newSpotMarker = L.marker(hwmap.getCenter(), {
@@ -227,15 +228,29 @@ function setupNewSpot() {
   });
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
 
-  newSpotReverseGeocode();
-
-  $newSpotWrap.fadeIn('fast');
-
   // Dragged location of the new spot
   // Preset some values at the form
   newSpotMarker.on("dragend", function(event){
     newSpotReverseGeocode(event);
   });
+
+  newSpotReverseGeocode();
+
+  $newSpotWrap.find('#hwmap-cancel-adding').click(function(e){
+    tearApartNewSpot();
+  });
+
+  $newSpotWrap.fadeIn('fast');
+
+}
+
+function tearApartNewSpot() {
+  mw.log('->tearApartNewSpot');
+  $newSpotWrap.fadeOut('fast');
+  $newSpotInit.fadeIn('fast');
+  hwmap.removeLayer(newSpotLayer);
+  newSpotMarker = null;
+  newSpotLayer = null;
 }
 
 
@@ -309,7 +324,7 @@ function setupSpecialPageMap() {
   //Getting spots in bounding box
   getBoxSpots();
 
-  $("#hwmap-add").click(function(e){
+  $newSpotInit.click(function(e){
     e.preventDefault();
     $(this).hide();
     setupNewSpot();
