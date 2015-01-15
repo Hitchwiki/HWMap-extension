@@ -7,7 +7,7 @@
  * If you have a better idea on how to do this, go for it !
  */
 class HWMapCityApi extends ApiBase {
-	public function execute() {
+  public function execute() {
       // Get parameters
       $params = $this->extractRequestParams();
       $page_title = $params['page_title'];
@@ -90,8 +90,9 @@ class HWMapCityApi extends ApiBase {
       $title_id_data = $title_id_api->getResultData();
       $ids = ''; $index = 0;
       foreach($title_id_data['query']['pages'] as  $key => $result) {
-        if($ids!='') $ids = $ids.','.$key;
-        else $ids = $key;
+        if (!empty($ids))
+          $ids .= '|';
+        $ids .= $key;
         $spots[$index]->id = $key;
         $index++;
       }
@@ -151,32 +152,32 @@ class HWMapCityApi extends ApiBase {
       }
 
       return true;
-	}
+  }
 
-	// Description
-	public function getDescription() {
-		return 'Get the linked spots of a page.';
-	}
+  // Description
+  public function getDescription() {
+    return 'Get the linked spots of a page.';
+  }
 
-	// Parameters.
-	public function getAllowedParams() {
-		return array(
-			'page_title' => array (
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true
-			),
-			'properties' => array (
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true
-			)
-		);
-	}
+  // Parameters.
+  public function getAllowedParams() {
+    return array(
+      'page_title' => array (
+        ApiBase::PARAM_TYPE => 'string',
+        ApiBase::PARAM_REQUIRED => true
+      ),
+      'properties' => array (
+        ApiBase::PARAM_TYPE => 'string',
+        ApiBase::PARAM_REQUIRED => true
+      )
+    );
+  }
 
-	// Describe the parameter
-	public function getParamDescription() {
-		return array_merge( parent::getParamDescription(), array(
-			'page_title' => 'Page title',
-			'properties' => 'Page propeties to query'
-		) );
-	}
+  // Describe the parameter
+  public function getParamDescription() {
+    return array_merge( parent::getParamDescription(), array(
+      'page_title' => 'Page title',
+      'properties' => 'Page propeties to query'
+    ) );
+  }
 }
