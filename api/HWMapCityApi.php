@@ -131,7 +131,7 @@ class HWMapCityApi extends ApiBase {
           $this->getRequest(),
           array(
             'action' => 'hwgetcommentscount',
-            'pageids' => $ids
+            'pageid' => $ids
           ),
           true
         );
