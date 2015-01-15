@@ -59,6 +59,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
     'scripts' => array(
       'modules/vendor/PruneCluster/dist/PruneCluster.js',
+      'modules/ext.HWMap.PruneCluster.binding.js'
     ),
     'styles' => array(
       'modules/vendor/PruneCluster/dist/LeafletStyleSheet.css',

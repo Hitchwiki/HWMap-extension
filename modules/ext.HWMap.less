@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'mixins';
 
 /*
  * Hitchwiki Maps
@@ -71,21 +72,20 @@
     }
   }
 
-  // Buttosn for adding new spot
+  // Buttons for adding a new spot
   #hwmap-add,
   #hwmap-add-wrap input[type='submit'] {
-    padding: 10px 15px;
-    background: @hw-orange;
-    font-size: 14px;
-    line-height: 15px;
-    border: 0;
-    color: @hw-orange-text;
-    text-transform: uppercase;
-    font-weight: bold;
-    cursor: pointer;
+    .hwbutton();
   }
 
-  // Button to init the adding new spot
+  #hwmap-cancel-adding {
+    text-decoration: none;
+    color: #fff;
+    font-size: 12px;
+    line-height: 12px;
+  }
+
+  // Button to init the adding a new spot
   #hwmap-add {
     display: inline-block;
     position: fixed;
@@ -94,7 +94,7 @@
     padding: 15px 25px;
   }
 
-  // Adding the spot -popup
+  // Adding the spot -modal
   .popupform-container {
     border: 0;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
@@ -252,4 +252,57 @@
     width: 45%;
   }
 
+}
+
+/*
+ * Spot form
+ */
+.hw-spot-form {
+
+}
+.hw-spot-form-actions {
+  display: block;
+  clear: both;
+  margin: 20px 0;
+  #wpSave {
+    margin: 0 10px 0 0;
+    .hwbutton();
+  }
+  #wpPreview {
+    margin: 0 10px 0 0;
+    .hwbutton();
+  }
+  // Cancel link
+  .editHelp {
+    a {
+      color: #888;
+      text-decoration: none;
+      &:active,
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  // Watch checkbox
+  .hw-spot-form-watch {
+    display: block;
+    clear: both;
+    margin-top: 10px;
+    input {
+
+    }
+    label {
+
+    }
+  }
+}
+.hw-spot-preview {
+
+}
+
+/*
+ * Form page outside the modal
+ */
+.hw-spot-add a {
+  .hwbutton();
 }
