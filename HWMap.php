@@ -59,7 +59,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
     'scripts' => array(
       'modules/vendor/PruneCluster/dist/PruneCluster.js',
-      'modules/ext.HWMap.PruneCluster.binding.js'
+      'modules/js/ext.HWMap.PruneCluster.binding.js'
     ),
     'styles' => array(
       'modules/vendor/PruneCluster/dist/LeafletStyleSheet.css',
@@ -79,11 +79,11 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'ractive'
     ),
     'scripts' => array(
-      'modules/ext.HWMap.js',
-      'modules/ext.HWMAP.CitySpots.js'
+      'modules/js/ext.HWMap.js',
+      'modules/js/ext.HWMAP.CitySpots.js'
     ),
     'styles' => array(
-      'modules/ext.HWMap.less',
+      'modules/less/ext.HWMap.less',
     ),
     // Other ensures this loads after the Vector skin styles
     'group' => 'other',
@@ -103,6 +103,6 @@ function onParserInit( Parser $parser ) {
   return true;
 }
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-  $result = file_get_contents(__DIR__ .'/modules/ext.HWMap.City.template.html');
+  $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.City.template.html');
   return $result;
 }

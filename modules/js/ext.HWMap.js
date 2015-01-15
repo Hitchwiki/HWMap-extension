@@ -26,6 +26,7 @@ var hwmap,
     },
     $newSpotWrap = $("#hwmap-add-wrap"),
     $newSpotForm = $newSpotWrap.find("form"),
+    $newSpotInit = $("#hwmap-add"),
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
     apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
@@ -69,7 +70,7 @@ var addRatings = function(newRating, id) {
       });
     }
     else {
-      console.log('not logged in ');
+      mw.log('Not logged in ');
     }
   });
 }
@@ -162,23 +163,23 @@ function initHWMap() {
     layers: [mapLayerStreets]
   });
 
+  hwmap.whenReady(function(){
+
+  });
+
   // Layers
   spotsLayer = new PruneClusterForLeaflet();
 
   spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
     leafletMarker.on('click', function(){
-      console.log("youpi click");
-
       $('html, body').animate({
         scrollTop:$('#spot_'+data.id).offset().top -48
       }, 'fast');
     });
     leafletMarker.on('mouseover', function(){
-      console.log("youpi mouseover");
       $('#spot_'+data.id).css('background-color', '#c4c4c4');
     });
     leafletMarker.on('mouseout', function(){
-      console.log("youpi mouseover");
       $('#spot_'+data.id).css('background-color', 'transparent');
     });
     leafletMarker.setIcon(data.icon);
@@ -216,8 +217,8 @@ function initHWMap() {
 
 }
 
-
 function setupNewSpot() {
+  mw.log('->setupNewSpot');
 
   // Craete new spot marker + layer
   newSpotMarker = L.marker(hwmap.getCenter(), {
@@ -227,15 +228,29 @@ function setupNewSpot() {
   });
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
 
-  newSpotReverseGeocode();
-
-  $newSpotWrap.fadeIn('fast');
-
   // Dragged location of the new spot
   // Preset some values at the form
   newSpotMarker.on("dragend", function(event){
     newSpotReverseGeocode(event);
   });
+
+  newSpotReverseGeocode();
+
+  $newSpotWrap.find('#hwmap-cancel-adding').click(function(e){
+    tearApartNewSpot();
+  });
+
+  $newSpotWrap.fadeIn('fast');
+
+}
+
+function tearApartNewSpot() {
+  mw.log('->tearApartNewSpot');
+  $newSpotWrap.fadeOut('fast');
+  $newSpotInit.fadeIn('fast');
+  hwmap.removeLayer(newSpotLayer);
+  newSpotMarker = null;
+  newSpotLayer = null;
 }
 
 
@@ -267,28 +282,36 @@ function newSpotReverseGeocode(event) {
       // Mandatory name for the MW article
       var placeName = '';//'Hitchhiking spot in ';
 
-      // Name must be unique, add coordinates to it
-      placeName += newSpotLocation.lat + ',' + newSpotLocation.lng + ' ';
+      var municipality = (data.geonames[0].adminName2 && data.geonames[0].adminName2 != '') ? data.geonames[0].adminName2 : false;
 
-      // Add municipality name to it
-      if(data.geonames[0].adminName1 && data.geonames[0].adminName1 !== '') placeName += data.geonames[0].adminName1 + ', ';
+      var country = (data.geonames[0].countryName && data.geonames[0].countryName !== '') ? data.geonames[0].countryName : false;
 
-      //if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') placeName += data.geonames[0].adminName2 + ', ';
+      if(municipality) {
+        // Add municipality name to article name
+        placeName += municipality;
 
-      //if(data.geonames[0].adminName3 && data.geonames[0].adminName3 !== '') placeName += data.geonames[0].adminName3 + ', ';
+        // Prefill city input at the form
+        $newSpotForm.find("input[name='Spot[Cities]']").val( municipality );
+      }
 
-      // Prefil name
+      // Divicer
+      if(municipality && country) {
+           placeName += ', ';
+      }
+
+      if(country) {
+        // Add country name to article name
+        placeName += country;
+
+        // Prefill country input at the form
+        $newSpotForm.find("input[name='Spot[Country]']").val( country );
+      }
+
+      // Name must be unique, add coordinates to article name
+      placeName += ' (' + Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6)) + ')';
+
+      // Prefil name input at the form
       $newSpotForm.find("input[name='page_name']").val(placeName);
-
-      // Prefill country info
-      if(data.geonames[0].countryName && data.geonames[0].countryName !== '') {
-        $newSpotForm.find("input[name='Spot[Country]']").val( data.geonames[0].countryName );
-      }
-
-      // Prefill city info
-      if(data.geonames[0].adminName2 && data.geonames[0].adminName2 !== '') {
-        $newSpotForm.find("input[name='Spot[Cities]']").val( data.geonames[0].adminName2 );
-      }
 
       // Enable the form again
       $newSpotForm.find("input[type='submit']").removeAttr('disabled');
@@ -309,7 +332,7 @@ function setupSpecialPageMap() {
   //Getting spots in bounding box
   getBoxSpots();
 
-  $("#hwmap-add").click(function(e){
+  $newSpotInit.click(function(e){
     e.preventDefault();
     $(this).hide();
     setupNewSpot();
@@ -348,13 +371,16 @@ function setupCityMap() {
       page = data.query.pages[i];
       break;
     }
+
     //Build city marker
     var marker = new PruneCluster.Marker(
       page.coordinates[0].lat,
       page.coordinates[0].lon
     );
+
     //Add icon
     marker.data.icon = icons.city;
+
     //Register marker
     spotsLayer.RegisterMarker(marker);
 
@@ -366,7 +392,6 @@ function setupCityMap() {
 
   //Getting related spots
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
-    console.log(data);
     //Let's group the different spots by cardinal direction
     for(var i = 0; i < data.query.spots.length; i++) {
       //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
@@ -469,9 +494,8 @@ var iconSpot = function (averageRating) {
 
 // Get markers in the current bbox
 var getBoxSpots = function () {
-  mw.log('->HWMap->getBoxSpots');
   bounds = hwmap.getBounds();
-  console.log(bounds);
+
   if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng) {
 
     //Make the bounds a bit bigger

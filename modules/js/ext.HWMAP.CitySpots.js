@@ -1,6 +1,6 @@
 var initTemplate = function () {
 
-    $.get( extensionRoot +'modules/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
+    $.get( extensionRoot +'modules/templates/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
       ractive = new Ractive({
         el: 'incity-spots',
         template: template,
