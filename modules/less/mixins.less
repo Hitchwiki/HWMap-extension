@@ -1,3 +1,10 @@
+// https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#MediaWiki_LESS_library
+// https://git.wikimedia.org/blob/mediawiki%2Fcore.git/HEAD/resources%2Fsrc%2Fmediawiki.less%2Fmediawiki.mixins.less
+@import "mediawiki.mixins";
+
+
+// Hitchwiki mixins:
+
 .hwbutton {
   padding: 10px 15px;
   font-size: 14px;
@@ -8,8 +15,9 @@
   text-transform: uppercase;
   font-weight: bold;
   cursor: pointer;
+  &:focus,
   &:hover,
   &:active {
-    background: brighten(@hw-orange, 10%);
+    background: lighten(@hw-orange, 5%);
   }
 }
