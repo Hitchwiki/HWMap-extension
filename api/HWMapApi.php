@@ -9,7 +9,7 @@ class HWMapApi extends ApiBase {
 
       if ( class_exists( 'HWAvgRatingApi' ) ) {
        $res = $dbr->select(
-            array( 'geo_tags', 'categorylinks', hw_ratings_avg),
+            array( 'geo_tags', 'categorylinks', 'hw_ratings_avg'),
             array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to', 'hw_average_rating'),
             array(
                 'gt_lat <'.$params['NElat'],

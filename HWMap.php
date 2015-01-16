@@ -80,8 +80,8 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
     'scripts' => array(
       'modules/vendor/geopoint/geopoint.js',
-      'modules/js/ext.HWMap.js',
-      'modules/js/ext.HWMAP.CitySpots.js'
+      'modules/js/ext.HWMAP.CitySpots.js',
+      'modules/js/ext.HWMap.js'
     ),
     'styles' => array(
       'modules/less/ext.HWMap.less',
