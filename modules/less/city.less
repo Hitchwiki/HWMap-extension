@@ -218,6 +218,54 @@
     //!------ Waiting time ------!//
     .waiting-time{
     }
+    //!------ Comments ------!//
+    .spot-comments{
+      display: none;
+      margin: 10px -48px 0 -48px;
+      padding: 10px 48px 10px 48px;
+      box-shadow:
+        inset 0px 11px 8px -10px @hw-grey-border-light,
+        inset 0px -11px 8px -10px @hw-grey-border-light;
+      background-color: @hw-grey-rate;
+      .comment{
+        border-bottom: 1px solid @hw-grey-border-light;
+        padding: 10px 0;
+        p{
+          margin: 0;
+        }
+        .comment-delete{
+          float: right;
+          cursor: pointer;
+          margin: 2px;
+        }
+        .comment-delete:hover{
+          color: @hw-color-senseless;
+        }
+        .comment-meta{
+          color: @hw-grey-texte;
+        }
+      }
+      .comment-textarea{
+        box-shadow: none;
+        margin-top: 5px;
+        border-radius: 0px;
+        background-color: white;
+        width: 100%;
+      }
+      .comment-button{
+        cursor: pointer;
+        border-radius: 3px;
+        border: 1px solid @hw-grey-border-light;
+        margin-top: 5px;
+        padding: 1px 5px;
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 14px;
+      }
+      .comment-button:hover{
+        background-color: white;
+      }
+    }
   }
 
 }

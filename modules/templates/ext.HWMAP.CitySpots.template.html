@@ -12,8 +12,8 @@
   </span>
   <span class="spot-right">
     {{#if userId}}<div class="edit-button">Edit</div>{{/if}}
-    {{#comments_count}}<div><span class="comments-box">{{comments_count}}</span></div>{{/comments_count}}
-    {{^comments_count}}<div><span class="comments-box">+</span></div>{{/comments_count}}
+    {{#comments_count}}<div onclick="loadComments({{id}})"><span class="comments-box">{{comments_count}}</span></div>{{/comments_count}}
+    {{^comments_count}}<div><span onclick="toggleComments({{id}})" class="comments-box">+</span></div>{{/comments_count}}
   </span>
   <p>{{{Description}}}</p>
   <div class="spot-footer">
@@ -34,7 +34,18 @@
       </span>
     </div>
   </div>
+  <div id="spot-comments-{{id}}" class="spot-comments">
+    {{#comments}}
+    <div class="comment">
+      {{#if user_id==userId}}<i onclick="deleteComment('{{comment_id}}', '{{id}}')" class="fa fa-trash comment-delete"></i>{{/if}}
+      {{{commenttext}}}
+      <span class="comment-meta">By {{user_name}}, {{timestamp_label}}</span>
+    </div>
+    {{/comments}}
+    <textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
+    {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', '{{this.new_comment}}')">Add comment</button> {{/if}}
+  </div>
 </div>
 {{/this}}
 
-{{/groupSpots}}
+{{/spots.groupSpots}}

@@ -58,7 +58,6 @@ var addRatings = function(newRating, id) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddrating&format=json", { rating: newRating, pageid: id, token: token})
       .done(function( data ) {
-        console.log(data);
         if(data.query.average) {
           //Update spot with new average
           for (var key in spotsData.groupSpots) {
@@ -92,7 +91,6 @@ var deleteRating = function(id) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwdeleterating&format=json", {pageid: id, token: token})
       .done(function( data ) {
-        console.log(data);
         if(data.query) {
           //Update spot with new average
           for (var key in spotsData.groupSpots) {
