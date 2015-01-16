@@ -252,6 +252,7 @@ function initHWMap() {
 
   // Layers
   spotsLayer = new PruneClusterForLeaflet();
+  spotsLayer.Cluster.Size = 10;
 
   spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
     leafletMarker.on('click', function(){
