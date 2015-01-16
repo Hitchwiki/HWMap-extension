@@ -14,7 +14,7 @@ var mapboxUser = "trustroots",
 
 // Geonames settings
 var geonamesUsername = 'hitchwiki';
-var spotCityDistance = 40; // in kilometers
+var spotCityDistance = 15; // in kilometers
 var minPopulationNonCapital = 500000;
 
 // Setup variables
