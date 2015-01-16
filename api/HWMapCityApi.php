@@ -171,6 +171,10 @@ class HWMapCityApi extends ApiBase {
       'properties' => array (
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
+      ),
+      'user_id' => array (
+        ApiBase::PARAM_TYPE => 'integer',
+        ApiBase::PARAM_REQUIRED => true
       )
     );
   }
@@ -179,7 +183,8 @@ class HWMapCityApi extends ApiBase {
   public function getParamDescription() {
     return array_merge( parent::getParamDescription(), array(
       'page_title' => 'Page title',
-      'properties' => 'Page propeties to query'
+      'properties' => 'Page propeties to query',
+      'user_id' => 'Current user id'
     ) );
   }
 }

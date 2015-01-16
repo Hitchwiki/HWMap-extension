@@ -32,7 +32,7 @@ var setupCityMap = function setupCityMap() {
 
 
   //Getting related spots
-  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
+  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&user_id="+userId+"&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
     //Let's group the different spots by cardinal direction
     for(var i = 0; i < data.query.spots.length; i++) {
       data.query.spots[i].average_label = getRatingLabel(data.query.spots[i].rating_average);
@@ -62,7 +62,7 @@ var setupCityMap = function setupCityMap() {
       }
 
     }
-
+    console.log(spotsData);
     //Init template
     initTemplate();
 
