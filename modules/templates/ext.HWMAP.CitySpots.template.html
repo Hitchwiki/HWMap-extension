@@ -11,7 +11,7 @@
     {{#CitiesDirection:i}}{{#if i>0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}{{#RoadsDirection}},&nbsp;<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
   </span>
   <span class="spot-right">
-    <div><div class="edit-button">Edit</div></div>
+    {{#if userId}}<div class="edit-button">Edit</div>{{/if}}
     {{#comments_count}}<div><span class="comments-box">{{comments_count}}</span></div>{{/comments_count}}
     {{^comments_count}}<div><span class="comments-box">+</span></div>{{/comments_count}}
   </span>
