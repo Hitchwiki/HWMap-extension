@@ -4,7 +4,10 @@ var initTemplate = function () {
       ractive = new Ractive({
         el: 'incity-spots',
         template: template,
-        data: spotsData
+        data: {
+          spots: spotsData,
+          userId: userId
+        }
       });
 
       // hide all the events

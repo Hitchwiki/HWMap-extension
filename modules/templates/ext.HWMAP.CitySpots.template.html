@@ -1,4 +1,4 @@
-{{#groupSpots:direction}}
+{{#spots.groupSpots:direction}}
 
 <span class="cardinal-direction">
   {{direction}}
@@ -18,8 +18,8 @@
   <p>{{{Description}}}</p>
   <div class="spot-footer">
     <div class="ratings">Hitchability:
-      <span class="rating-widget">
-        <span class="average average-{{rating_average}}">{{average_label}}</span><span id="rate_{{id}}" class="rate rate-{{rating_user}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
+      <span class="rating-widget average-{{rating_average}}">
+        <span class="average average-{{rating_average}} {{#if !userId}}average-no-user{{/if}}">{{average_label}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate rate-{{rating_user}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
         <span id="your_rate_{{id}}" class="your-rate">
           <span class="rating-choice-head">{{#if rating_user > 0}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
           <span onclick="addRatings(5, {{id}})" class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>
@@ -29,8 +29,8 @@
           <span onclick="addRatings(1, {{id}})" class="rating-choice"><span class="bubble bubble-senseless"></span> Senseless</span>
           {{#timestamp_user}}<span class="rating-choice-timestamp">You rated {{timestamp_user}}</span>
           <span onclick="deleteRating({{id}})" class="rating-choice-remove">Remove my rating</span>{{/timestamp_user}}
-        </span>
-        {{#if rating_count > 0}}<a href="#" class="rating-count">>See {{rating_count}} votes</a>{{/if}}
+        </span>{{/if}}
+      {{#if rating_count > 0}}<br /><a href="#" class="rating-count">>See {{rating_count}} votes</a>{{/if}}
       </span>
     </div>
   </div>

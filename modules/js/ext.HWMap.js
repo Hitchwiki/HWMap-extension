@@ -65,12 +65,12 @@ var addRatings = function(newRating, id) {
             var spots = spotsData.groupSpots[key];
             for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
             if(i < spots.length) {
-              ractive.set('groupSpots.'+key+'.'+i+'.timestamp_user', parseTimestamp(data.query.timestamp) );
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_user', newRating);
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_user_label', getRatingLabel(newRating.toString()));
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              ractive.set('groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', parseTimestamp(data.query.timestamp) );
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', newRating);
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', getRatingLabel(newRating.toString()));
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
               break;
             }
           }
@@ -98,12 +98,12 @@ var deleteRating = function(id) {
             var spots = spotsData.groupSpots[key];
             for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
             if(i < spots.length) {
-              ractive.set('groupSpots.'+key+'.'+i+'.timestamp_user', 0);
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_user', 0);
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_user_label', null);
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_average', data.query.average.toString() );
-              ractive.set('groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              ractive.set('groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average.toString()));
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', 0);
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', 0);
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', null);
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average.toString() );
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average.toString()));
               break;
             }
           }
