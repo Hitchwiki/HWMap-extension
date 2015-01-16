@@ -71,6 +71,7 @@ var addRatings = function(newRating, id) {
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
+              updateSpotMarker(id, data.query.average);
               break;
             }
           }
@@ -104,6 +105,7 @@ var deleteRating = function(id) {
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average.toString() );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average.toString()));
+              updateSpotMarker(id, data.query.average.toString());
               break;
             }
           }
@@ -143,6 +145,20 @@ var getRatingLabel = function (rating) {
   }
   return label;
 };
+
+var updateSpotMarker = function(id, newRating) {
+  for(var i = 0; i < spotsLayer.Cluster._markers.length; i++) {
+    if(spotsLayer.Cluster._markers[i].data.id == id) {
+      if(spotsLayer.Cluster._markers[i].data.average != newRating) {
+        spotsLayer.Cluster._markers[i].data.icon = iconSpot(newRating);
+        spotsLayer.Cluster._markers[i].data.average = newRating;
+        spotsLayer.RedrawIcons();
+        spotsLayer.ProcessView();
+      }
+      break;
+    }
+  }
+}
 
 /*
  * Initialize map
