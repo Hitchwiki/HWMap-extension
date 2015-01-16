@@ -37,126 +37,7 @@ var hwmap,
     token,
     ractive;
 
-//Function to get edit token
-var getToken = function (callback) {
-  if(userId) {
-    $.get( apiRoot + "/api.php?action=query&meta=tokens&format=json", function( data ) {
-      callback(data.query.tokens.csrftoken);
-    });
-  }
-  else {
-    callback(null);
-  }
-};
 
-
-//addRating
-var addRatings = function(newRating, id) {
-  //Get token
-  getToken(function(token) {
-    if(token) {
-      //Post new rating
-      $.post(  apiRoot + "/api.php?action=hwaddrating&format=json", { rating: newRating, pageid: id, token: token})
-      .done(function( data ) {
-        if(data.query.average) {
-          //Update spot with new average
-          for (var key in spotsData.groupSpots) {
-            var spots = spotsData.groupSpots[key];
-            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-            if(i < spots.length) {
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', parseTimestamp(data.query.timestamp) );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', newRating);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', getRatingLabel(newRating.toString()));
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
-              updateSpotMarker(id, data.query.average);
-              break;
-            }
-          }
-        }
-      });
-    }
-    else {
-      mw.log('Not logged in ');
-    }
-  });
-}
-
-//addRating
-var deleteRating = function(id) {
-  //Get token
-  getToken(function(token) {
-    if(token) {
-      //Post new rating
-      $.post(  apiRoot + "/api.php?action=hwdeleterating&format=json", {pageid: id, token: token})
-      .done(function( data ) {
-        if(data.query) {
-          //Update spot with new average
-          for (var key in spotsData.groupSpots) {
-            var spots = spotsData.groupSpots[key];
-            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-            if(i < spots.length) {
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', 0);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', 0);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', null);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average.toString() );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average.toString()));
-              updateSpotMarker(id, data.query.average.toString());
-              break;
-            }
-          }
-        }
-      });
-    }
-    else {
-      mw.log('Not logged in ');
-    }
-  });
-}
-
-var parseTimestamp = function (timestamp) {
-    return timestamp.slice(6, 8)+'.'+timestamp.slice(4, 6)+'.'+timestamp.slice(0, 4);
-};
-
-var getRatingLabel = function (rating) {
-  var label;
-  switch (rating) {
-    case '1':
-      label = "Senseless";
-      break;
-    case '2':
-      label = "Bad";
-      break;
-    case '3':
-      label = "Average";
-      break;
-    case '4':
-      label = "Good";
-      break;
-    case '5':
-      label = "Very good";
-      break;
-    default:
-      label = "Unknown";
-  }
-  return label;
-};
-
-var updateSpotMarker = function(id, newRating) {
-  for(var i = 0; i < spotsLayer.Cluster._markers.length; i++) {
-    if(spotsLayer.Cluster._markers[i].data.id == id) {
-      if(spotsLayer.Cluster._markers[i].data.average != newRating) {
-        spotsLayer.Cluster._markers[i].data.icon = iconSpot(newRating);
-        spotsLayer.Cluster._markers[i].data.average = newRating;
-        spotsLayer.RedrawIcons();
-        spotsLayer.ProcessView();
-      }
-      break;
-    }
-  }
-}
 
 /*
  * Initialize map
@@ -254,20 +135,31 @@ function initHWMap() {
   spotsLayer = new PruneClusterForLeaflet();
   spotsLayer.Cluster.Size = 10;
 
-  spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
-    leafletMarker.on('click', function(){
-      $('html, body').animate({
-        scrollTop:$('#spot_'+data.id).offset().top -48
-      }, 'fast');
-    });
-    leafletMarker.on('mouseover', function(){
-      $('#spot_'+data.id).css('background-color', '#c4c4c4');
-    });
-    leafletMarker.on('mouseout', function(){
-      $('#spot_'+data.id).css('background-color', 'transparent');
-    });
-    leafletMarker.setIcon(data.icon);
-  };
+  //Check if map is called from the special page
+  if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
+    //@todo
+  }
+  //Check if map is called from a city page
+  else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
+    spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
+      leafletMarker.on('click', function(){
+        $('html, body').animate({
+          scrollTop:$('#spot_'+data.id).offset().top -48
+        }, 'fast');
+      });
+      leafletMarker.on('mouseover', function(){
+        $('#spot_'+data.id).css('background-color', '#c4c4c4');
+      });
+      leafletMarker.on('mouseout', function(){
+        $('#spot_'+data.id).css('background-color', 'transparent');
+      });
+      leafletMarker.setIcon(data.icon);
+    };
+  }
+  //Check if map is called from a country page
+  else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
+    //@todo
+  }
 
   hwmap.addLayer(spotsLayer);
 
@@ -301,196 +193,6 @@ function initHWMap() {
 
 }
 
-function setupNewSpot() {
-  mw.log('->setupNewSpot');
-
-  // Craete new spot marker + layer
-  newSpotMarker = L.marker(hwmap.getCenter(), {
-    icon: icons.new,
-    draggable: true,
-    title: "Drag me!"
-  });
-  newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
-
-  // Dragged location of the new spot
-  // Preset some values at the form
-  newSpotMarker.on("dragend", function(event){
-    newSpotReverseGeocode(event);
-  });
-
-  newSpotReverseGeocode();
-
-  $newSpotWrap.find('#hwmap-cancel-adding').click(function(e){
-    tearApartNewSpot();
-  });
-
-  $newSpotWrap.fadeIn('fast');
-
-}
-
-/*
- * Clean out adding new spot form/buttons etc
- */
-function tearApartNewSpot() {
-  mw.log('->tearApartNewSpot');
-  $newSpotWrap.fadeOut('fast');
-  $newSpotInit.fadeIn('fast');
-  hwmap.removeLayer(newSpotLayer);
-  newSpotMarker = null;
-  newSpotLayer = null;
-}
-
-
-function newSpotReverseGeocode(event) {
-
-  var city = '', country = '', isBigCity = false;
-
-  function fillSpotForm() {
-    var placeName = '';
-
-    // Prefill city input at the form
-    if (city != '') {
-      placeName += city;
-      if (isBigCity) {
-        $newSpotForm.find("input[name='Spot[Cities]']").val( city );
-      }
-    }
-
-    // Prefill country input at the form
-    if (country != '') {
-      if (placeName != '')
-        placeName += ', ';
-      placeName += country;
-      $newSpotForm.find("input[name='Spot[Country]']").val( country );
-    }
-
-    // Add coordinates to the spot title to ensure its uniqueness
-    if (placeName != '')
-      placeName += ' ';
-    placeName += '(' + Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6)) + ')';
-
-    // Prefill name input at the form
-    $newSpotForm.find("input[name='page_name']").val(placeName);
-
-    // Enable the form again
-    $newSpotForm.find("input[type='submit']").removeAttr('disabled');
-  }
-
-  $newSpotForm.find("input[type='submit']").attr('disabled', 'disabled');
-
-  var newSpotLocation = (event) ? event.target.getLatLng() : hwmap.getCenter();
-
-  // Spot coordinates
-  $newSpotForm.find("input[name='Spot[Location]']").val( newSpotLocation.lat + ',' + newSpotLocation.lng );
-
-  var point = new GeoPoint(newSpotLocation.lat, newSpotLocation.lng);
-  var bbox = point.boundingCoordinates(20, null, true);
-
-  // Spot name
-  $.ajax({
-    url: 'http://api.geonames.org/citiesJSON',
-    dataType: 'jsonp',
-    data: {
-      north: bbox[1].latitude(),
-      east: bbox[1].longitude(),
-      south: bbox[0].latitude(),
-      west: bbox[0].longitude(),
-      style: 'full',
-      maxRows: 1,
-      lang: 'en',
-      username: geonamesUsername
-    },
-    success: function( data ) {
-      if (data.geonames && data.geonames.length != 0) {
-        place = data.geonames[0];
-
-        isBigCity = (
-          (place.fcode && $.inArray(place.fcode, ['PPLC', 'PPLA']) != -1) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
-          (place.population && place.population >= minPopulationNonCapital) // populated city (eg. Rotterdam)
-        );
-
-        if(place.name) {
-          city = place.name;
-        }
-
-        var countryCode = data.geonames[0].countrycode;
-        if (countryCode && countryCode != '') {
-          $.ajax({
-            url: 'http://api.geonames.org/countryInfoJSON',
-            dataType: 'jsonp',
-            data: {
-              country: countryCode,
-              style: 'full',
-              maxRows: 1,
-              lang: 'en',
-              username: geonamesUsername
-            },
-            success: function ( data ) {
-              if (data.geonames && data.geonames.length != 0) {
-                var countryInfo = data.geonames[0];
-                if (countryInfo && countryInfo.countryName) {
-                  country = countryInfo.countryName;
-                }
-              }
-              fillSpotForm();
-            },
-            error: function () { // country info lookup request failed
-              fillSpotForm();
-            }
-          });
-        } else { // no country code in city search response
-          fillSpotForm();
-        }
-      } else { // no closeby cities found
-          fillSpotForm();
-      }
-    },
-    error: function () { // city search request failed
-      fillSpotForm();
-    }
-  });
-
-}
-
-/*
- * Setup big map at Special:HWMap
- */
-function setupSpecialPageMap() {
-  mw.log('->HWMap->setupSpecialPageMap');
-
-  //Set map view
-  hwmap.setView(defaultCenter, defaultZoom);
-
-  //Getting spots in bounding box
-  getBoxSpots();
-
-  $newSpotInit.click(function(e){
-    e.preventDefault();
-    $(this).hide();
-    setupNewSpot();
-  });
-
-  //Fire event to check when map move
-  hwmap.on('moveend', function() {
-    //mw.log(spotsLayer._topClusterLevel._childcount);
-    //Get spots when zoom is bigger than 6
-    if(hwmap.getZoom() > 5) {
-      getBoxSpots();
-    }
-    //When zoom is smaller than 6 we clear the markers if not already cleared
-    else if(spotsLayer._objectsOnMap.length > 0){
-      //Clear the markers and last boundings
-      spotsLayer.RemoveMarkers();
-      lastBounds = {
-        NElat:'0',
-        NElng:'0',
-        SWlat:'0',
-        SWlng:'0'
-      };
-    }
-  });
-}
-
 /*
  * Setup big map at city article
  */
@@ -498,33 +200,6 @@ function setupCountryMap() {
   $("body").addClass("hwmap-page");
   // @todo
 }
-
-/*
- * Spot icon builder
- *
- * @return L.marker
- */
-var iconSpot = function (averageRating) {
-  if(averageRating == 5) {
-    return icons.verygood;
-  }
-  else if(averageRating == 4) {
-    return icons.good;
-  }
-  else if(averageRating == 3) {
-    return icons.average;
-  }
-  else if(averageRating == 2) {
-    return icons.bad;
-  }
-  else if(averageRating == 1) {
-    return icons.senseless;
-  }
-  else {
-    return icons.unknown;
-  }
-};
-
 
 // Get markers in the current bbox
 var getBoxSpots = function () {
@@ -581,8 +256,6 @@ var getBoxSpots = function () {
     });
   }
 }
-
-
 
 jQuery(document).ready(function($){
 //jQuery( function( $ ) {
