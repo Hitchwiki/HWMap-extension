@@ -10,11 +10,15 @@ function setupSpecialPageMap() {
   //Getting spots in bounding box
   getBoxSpots();
 
-  $newSpotInit.click(function(e){
-    e.preventDefault();
-    $(this).hide();
-    setupNewSpot();
-  });
+  // Button for adding new spot (show only for logged in users)
+  // wgUserId returns null when not logged in
+  if(mw.config.get('wgUserId')) {
+    $newSpotInit.show().click(function(e){
+      e.preventDefault();
+      $(this).hide();
+      setupNewSpot();
+    });
+  }
 
   //Fire event to check when map move
   hwmap.on('moveend', function() {

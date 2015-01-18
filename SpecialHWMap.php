@@ -14,7 +14,7 @@ class SpecialHWMap extends SpecialPage {
     $output->addHTML('<div class="hwmap-container"><div id="hwmap"></div></div>');
 
     // Add new spot HTML
-    $output->addHTML('<a href="#" id="hwmap-add">Add new spot</a>');
+    $output->addHTML('<a href="#" id="hwmap-add" style="display:none;">Add new spot</a>');
     $output->addHTML('<div id="hwmap-add-wrap" style="display:none;">');
     $output->addHTML('<p>Drag marker to the hitchhiking spot. Zoom in closer to see better and use satellite maps to confirm location.</p>');
 
