@@ -152,15 +152,27 @@ var toggleComments = function (id) {
 }
 
 //Add Comment
-var addComment = function (id, newComment) {
+var addComment = function (id, direction) {
   //Get token
   getToken(function(token) {
     if(token) {
+      for(var i = 0; i < spotsData.groupSpots[direction].length && spotsData.groupSpots[direction][i].id != id; i++) {}
+      if(i < spotsData.groupSpots[direction].length) {
+        newComment = spotsData.groupSpots[direction][i].new_comment.replace(/\n/g, '<br />');
+      }
+      console.log(newComment);
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddcomment&format=json", {commenttext: newComment, pageid: id, token: token})
       .done(function( data ) {
         if(data) {
           loadComments(id, true);
+          for (var key in spotsData.groupSpots) {
+            var spots = spotsData.groupSpots[key];
+            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
+            if(i < spots.length) {
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.comment_count', data.query.count );
+            }
+          }
         }
       });
     }
@@ -176,11 +188,18 @@ var deleteComment = function (commentId, id) {
   getToken(function(token) {
     if(token) {
       if(window.confirm("Delete comment ?")){
-         //Post new rating
-         $.post(  apiRoot + "/api.php?action=hwdeletecomment&format=json", {comment_id: commentId, token: token})
+        //Post new rating
+        $.post(  apiRoot + "/api.php?action=hwdeletecomment&format=json", {comment_id: commentId, token: token})
         .done(function( data ) {
           if(data) {
             loadComments(id, true);
+            for (var key in spotsData.groupSpots) {
+              var spots = spotsData.groupSpots[key];
+              for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
+              if(i < spots.length) {
+                ractive.set('spots.groupSpots.'+key+'.'+i+'.comment_count', data.query.count );
+              }
+            }
           }
         });
       }

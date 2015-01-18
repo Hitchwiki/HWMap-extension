@@ -61,7 +61,7 @@
     {{/comments}}
     {{#if userId}}<textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
     {{else}}<p>Please log in to add a comment</p>{{/if}}
-    {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', '{{this.new_comment}}')">Add comment</button> {{/if}}
+    {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', '{{direction}}')">Add comment</button> {{/if}}
   </div>
 </div>
 {{/this}}
