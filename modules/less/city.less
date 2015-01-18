@@ -46,11 +46,14 @@
           border: 1px solid @hw-grey-border-light;
           font-size: 10px;
         }
+        .edit-button:hover{
+          background-color: @hw-orange;
+        }
         .comments-box{
           position: relative;
-          height: 20px;
-          line-height: 20px;
-          min-width: 20px;
+          height: 30px;
+          line-height: 30px;
+          min-width: 30px;
           padding: 2px;
           background-color: @hw-grey-border-light;
           color: white;
@@ -60,25 +63,37 @@
           content: "";
           display: block; /* reduce the damage in FF3.0 */
           position: absolute;
-          bottom: -6px;
-          left: 7px;
+          bottom: -9px;
+          left: 10px;
           width: 0;
           height: 0;
-          border-top: 7px solid @hw-grey-border-light;
-          border-right: 6px solid transparent;
+          border-top: 10px solid @hw-grey-border-light;
+          border-right: 9px solid transparent;
+        }
+        .comments-box:hover {
+          background-color: @hw-orange;
+        }
+        .comments-box:hover:after {
+          border-top: 10px solid @hw-orange;
+        }
+        .comment-spinner {
+          font-size: 16px;
+          margin: 2px;
+          visibility: hidden;
         }
       }
     }
     .spot-footer{
 
-        height: 50px;
-      line-height: 50px;
+      //height: 50px;
+      //line-height: 50px;
       .ratings, .waiting-time{
-        margin-bottom: 10px;
+        margin-bottom: 30px;
       }
     }
     //!------ Ratings ------!//
     .ratings{
+      width: 50%;
       .rating-widget{
         font-size: 12px;
         display: inline-block;
@@ -210,8 +225,31 @@
         }
         .rating-count{
           position: absolute;
-          text-size: 7px;
+          cursor: pointer;
+          margin-top: 5px;
+          text-size: 12px;
           color: @hw-grey-border;
+        }
+      }
+      .spot-ratings{
+        display: none;
+        margin-top: 20px;
+        font-size: 10px;
+        width: 100%;
+        table{
+          background-color: #f3d356;
+          border: 1px solid black;
+          text-align: center;
+          width: 100%;
+          tr{
+            th{
+              padding-bottom: 2px;
+              border-bottom: 1px solid black;
+            }
+            td, th{
+              margin: 0 3px 0 3px;
+            }
+          }
         }
       }
     }
@@ -221,6 +259,8 @@
     //!------ Comments ------!//
     .spot-comments{
       display: none;
+      height: 0px;
+      overflow:hidden;
       margin: 10px -48px 0 -48px;
       padding: 10px 48px 10px 48px;
       box-shadow:
@@ -259,7 +299,6 @@
         margin-top: 5px;
         padding: 1px 5px;
         text-align: center;
-        text-transform: uppercase;
         font-size: 14px;
       }
       .comment-button:hover{
@@ -292,3 +331,9 @@
     }
   }
 }
+
+.heightAuto{
+    height:auto;
+}
+
+

@@ -12,7 +12,7 @@
   </span>
   <span class="spot-right">
     {{#if userId}}<div class="edit-button">Edit</div>{{/if}}
-    {{#comments_count}}<div onclick="loadComments({{id}})"><span class="comments-box">{{comments_count}}</span></div>{{/comments_count}}
+    {{#comments_count}}<div ><i id="comment-spinner-{{id}}" class="fa fa-spinner fa-spin comment-spinner"></i><span onclick="loadComments({{id}})" class="comments-box">{{comments_count}}</span></div>{{/comments_count}}
     {{^comments_count}}<div><span onclick="toggleComments({{id}})" class="comments-box">+</span></div>{{/comments_count}}
   </span>
   <p>{{{Description}}}</p>
@@ -30,11 +30,28 @@
           {{#timestamp_user}}<span class="rating-choice-timestamp">You rated {{timestamp_user}}</span>
           <span onclick="deleteRating({{id}})" class="rating-choice-remove">Remove my rating</span>{{/timestamp_user}}
         </span>{{/if}}
-      {{#if rating_count > 0}}<br /><a href="#" class="rating-count">>See {{rating_count}} votes</a>{{/if}}
+      {{#if rating_count > 0}}<br /><a onclick="loadRatings('{{id}}')" class="rating-count">>See {{rating_count}} votes</a>{{/if}}
       </span>
+      <br />
+      <div id="spot-ratings-{{id}}" class="spot-ratings">
+      <table>
+        <tr>
+          <th><i class="fa fa-star"></i></th>
+          <th><i class="fa fa-users"></i></th>
+          <th><i class="fa fa-calendar"></i></th>
+        </tr>
+        {{#ratings}}
+        <tr>
+          <td>{{rating_label}}</td>
+          <td>{{user_name}}</td>
+          <td>{{timestamp_label}}</td>
+        </tr>
+        {{/ratings}}
+      </table>
+      </div>
     </div>
   </div>
-  <div id="spot-comments-{{id}}" class="spot-comments">
+  <div id="spot-comments-{{id}}" class="spot-comments hide-comment">
     {{#comments}}
     <div class="comment">
       {{#if user_id==userId}}<i onclick="deleteComment('{{comment_id}}', '{{id}}')" class="fa fa-trash comment-delete"></i>{{/if}}
@@ -42,7 +59,8 @@
       <span class="comment-meta">By {{user_name}}, {{timestamp_label}}</span>
     </div>
     {{/comments}}
-    <textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
+    {{#if userId}}<textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
+    {{else}}<p>Please log in to add a comment</p>{{/if}}
     {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', '{{this.new_comment}}')">Add comment</button> {{/if}}
   </div>
 </div>

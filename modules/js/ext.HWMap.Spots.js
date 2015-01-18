@@ -83,12 +83,33 @@ var parseTimestamp = function (timestamp) {
     return timestamp.slice(6, 8)+'.'+timestamp.slice(4, 6)+'.'+timestamp.slice(0, 4);
 };
 
+var slideSpeed = 300;
+var slideComment = function (id, state) {
+  var content = $(id);
+  if(state == 'down') {
+    content.css({'display': 'block'});
+    var contentHeight = content.css({'height': 'auto'}).height();
+    console.log(contentHeight);
+    content.css({'height': ''});
+    content.animate({
+      height: contentHeight
+    }, slideSpeed);
+  }
+  else if(state == 'up') {
+    content.animate({
+      height: 0
+    }, slideSpeed, function() {
+      content.css({'display': 'none'});
+    });
+  }
+}
+
 var commentLoaded = [];
 var loadComments = function (id, reload) {
   if(typeof commentLoaded[id] === 'undefined' || reload) {
+    $('#comment-spinner-'+id).css({'visibility': 'visible'});
     $.get( apiRoot + "/api.php?action=hwgetcomments&format=json&pageid="+id, function(data) {
       if(data.query) {
-        $("#spot-comments-"+id).show();
         //Update spot with new average
         for (var key in spotsData.groupSpots) {
           var spots = spotsData.groupSpots[key];
@@ -103,31 +124,33 @@ var loadComments = function (id, reload) {
             break;
           }
         }
+        slideComment("#spot-comments-"+id, 'down');
       }
+      $('#comment-spinner-'+id).css({'visibility': 'hidden'});
     });
   }
   else if (commentLoaded[id] == true){
-    $("#spot-comments-"+id).hide();
+    slideComment("#spot-comments-"+id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    $("#spot-comments-"+id).show();
+    slideComment("#spot-comments-"+id, 'down');
     commentLoaded[id] = true;
   }
 }
 
 var toggleComments = function (id) {
   if (commentLoaded[id] == true){
-    $("#spot-comments-"+id).hide();
+    slideComment("#spot-comments-"+id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    $("#spot-comments-"+id).show();
+    slideComment("#spot-comments-"+id, 'down');
     commentLoaded[id] = true;
   }
 }
 
-//add Comment
+//Add Comment
 var addComment = function (id, newComment) {
   //Get token
   getToken(function(token) {
@@ -146,18 +169,20 @@ var addComment = function (id, newComment) {
   });
 }
 
-//delete Comment
+//Delete Comment
 var deleteComment = function (commentId, id) {
   //Get token
   getToken(function(token) {
     if(token) {
-      //Post new rating
-      $.post(  apiRoot + "/api.php?action=hwdeletecomment&format=json", {comment_id: commentId, token: token})
-      .done(function( data ) {
-        if(data) {
-          loadComments(id, true);
+      if(window.confirm("Delete comment ?")){
+         //Post new rating
+         $.post(  apiRoot + "/api.php?action=hwdeletecomment&format=json", {comment_id: commentId, token: token})
+        .done(function( data ) {
+          if(data) {
+            loadComments(id, true);
         }
-      });
+        });
+      }
     }
     else {
       mw.log('Not logged in ');
@@ -165,8 +190,41 @@ var deleteComment = function (commentId, id) {
   });
 }
 
+var ratingsLoaded = [];
+var loadRatings = function (id, reload) {
+  if(typeof ratingsLoaded[id] === 'undefined' || reload) {
+    $.get( apiRoot + "/api.php?action=hwgetratings&format=json&pageid="+id, function(data) {
+      if(data.query) {
+        console.log(data.query);
+        $("#spot-ratings-"+id).show();
+        //Update spot with new average
+        for (var key in spotsData.groupSpots) {
+          var spots = spotsData.groupSpots[key];
+          for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
+          if(i < spots.length) {
+            for(var j = 0; j < data.query.ratings.length ; j++) {
+              data.query.ratings[j].rating_label = getRatingLabel(data.query.ratings[j].rating);
+              data.query.ratings[j].timestamp_label = parseTimestamp(data.query.ratings[j].timestamp);
+            }
+            ractive.set('spots.groupSpots.'+key+'.'+i+'.ratings', data.query.ratings);
+            ratingsLoaded[id] = true;
+            break;
+          }
+        }
+      }
+    });
+  }
+  else if (ratingsLoaded[id] == true){
+    $("#spot-ratings-"+id).hide();
+    ratingsLoaded[id] = false;
+  }
+  else {
+    $("#spot-ratings-"+id).show();
+    ratingsLoaded[id] = true;
+  }
+}
 
-//Delete rating
+//Add rating
 var addRatings = function(newRating, id) {
   //Get token
   getToken(function(token) {
@@ -187,6 +245,9 @@ var addRatings = function(newRating, id) {
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
               updateSpotMarker(id, data.query.average);
+              if(typeof ratingsLoaded[id] !== 'undefined') {
+                loadRatings(id, true);
+              }
               break;
             }
           }
@@ -220,6 +281,9 @@ var deleteRating = function(id) {
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average.toString()));
               updateSpotMarker(id, data.query.average.toString());
+              if(typeof ratingsLoaded[id] !== 'undefined') {
+                loadRatings(id, true);
+              }
               break;
             }
           }
