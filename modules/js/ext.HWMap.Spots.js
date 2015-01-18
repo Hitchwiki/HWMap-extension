@@ -104,25 +104,18 @@ var slideComment = function (id, state) {
 }
 
 var commentLoaded = [];
-var loadComments = function (id, reload) {
+var loadComments = function (id, reload, direction, spotIndex) {
   if(typeof commentLoaded[id] === 'undefined' || reload) {
     $('#comment-spinner-'+id).css({'visibility': 'visible'});
     $.get( apiRoot + "/api.php?action=hwgetcomments&format=json&pageid="+id, function(data) {
       if(data.query) {
         //Update spot with new average
-        for (var key in spotsData.groupSpots) {
-          var spots = spotsData.groupSpots[key];
-          for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-          if(i < spots.length) {
-            for(var j = 0; j < data.query.comments.length ; j++) {
-              data.query.comments[j].timestamp_label = parseTimestamp(data.query.comments[j].timestamp);
-            }
-            ractive.set('spots.groupSpots.'+key+'.'+i+'.comments', data.query.comments);
-            ractive.set('spots.groupSpots.'+key+'.'+i+'.new_comment', '');
-            commentLoaded[id] = true;
-            break;
-          }
+        for(var j = 0; j < data.query.comments.length ; j++) {
+          data.query.comments[j].timestamp_label = parseTimestamp(data.query.comments[j].timestamp);
         }
+        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.comments', data.query.comments);
+        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.new_comment', '');
+        commentLoaded[id] = true;
         if(!reload) {
           slideComment("#spot-comments-"+id, 'down');
         }
@@ -152,27 +145,18 @@ var toggleComments = function (id) {
 }
 
 //Add Comment
-var addComment = function (id, direction) {
+var addComment = function (id, direction, spotIndex) {
   //Get token
   getToken(function(token) {
     if(token) {
-      for(var i = 0; i < spotsData.groupSpots[direction].length && spotsData.groupSpots[direction][i].id != id; i++) {}
-      if(i < spotsData.groupSpots[direction].length) {
-        newComment = spotsData.groupSpots[direction][i].new_comment.replace(/\n/g, '<br />');
-      }
+      newComment = spotsData.groupSpots[direction][spotIndex].new_comment.replace(/\n/g, '<br />');
       console.log(newComment);
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddcomment&format=json", {commenttext: newComment, pageid: id, token: token})
       .done(function( data ) {
         if(data) {
-          loadComments(id, true);
-          for (var key in spotsData.groupSpots) {
-            var spots = spotsData.groupSpots[key];
-            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-            if(i < spots.length) {
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.comment_count', data.query.count );
-            }
-          }
+          loadComments(id, true, direction, spotIndex);
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.comment_count', data.query.count );
         }
       });
     }
@@ -183,7 +167,7 @@ var addComment = function (id, direction) {
 }
 
 //Delete Comment
-var deleteComment = function (commentId, id) {
+var deleteComment = function (commentId, id, direction, spotIndex) {
   //Get token
   getToken(function(token) {
     if(token) {
@@ -192,14 +176,8 @@ var deleteComment = function (commentId, id) {
         $.post(  apiRoot + "/api.php?action=hwdeletecomment&format=json", {comment_id: commentId, token: token})
         .done(function( data ) {
           if(data) {
-            loadComments(id, true);
-            for (var key in spotsData.groupSpots) {
-              var spots = spotsData.groupSpots[key];
-              for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-              if(i < spots.length) {
-                ractive.set('spots.groupSpots.'+key+'.'+i+'.comment_count', data.query.count );
-              }
-            }
+            loadComments(id, true, direction, spotIndex);
+            ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.comment_count', data.query.count );
           }
         });
       }
@@ -211,26 +189,19 @@ var deleteComment = function (commentId, id) {
 }
 
 var ratingsLoaded = [];
-var loadRatings = function (id, reload) {
+var loadRatings = function (id, reload, direction, spotIndex) {
   if(typeof ratingsLoaded[id] === 'undefined' || reload) {
     $.get( apiRoot + "/api.php?action=hwgetratings&format=json&pageid="+id, function(data) {
       if(data.query) {
         console.log(data.query);
         $("#spot-ratings-"+id).show();
         //Update spot with new average
-        for (var key in spotsData.groupSpots) {
-          var spots = spotsData.groupSpots[key];
-          for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-          if(i < spots.length) {
-            for(var j = 0; j < data.query.ratings.length ; j++) {
-              data.query.ratings[j].rating_label = getRatingLabel(data.query.ratings[j].rating);
-              data.query.ratings[j].timestamp_label = parseTimestamp(data.query.ratings[j].timestamp);
-            }
-            ractive.set('spots.groupSpots.'+key+'.'+i+'.ratings', data.query.ratings);
-            ratingsLoaded[id] = true;
-            break;
-          }
+        for(var j = 0; j < data.query.ratings.length ; j++) {
+          data.query.ratings[j].rating_label = getRatingLabel(data.query.ratings[j].rating);
+          data.query.ratings[j].timestamp_label = parseTimestamp(data.query.ratings[j].timestamp);
         }
+        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.ratings', data.query.ratings);
+        ratingsLoaded[id] = true;
       }
     });
   }
@@ -245,7 +216,7 @@ var loadRatings = function (id, reload) {
 }
 
 //Add rating
-var addRatings = function(newRating, id) {
+var addRatings = function(newRating, id, direction, spotIndex) {
   //Get token
   getToken(function(token) {
     if(token) {
@@ -255,22 +226,15 @@ var addRatings = function(newRating, id) {
         console.log(data);
         if(data.query.average) {
           //Update spot with new average
-          for (var key in spotsData.groupSpots) {
-            var spots = spotsData.groupSpots[key];
-            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-            if(i < spots.length) {
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', parseTimestamp(data.query.timestamp) );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', newRating);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', getRatingLabel(newRating));
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
-              updateSpotMarker(id, data.query.average);
-              if(typeof ratingsLoaded[id] !== 'undefined') {
-                loadRatings(id, true);
-              }
-              break;
-            }
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.timestamp_user', parseTimestamp(data.query.timestamp) );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user', newRating);
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user_label', getRatingLabel(newRating));
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_average', data.query.average );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_count', data.query.count );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.average_label', getRatingLabel(data.query.average));
+          updateSpotMarker(id, data.query.average);
+          if(typeof ratingsLoaded[id] !== 'undefined') {
+            loadRatings(id, true, direction, spotIndex);
           }
         }
       });
@@ -282,7 +246,7 @@ var addRatings = function(newRating, id) {
 }
 
 //Delete rating
-var deleteRating = function(id) {
+var deleteRating = function(id, direction, spotIndex) {
   //Get token
   getToken(function(token) {
     if(token) {
@@ -292,22 +256,15 @@ var deleteRating = function(id) {
         console.log(data);
         if(data.query) {
           //Update spot with new average
-          for (var key in spotsData.groupSpots) {
-            var spots = spotsData.groupSpots[key];
-            for(var i = 0; i < spots.length && spots[i].id != id; i++) {}
-            if(i < spots.length) {
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', 0);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', 0);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', null);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
-              updateSpotMarker(id, data.query.average);
-              if(typeof ratingsLoaded[id] !== 'undefined') {
-                loadRatings(id, true);
-              }
-              break;
-            }
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.timestamp_user', 0);
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user', 0);
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user_label', null);
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_average', data.query.average );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_count', data.query.count );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.average_label', getRatingLabel(data.query.average));
+          updateSpotMarker(id, data.query.average);
+          if(typeof ratingsLoaded[id] !== 'undefined') {
+            loadRatings(id, true, direction, spotIndex);
           }
         }
       });
