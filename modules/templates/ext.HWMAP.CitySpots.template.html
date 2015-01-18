@@ -12,14 +12,14 @@
   </span>
   <span class="spot-right">
     {{#if userId}}<div class="edit-button">Edit</div>{{/if}}
-    {{#comments_count}}<div ><i id="comment-spinner-{{id}}" class="fa fa-spinner fa-spin comment-spinner"></i><span onclick="loadComments({{id}})" class="comments-box">{{comments_count}}</span></div>{{/comments_count}}
-    {{^comments_count}}<div><span onclick="toggleComments({{id}})" class="comments-box">+</span></div>{{/comments_count}}
+    {{#comment_count}}<div ><i id="comment-spinner-{{id}}" class="fa fa-spinner fa-spin comment-spinner"></i><span onclick="loadComments({{id}})" class="comments-box">{{comment_count}}</span></div>{{/comment_count}}
+    {{^comment_count}}<div><span onclick="toggleComments({{id}})" class="comments-box">+</span></div>{{/comment_count}}
   </span>
   <p>{{{Description}}}</p>
   <div class="spot-footer">
     <div class="ratings">Hitchability:
       <span class="rating-widget average-{{rating_average}}">
-        <span class="average average-{{rating_average}} {{#if !userId}}average-no-user{{/if}}">{{average_label}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate rate-{{rating_user}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
+        <span class="average average-{{Math.round(rating_average)}} {{#if !userId}}average-no-user{{/if}}">{{average_label}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate rate-{{Math.round(rating_user)}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
         <span id="your_rate_{{id}}" class="your-rate">
           <span class="rating-choice-head">{{#if rating_user > 0}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
           <span onclick="addRatings(5, {{id}})" class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>

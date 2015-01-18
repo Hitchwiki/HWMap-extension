@@ -5,20 +5,20 @@
  *
  * @return L.marker
  */
-var iconSpot = function (averageRating) {
-  if(averageRating == 5) {
+var iconSpot = function (rating) {
+  if(rating >= 4.5) {
     return icons.verygood;
   }
-  else if(averageRating == 4) {
+  else if(rating >= 3.5) {
     return icons.good;
   }
-  else if(averageRating == 3) {
+  else if(rating >= 2.5 ) {
     return icons.average;
   }
-  else if(averageRating == 2) {
+  else if(rating >= 1.5) {
     return icons.bad;
   }
-  else if(averageRating == 1) {
+  else if(rating >= 1) {
     return icons.senseless;
   }
   else {
@@ -28,27 +28,24 @@ var iconSpot = function (averageRating) {
 
 //Get the rating label according to the rating average
 var getRatingLabel = function (rating) {
-  var label;
-  switch (rating) {
-    case '1':
-      label = "Senseless";
-      break;
-    case '2':
-      label = "Bad";
-      break;
-    case '3':
-      label = "Average";
-      break;
-    case '4':
-      label = "Good";
-      break;
-    case '5':
-      label = "Very good";
-      break;
-    default:
-      label = "Unknown";
+  if(rating >= 4.5) {
+    return "Very good";
   }
-  return label;
+  else if(rating >= 3.5) {
+    return "Good";
+  }
+  else if(rating >= 2.5 ) {
+    return "Average";
+  }
+  else if(rating >= 1.5) {
+    return "Bad";
+  }
+  else if(rating >= 1) {
+    return "Senseless";
+  }
+  else {
+    return "Unknown";
+  }
 };
 
 //Update spot marker with new rating
@@ -93,7 +90,9 @@ var slideComment = function (id, state) {
     content.css({'height': ''});
     content.animate({
       height: contentHeight
-    }, slideSpeed);
+    }, slideSpeed, function() {
+      content.css({'height': 'auto'});
+    });
   }
   else if(state == 'up') {
     content.animate({
@@ -124,7 +123,9 @@ var loadComments = function (id, reload) {
             break;
           }
         }
-        slideComment("#spot-comments-"+id, 'down');
+        if(!reload) {
+          slideComment("#spot-comments-"+id, 'down');
+        }
       }
       $('#comment-spinner-'+id).css({'visibility': 'hidden'});
     });
@@ -180,7 +181,7 @@ var deleteComment = function (commentId, id) {
         .done(function( data ) {
           if(data) {
             loadComments(id, true);
-        }
+          }
         });
       }
     }
@@ -232,6 +233,7 @@ var addRatings = function(newRating, id) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddrating&format=json", { rating: newRating, pageid: id, token: token})
       .done(function( data ) {
+        console.log(data);
         if(data.query.average) {
           //Update spot with new average
           for (var key in spotsData.groupSpots) {
@@ -240,7 +242,7 @@ var addRatings = function(newRating, id) {
             if(i < spots.length) {
               ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', parseTimestamp(data.query.timestamp) );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', newRating);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', getRatingLabel(newRating.toString()));
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', getRatingLabel(newRating));
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
@@ -268,6 +270,7 @@ var deleteRating = function(id) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwdeleterating&format=json", {pageid: id, token: token})
       .done(function( data ) {
+        console.log(data);
         if(data.query) {
           //Update spot with new average
           for (var key in spotsData.groupSpots) {
@@ -277,10 +280,10 @@ var deleteRating = function(id) {
               ractive.set('spots.groupSpots.'+key+'.'+i+'.timestamp_user', 0);
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user', 0);
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_user_label', null);
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average.toString() );
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_average', data.query.average );
               ractive.set('spots.groupSpots.'+key+'.'+i+'.rating_count', data.query.count );
-              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average.toString()));
-              updateSpotMarker(id, data.query.average.toString());
+              ractive.set('spots.groupSpots.'+key+'.'+i+'.average_label', getRatingLabel(data.query.average));
+              updateSpotMarker(id, data.query.average);
               if(typeof ratingsLoaded[id] !== 'undefined') {
                 loadRatings(id, true);
               }

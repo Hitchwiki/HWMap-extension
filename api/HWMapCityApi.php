@@ -12,6 +12,7 @@ class HWMapCityApi extends ApiBase {
       $params = $this->extractRequestParams();
       $page_title = $params['page_title'];
       $properties = $params['properties'];
+      $user_id = $params['user_id'];
       $spots = array();
 
       //Make an array from the properties
@@ -103,7 +104,8 @@ class HWMapCityApi extends ApiBase {
           $this->getRequest(),
           array(
             'action' => 'hwavgrating',
-            'pageid' => $ids
+            'pageid' => $ids,
+            'user_id' => $user_id
           ),
           true
         );
@@ -143,7 +145,7 @@ class HWMapCityApi extends ApiBase {
             //Looking for the spot ...
           }
           if($index < count($spots)) {
-            $spots[$index]->comments_count = $count_res['comments_count'];
+            $spots[$index]->comment_count = $count_res['comment_count'];
           }
         }
       }

@@ -94,7 +94,7 @@ class HWSpotIdApi extends ApiBase {
         $spot->rating_average = $spot_average_rating_data['query']['ratings'][0]['rating_average'];
         $spot->rating_count = $spot_average_rating_data['query']['ratings'][0]['rating_count'];
 
-        //And get the average detail
+        //And tget the average detail
         $spot_average_detail = new DerivativeRequest(
           $this->getRequest(),
           array(
@@ -124,7 +124,7 @@ class HWSpotIdApi extends ApiBase {
         $spot_comment_count_api = new ApiMain( $spot_comment_count );
         $spot_comment_count_api->execute();
         $spot_comment_count_data = $spot_comment_count_api->getResultData();
-        $spot->comments_count = $spot_comment_count_data['query']['comment_counts'][0]['comments_count'];
+        $spot->comment_count = $spot_comment_count_data['query']['comment_counts'][0]['comment_count'];
 
         //And get the comments details
         $spot_comment_detail = new DerivativeRequest(
