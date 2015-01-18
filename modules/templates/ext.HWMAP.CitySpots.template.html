@@ -19,9 +19,9 @@
   <div class="spot-footer">
     <div class="ratings">Hitchability:
       <span class="rating-widget average-{{rating_average}}">
-        <span class="average average-{{Math.round(rating_average)}} {{#if !userId}}average-no-user{{/if}}">{{average_label}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate rate-{{Math.round(rating_user)}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
+        <span class="average {{#if rating_average > 0}}average-{{Math.round(rating_average)}}{{else}}average-null{{/if}} {{#if !userId}}average-no-user{{/if}}">{{average_label}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate {{#if rating_average > 0}}rate-{{Math.round(rating_user)}}{{else}}rate-null{{/if}}">{{#if rating_user}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
         <span id="your_rate_{{id}}" class="your-rate">
-          <span class="rating-choice-head">{{#if rating_user > 0}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
+          <span class="rating-choice-head">{{#if rating_user}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
           <span onclick="addRatings(5, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>
           <span onclick="addRatings(4, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-good"></span> Good</span>
           <span onclick="addRatings(3, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-average"></span> Average</span>
@@ -30,7 +30,7 @@
           {{#timestamp_user}}<span class="rating-choice-timestamp">You rated {{timestamp_user}}</span>
           <span onclick="deleteRating({{id}}, '{{direction}}', {{index}})" class="rating-choice-remove">Remove my rating</span>{{/timestamp_user}}
         </span>{{/if}}
-      {{#if rating_count > 0}}<br /><a onclick="loadRatings('{{id}}', false, '{{direction}}', {{index}})" class="rating-count">>See {{rating_count}} votes</a>{{/if}}
+      {{#if rating_count > 0}}<a onclick="loadRatings('{{id}}', false, '{{direction}}', {{index}})" class="rating-count">>See {{rating_count}} votes</a>{{/if}}
       </span>
       <br />
       <div id="spot-ratings-{{id}}" class="spot-ratings">

@@ -42,9 +42,6 @@ var setupCityMap = function setupCityMap() {
     //Let's group the different spots by cardinal direction
     for(var i = 0; i < data.query.spots.length; i++) {
       data.query.spots[i].average_label = getRatingLabel(data.query.spots[i].rating_average);
-      if(!data.query.spots[i].rating_average) {
-        data.query.spots[i].rating_average = '0';
-      }
       if(data.query.spots[i].timestamp_user){
         data.query.spots[i].timestamp_user = parseTimestamp(data.query.spots[i].timestamp_user);
       }
