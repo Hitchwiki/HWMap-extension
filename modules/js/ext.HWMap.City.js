@@ -13,20 +13,26 @@ var setupCityMap = function setupCityMap() {
       break;
     }
 
-    //Build city marker
-    var marker = new PruneCluster.Marker(
-      page.coordinates[0].lat,
-      page.coordinates[0].lon
-    );
+    // If this city has coordinates set via SMW, add marker to the map
+    if(page.coordinates) {
 
-    //Add icon
-    marker.data.icon = icons.city;
+      //Build city marker
+      var marker = new PruneCluster.Marker(
+        page.coordinates[0].lat,
+        page.coordinates[0].lon
+      );
 
-    //Register marker
-    spotsLayer.RegisterMarker(marker);
+      //Add icon
+      marker.data.icon = icons.city;
+
+      //Register marker
+      spotsLayer.RegisterMarker(marker);
+
+      // Center map to city coordinates
+      hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 12);
+    }
 
     //Set Map View
-    hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 12);
     spotsLayer.ProcessView();
   });
 
@@ -125,4 +131,3 @@ var initTemplate = function () {
     });
 
 };
-
