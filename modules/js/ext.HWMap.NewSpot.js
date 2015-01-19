@@ -1,6 +1,8 @@
 function setupNewSpot() {
   mw.log('->setupNewSpot');
 
+  $newSpotInit.hide();
+
   // Craete new spot marker + layer
   newSpotMarker = L.marker(hwmap.getCenter(), {
     icon: icons.new,

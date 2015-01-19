@@ -1,4 +1,12 @@
 /*
+ * Return fragment identifier of the current URL
+ */
+$.fn.urlHash = function() {
+  // unlike window.location.hash, this one's IE-friendly
+  return document.URL.substr(document.URL.indexOf('#') + 1);
+};
+
+/*
  * Setup big map at Special:HWMap
  */
 function setupSpecialPageMap() {
@@ -35,8 +43,11 @@ function setupSpecialPageMap() {
   if(mw.config.get('wgUserId')) {
     $newSpotInit.show().click(function(e){
       e.preventDefault();
-      $(this).hide();
       setupNewSpot();
     });
+
+    if ($(this).urlHash() == 'add') {
+      setupNewSpot();
+    }
   }
 }
