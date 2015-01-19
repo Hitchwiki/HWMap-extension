@@ -2,22 +2,47 @@
 // https://git.wikimedia.org/blob/mediawiki%2Fcore.git/HEAD/resources%2Fsrc%2Fmediawiki.less%2Fmediawiki.mixins.less
 @import "mediawiki.mixins";
 
-
 // Hitchwiki mixins:
 
 .hwbutton {
+  display: inline-block;
   padding: 10px 15px;
-  font-size: 14px;
-  line-height: 15px;
   border: 0;
   background: @hw-orange;
-  color: @hw-orange-text;
-  text-transform: uppercase;
-  font-weight: bold;
   cursor: pointer;
+  &, a {
+    font-size: 14px;
+    line-height: 15px;
+    color: @hw-orange-text;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: bold;
+  }
   &:focus,
   &:hover,
   &:active {
     background: lighten(@hw-orange, 5%);
   }
+}
+
+
+.hwbutton-secondary {
+  background: #ccc;
+  &, a {
+    color: #555;
+    font-weight: normal;
+    text-transform: none;
+    text-decoration: none;
+  }
+  &:focus,
+  &:hover,
+  &:active {
+    background: lighten(#ccc, 5%);
+  }
+}
+
+.hwbutton-small {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 13px;
 }
