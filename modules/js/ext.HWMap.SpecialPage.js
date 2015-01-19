@@ -7,19 +7,6 @@ function setupSpecialPageMap() {
   //Set map view
   hwmap.setView(defaultCenter, defaultZoom);
 
-  //Getting spots in bounding box
-  getBoxSpots();
-
-  // Button for adding new spot (show only for logged in users)
-  // wgUserId returns null when not logged in
-  if(mw.config.get('wgUserId')) {
-    $newSpotInit.show().click(function(e){
-      e.preventDefault();
-      $(this).hide();
-      setupNewSpot();
-    });
-  }
-
   //Fire event to check when map move
   hwmap.on('moveend', function() {
     //mw.log(spotsLayer._topClusterLevel._childcount);
@@ -39,4 +26,17 @@ function setupSpecialPageMap() {
       };
     }
   });
+
+  //Getting spots in bounding box
+  hwmap.fireEvent('moveend');
+
+  // Button for adding new spot (show only for logged in users)
+  // wgUserId returns null when not logged in
+  if(mw.config.get('wgUserId')) {
+    $newSpotInit.show().click(function(e){
+      e.preventDefault();
+      $(this).hide();
+      setupNewSpot();
+    });
+  }
 }
