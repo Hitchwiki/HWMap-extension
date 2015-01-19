@@ -128,7 +128,7 @@ function initHWMap() {
   });
 
   hwmap.whenReady(function(){
-
+    setTimeout(function(){ hwmap.invalidateSize(); }, 500);
   });
 
   // Layers
