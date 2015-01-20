@@ -1,4 +1,12 @@
 /*
+ * Return fragment identifier of the current URL
+ */
+$.fn.urlHash = function() {
+  // unlike window.location.hash, this one's IE-friendly
+  return document.URL.substr(document.URL.indexOf('#') + 1);
+};
+
+/*
  * Setup big map at Special:HWMap
  */
 function setupSpecialPageMap() {
@@ -6,19 +14,6 @@ function setupSpecialPageMap() {
 
   //Set map view
   hwmap.setView(defaultCenter, defaultZoom);
-
-  //Getting spots in bounding box
-  getBoxSpots();
-
-  // Button for adding new spot (show only for logged in users)
-  // wgUserId returns null when not logged in
-  if(mw.config.get('wgUserId')) {
-    $newSpotInit.show().click(function(e){
-      e.preventDefault();
-      $(this).hide();
-      setupNewSpot();
-    });
-  }
 
   //Fire event to check when map move
   hwmap.on('moveend', function() {
@@ -39,4 +34,20 @@ function setupSpecialPageMap() {
       };
     }
   });
+
+  //Getting spots in bounding box
+  hwmap.fireEvent('moveend');
+
+  // Button for adding new spot (show only for logged in users)
+  // wgUserId returns null when not logged in
+  if(mw.config.get('wgUserId')) {
+    $newSpotInit.show().click(function(e){
+      e.preventDefault();
+      setupNewSpot();
+    });
+
+    if ($(this).urlHash() == 'add') {
+      setupNewSpot();
+    }
+  }
 }

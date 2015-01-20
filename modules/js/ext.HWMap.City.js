@@ -39,53 +39,60 @@ var setupCityMap = function setupCityMap() {
 
   //Getting related spots
   $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&user_id="+userId+"&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
-    //Let's group the different spots by cardinal direction
-    for(var i = 0; i < data.query.spots.length; i++) {
-      data.query.spots[i].average_label = getRatingLabel(data.query.spots[i].rating_average);
-      if(data.query.spots[i].timestamp_user){
-        data.query.spots[i].timestamp_user = parseTimestamp(data.query.spots[i].timestamp_user);
-      }
-      if(data.query.spots[i].rating_user){
-        data.query.spots[i].rating_user_label = getRatingLabel(data.query.spots[i].rating_user);
-      }
 
-      //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
-      if(data.query.spots[i].CardinalDirection == "") {
-        if(!spotsData.groupSpots['Other directions']) {
-          spotsData.groupSpots['Other directions'] = [];
+    // Proceed if we got spots
+    if(!data.error && data.query && data.query.spots.length > 0) {
+
+      //Let's group the different spots by cardinal direction
+      for(var i = 0; i < data.query.spots.length; i++) {
+        data.query.spots[i].average_label = getRatingLabel(data.query.spots[i].rating_average);
+        if(data.query.spots[i].timestamp_user){
+          data.query.spots[i].timestamp_user = parseTimestamp(data.query.spots[i].timestamp_user);
         }
-        spotsData.groupSpots['Other directions'].push(data.query.spots[i]);
-      }
-      else {
-        var CardinalDirection = data.query.spots[i].CardinalDirection.join(', ');
-        if(!spotsData.groupSpots[CardinalDirection]) {
-          spotsData.groupSpots[CardinalDirection] = [];
+        if(data.query.spots[i].rating_user){
+          data.query.spots[i].rating_user_label = getRatingLabel(data.query.spots[i].rating_user);
         }
-        spotsData.groupSpots[CardinalDirection].push(data.query.spots[i]);
+
+        //data.query.spots[i].Description = $.parseHTML(data.query.spots[i].Description);
+        if(data.query.spots[i].CardinalDirection == "") {
+          if(!spotsData.groupSpots['Other directions']) {
+            spotsData.groupSpots['Other directions'] = [];
+          }
+          spotsData.groupSpots['Other directions'].push(data.query.spots[i]);
+        }
+        else {
+          var CardinalDirection = data.query.spots[i].CardinalDirection.join(', ');
+          if(!spotsData.groupSpots[CardinalDirection]) {
+            spotsData.groupSpots[CardinalDirection] = [];
+          }
+          spotsData.groupSpots[CardinalDirection].push(data.query.spots[i]);
+        }
+
       }
+      console.log(spotsData);
+      //Init template
+      initTemplate();
+
+      var citySpots = data.query.spots;
+
+      for (var i in citySpots) {
+        //Build spot marker
+        var marker = new PruneCluster.Marker(
+          citySpots[i].Location[0].lat,
+          citySpots[i].Location[0].lon
+        );
+        //Add icon
+        marker.data.icon = iconSpot(citySpots[i].rating_average);
+        //Add id
+        marker.data.id = citySpots[i].id;
+        marker.data.average = citySpots[i].rating_average;
+        //Register marker
+        spotsLayer.RegisterMarker(marker);
+      }
+      spotsLayer.ProcessView();
 
     }
-    console.log(spotsData);
-    //Init template
-    initTemplate();
 
-    var citySpots = data.query.spots;
-
-    for (var i in citySpots) {
-      //Build spot marker
-      var marker = new PruneCluster.Marker(
-        citySpots[i].Location[0].lat,
-        citySpots[i].Location[0].lon
-      );
-      //Add icon
-      marker.data.icon = iconSpot(citySpots[i].rating_average);
-      //Add id
-      marker.data.id = citySpots[i].id;
-      marker.data.average = citySpots[i].rating_average;
-      //Register marker
-      spotsLayer.RegisterMarker(marker);
-    }
-    spotsLayer.ProcessView();
   });
 }
 
