@@ -172,10 +172,29 @@
       }
       .add-waiting-time{
         display: none;
+        margin-top: 5px;
         .waiting-time-input{
+          background-color: @hw-grey-extra-light;
           width: 60px;
+          border-radius: 0px;
+          border: 1px solid @hw-grey-medium;
+          text-align: center;
+          height: 30px;
+          font-size: 14px;
+        }
+        .waiting-time-input:focus{
+          background-color: @hw-grey-light;
+        }
+        .hw-button{
+          margin: 0 5px;
+        }
+        .add-time-help{
+          color: grey;
+          font-size: 11px;
+          margin-top: 2px;
         }
       }
+
     }
     //!------ Detail list ------!//
     .spot-ratings, .spot-waiting-times{
@@ -204,6 +223,13 @@
             line-height: 0px;
           }
         }
+      }
+      .waiting-time-delete{
+          cursor: pointer;
+          margin-left: 2px;
+      }
+      .waiting-time-delete:hover{
+        color: @hw-color-senseless;
       }
     }
     //!------ Bar graph ratings ------!//

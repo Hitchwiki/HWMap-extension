@@ -79,11 +79,11 @@
       </div>
       <div class="waiting-time col-md-4 col-footer-left-border col-spot-footer">
         <div class="waiting-time-widget">
-          {{#if waiting_time_count}}<span>Waiting time {{waiting_time_average}} minutes ({{waiting_time_count}})</span><button type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>
-          {{else}}<span>There is no waiting times yet</span><button type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>{{/if}}
+          {{#if waiting_time_count}}<span>Waiting time {{waiting_time_average}} minutes ({{waiting_time_count}})</span>
+          {{else}}<span>There is no waiting times yet</span>{{/if}}<button id="waiting_time_button_{{id}}" type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>
         </div>
         <div id="add_waiting_time_{{id}}" class="add-waiting-time">
-          <input value="{{this.newWaitingTime}}" type="number" class="waiting-time-input" min="0" max="999" />{{#if this.newWaitingTime}}<button onclick="addWaitingTime({{this.newWaitingTime}}, {{id}}, '{{direction}}', {{index}})">Ok</button>{{/if}}
+          <button class="hw-button hw-button-small" onclick="hideAddWaitingTime('{{id}}')">Cancel</button><input value="{{this.newWaitingTime}}" type="number" class="waiting-time-input" min="0" max="9999" placeholder="min."/><button class="hw-button hw-button-small" onclick="addWaitingTime({{this.newWaitingTime}}, {{id}}, '{{direction}}', {{index}})">Add</button><div class="add-time-help">{{#if Math.floor(this.newWaitingTime/60)}}{{Math.floor(this.newWaitingTime/60)}} hour{{/if}} {{#if this.newWaitingTime%60}}{{this.newWaitingTime%60}} minutes{{/if}}</div>
         </div>
 
         <div id="spot-waitingtimes-{{id}}" class="spot-waiting-times">
@@ -117,7 +117,7 @@
               <tr>
                 <td>{{waiting_time}} mins</td>
                 <td>{{user_name}}</td>
-                <td>{{timestamp_label}}</td>
+                <td>{{timestamp_label}} {{#if user_id==userId}}<i onclick="deleteWaitingTime('{{waiting_time_id}}', '{{id}}', '{{direction}}', {{index}})" class="fa fa-trash waiting-time-delete"></i>{{/if}}</td>
               </tr>
               {{/waiting_times}}
             </table>

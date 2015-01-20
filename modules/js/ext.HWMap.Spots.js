@@ -86,7 +86,6 @@ var slideShow = function (id, state) {
   if(state == 'down') {
     content.css({'display': 'block'});
     var contentHeight = content.css({'height': 'auto'}).height();
-    console.log(contentHeight);
     content.css({'height': ''});
     content.animate({
       height: contentHeight
@@ -108,7 +107,6 @@ var loadComments = function (id, reload, direction, spotIndex) {
   if(typeof commentLoaded[id] === 'undefined' || reload) {
     $('#comment-spinner-'+id).css({'visibility': 'visible'});
     $.get( apiRoot + "/api.php?action=hwgetcomments&format=json&pageid="+id, function(data) {
-      console.log(data);
       if(data.query) {
         //Update spot with new average
         for(var j = 0; j < data.query.comments.length ; j++) {
@@ -151,7 +149,6 @@ var addComment = function (id, direction, spotIndex) {
   getToken(function(token) {
     if(token) {
       newComment = spotsData.groupSpots[direction][spotIndex].new_comment.replace(/\n/g, '<br />');
-      console.log(newComment);
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddcomment&format=json", {commenttext: newComment, pageid: id, token: token})
       .done(function( data ) {
@@ -194,7 +191,6 @@ var loadRatings = function (id, reload, direction, spotIndex) {
   if(typeof ratingsLoaded[id] === 'undefined' || reload) {
     $.get( apiRoot + "/api.php?action=hwgetratings&format=json&pageid="+id, function(data) {
       if(data.query.ratings.length) {
-        console.log(data.query);
         slideShow("#spot-ratings-"+id, 'down');
         //Update spot with new average
         for(var j = 0; j < data.query.ratings.length ; j++) {
@@ -228,7 +224,6 @@ var addRatings = function(newRating, id, direction, spotIndex) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddrating&format=json", { rating: newRating, pageid: id, token: token})
       .done(function( data ) {
-        console.log(data);
         if(data.query.average) {
           //Update spot with new average
           ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.timestamp_user', parseTimestamp(data.query.timestamp) );
@@ -258,7 +253,6 @@ var deleteRating = function(id, direction, spotIndex) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwdeleterating&format=json", {pageid: id, token: token})
       .done(function( data ) {
-        console.log(data);
         if(data.query) {
           //Update spot with new average
           ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.timestamp_user', 0);
@@ -282,6 +276,11 @@ var deleteRating = function(id, direction, spotIndex) {
 
 var showAddWaitingTime = function(id) {
   $("#add_waiting_time_"+id).show();
+  $("#waiting_time_button_"+id).hide();
+}
+var hideAddWaitingTime = function(id) {
+  $("#add_waiting_time_"+id).hide();
+  $("#waiting_time_button_"+id).show();
 }
 
 var waitingTimesLoaded = [];
@@ -289,7 +288,6 @@ var loadWaintingTimes = function (id, reload, direction, spotIndex) {
   if(typeof waitingTimesLoaded[id] === 'undefined' || reload) {
     $.get( apiRoot + "/api.php?action=hwgetwaitingtimes&format=json&pageid="+id, function(data) {
       if(data.query.waiting_times.length) {
-        console.log(data.query.waiting_times.length);
         slideShow("#spot-waitingtimes-"+id, 'down');
         //Update spot with new average
         for(var j = 0; j < data.query.waiting_times.length ; j++) {
@@ -317,29 +315,47 @@ var loadWaintingTimes = function (id, reload, direction, spotIndex) {
 
 //Add waiting time
 var addWaitingTime = function(newWaitingTime, id, direction, spotIndex) {
-  console.log(newWaitingTime);
+  hideAddWaitingTime(id);
   //Get token
   getToken(function(token) {
     if(token) {
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddwaitingtime&format=json", {waiting_time: newWaitingTime, pageid: id, token: token})
       .done(function( data ) {
-        console.log(data);
-        /*
         if(data.query) {
           //Update spot with new average
-          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.timestamp_user', parseTimestamp(data.query.timestamp) );
-          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user', newRating);
-          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user_label', getRatingLabel(newRating));
-          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_average', data.query.average );
-          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_count', data.query.count );
-          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.average_label', getRatingLabel(data.query.average));
-          updateSpotMarker(id, data.query.average);
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_time_average', data.query.average );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_time_count', data.query.count );
           if(typeof ratingsLoaded[id] !== 'undefined') {
-            loadRatings(id, true, direction, spotIndex);
+            loadWaintingTimes(id, true, direction, spotIndex);
           }
-        }*/
+        }
       });
+    }
+    else {
+      mw.log('Not logged in ');
+    }
+  });
+}
+
+var deleteWaitingTime = function(waiting_time_id, id, direction, spotIndex) {
+  //Get token
+  getToken(function(token) {
+    if(token) {
+      if(window.confirm("Delete waiting time ?")){
+        //Post new rating
+        $.post(  apiRoot + "/api.php?action=hwdeletewaitingtime&format=json", {waiting_time_id: waiting_time_id, token: token})
+        .done(function( data ) {
+          if(data.query) {
+            //Update spot with new average
+            ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_time_average', data.query.average );
+            ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_time_count', data.query.count );
+            if(typeof ratingsLoaded[id] !== 'undefined') {
+              loadWaintingTimes(id, true, direction, spotIndex);
+            }
+          }
+        });
+      }
     }
     else {
       mw.log('Not logged in ');
