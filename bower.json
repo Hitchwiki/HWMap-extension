@@ -19,6 +19,6 @@
     "PruneCluster": "~1.1.0",
     "ractive": "~0.6.1",
     "geopoint": "https://github.com/davidwood/node-geopoint.git",
-    "bootstrap": "~3.3.1"
+    "bootstrap": "~3.3.2"
   }
 }
