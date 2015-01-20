@@ -83,7 +83,7 @@
           {{else}}<span>There is no waiting times yet</span>{{/if}}<button id="waiting_time_button_{{id}}" type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>
         </div>
         <div id="add_waiting_time_{{id}}" class="add-waiting-time">
-          <button class="hw-button hw-button-small" onclick="hideAddWaitingTime('{{id}}')">Cancel</button><input value="{{this.newWaitingTime}}" type="number" class="waiting-time-input" min="0" max="9999" placeholder="min."/><button class="hw-button hw-button-small" onclick="addWaitingTime({{this.newWaitingTime}}, {{id}}, '{{direction}}', {{index}})">Add</button><div class="add-time-help">{{#if Math.floor(this.newWaitingTime/60)}}{{Math.floor(this.newWaitingTime/60)}} hour{{/if}} {{#if this.newWaitingTime%60}}{{this.newWaitingTime%60}} minutes{{/if}}</div>
+          <button class="hw-button hw-button-small" onclick="hideAddWaitingTime('{{id}}')">Cancel</button><input value="{{this.new_waiting_time}}" type="number" class="waiting-time-input" min="0" max="9999" placeholder="min."/><button class="hw-button hw-button-small" onclick="addWaitingTime({{this.new_waiting_time}}, {{id}}, '{{direction}}', {{index}})">Add</button><div class="add-time-help">{{#if Math.floor(this.new_waiting_time/60)}}{{Math.floor(this.new_waiting_time/60)}} hour{{/if}} {{#if this.new_waiting_time%60}}{{this.new_waiting_time%60}} minutes{{/if}}</div>
         </div>
 
         <div id="spot-waitingtimes-{{id}}" class="spot-waiting-times">

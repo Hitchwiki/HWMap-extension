@@ -326,6 +326,7 @@ var addWaitingTime = function(newWaitingTime, id, direction, spotIndex) {
           //Update spot with new average
           ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_time_average', data.query.average );
           ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_time_count', data.query.count );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.new_waiting_time', null);
           if(typeof ratingsLoaded[id] !== 'undefined') {
             loadWaintingTimes(id, true, direction, spotIndex);
           }
