@@ -5,63 +5,150 @@
 </span>
 
 {{#this:index}}
-<div class="spot" id="spot_{{id}}">
-  <span class="spot-head">
-    {{#if CitiesDirection}}<span>Towards </span>{{/if}}
-    {{#CitiesDirection:i}}{{#if i>0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}{{#RoadsDirection}},&nbsp;<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
-  </span>
-  <span class="spot-right">
-    {{#if userId}}<div class="edit-button">Edit</div>{{/if}}
-    {{#comment_count}}<div ><i id="comment-spinner-{{id}}" class="fa fa-spinner fa-spin comment-spinner"></i><span onclick="loadComments({{id}}, false, '{{direction}}', {{index}})" class="comments-box">{{comment_count}}</span></div>{{/comment_count}}
-    {{^comment_count}}<div><span onclick="toggleComments({{id}})" class="comments-box">+</span></div>{{/comment_count}}
-  </span>
-  <p>{{{Description}}}</p>
-  <div class="spot-footer">
-    <div class="ratings">Hitchability:
-      <span class="rating-widget average-{{rating_average}}">
-        <span class="average {{#if rating_average > 0}}average-{{Math.round(rating_average)}}{{else}}average-null{{/if}} {{#if !userId}}average-no-user{{/if}}">{{average_label}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate {{#if rating_average > 0}}rate-{{Math.round(rating_user)}}{{else}}rate-null{{/if}}">{{#if rating_user}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
-        <span id="your_rate_{{id}}" class="your-rate">
-          <span class="rating-choice-head">{{#if rating_user}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
-          <span onclick="addRatings(5, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>
-          <span onclick="addRatings(4, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-good"></span> Good</span>
-          <span onclick="addRatings(3, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-average"></span> Average</span>
-          <span onclick="addRatings(2, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-bad"></span> Bad</span>
-          <span onclick="addRatings(1, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-senseless"></span> Senseless</span>
-          {{#timestamp_user}}<span class="rating-choice-timestamp">You rated {{timestamp_user}}</span>
-          <span onclick="deleteRating({{id}}, '{{direction}}', {{index}})" class="rating-choice-remove">Remove my rating</span>{{/timestamp_user}}
-        </span>{{/if}}
-      {{#if rating_count > 0}}<a onclick="loadRatings('{{id}}', false, '{{direction}}', {{index}})" class="rating-count">>See {{rating_count}} votes</a>{{/if}}
-      </span>
-      <br />
-      <div id="spot-ratings-{{id}}" class="spot-ratings">
-      <table>
-        <tr>
-          <th><i class="fa fa-star"></i></th>
-          <th><i class="fa fa-users"></i></th>
-          <th><i class="fa fa-calendar"></i></th>
-        </tr>
-        {{#ratings}}
-        <tr>
-          <td>{{rating_label}}</td>
-          <td>{{user_name}}</td>
-          <td>{{timestamp_label}}</td>
-        </tr>
-        {{/ratings}}
-      </table>
+<div class="spot row" id="spot_{{id}}">
+  <div class="col-md-12">
+    <div class="spot-main row">
+      <div class="spot-head col-xs-12">
+        {{#if CitiesDirection}}<span>Towards </span>{{/if}}
+        {{#CitiesDirection:i}}{{#if i>0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}{{#RoadsDirection}},&nbsp;<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
+        <p>{{{Description}}}</p>
       </div>
     </div>
-  </div>
-  <div id="spot-comments-{{id}}" class="spot-comments hide-comment">
-    {{#comments}}
-    <div class="comment">
-      {{#if user_id==userId}}<i onclick="deleteComment('{{comment_id}}', '{{id}}', '{{direction}}', {{index}})" class="fa fa-trash comment-delete"></i>{{/if}}
-      {{{commenttext}}}
-      <span class="comment-meta">By {{user_name}}, {{timestamp_label}}</span>
+    <div class="spot-footer row">
+      {{#if rating_count || waiting_time_count}}
+      <div class="col-md-1 col-spot-footer col-footer-right-border ">
+        <button onclick="loadSpotDetails({{id}}, false, '{{direction}}', {{index}})" type="button" class="hw-button hw-button-big"><i class="fa fa-bar-chart"></i></button>
+      </div>
+      {{/if}}
+      <div class="ratings col-md-5 col-spot-footer">
+        <span class="rating-widget average-{{rating_average}}"><span>Hitchability </span>
+          <span class="average {{#if rating_average > 0}}average-{{Math.round(rating_average)}}{{else}}average-null{{/if}} {{#if !userId}}average-no-user{{/if}}">{{average_label}} {{#if rating_count > 0}}<small>({{rating_count}})</small>{{/if}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate {{#if rating_user > 0}}rate-{{Math.round(rating_user)}}{{else}}rate-null{{/if}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
+          <span id="your_rate_{{id}}" class="your-rate">
+            <span class="rating-choice-head">{{#if rating_user}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
+            <span onclick="addRatings(5, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>
+            <span onclick="addRatings(4, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-good"></span> Good</span>
+            <span onclick="addRatings(3, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-average"></span> Average</span>
+            <span onclick="addRatings(2, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-bad"></span> Bad</span>
+            <span onclick="addRatings(1, {{id}}, '{{direction}}', {{index}})" class="rating-choice"><span class="bubble bubble-senseless"></span> Senseless</span>
+            {{#timestamp_user}}<span class="rating-choice-timestamp">You rated {{timestamp_user}}</span>
+            <span onclick="deleteRating({{id}}, '{{direction}}', {{index}})" class="rating-choice-remove">Remove my rating</span>{{/timestamp_user}}
+          </span>{{/if}}
+        </span>
+        <div id="spot-ratings-{{id}}" class="spot-ratings">
+          <div class="bar-graph-details">
+            <span class="bar-5 graph-bar"></span>
+            <span class="bar-4 graph-bar"></span>
+            <span class="bar-3 graph-bar"></span>
+            <span class="bar-2 graph-bar"></span>
+            <span class="bar-1 graph-bar"></span>
+            <div class="distribution-details">
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-verygood"></span> Very good</p></div>
+                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.5.percentage)}}% ({{ratings_distribution.5.count}})</p></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-good"></span> Good</p></div>
+                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.4.percentage)}}% ({{ratings_distribution.4.count}})</p></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-average"></span> Average</p></div>
+                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.3.percentage)}}% ({{ratings_distribution.3.count}})</p></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-bad"></span> Bad</p></div>
+                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.2.percentage)}}% ({{ratings_distribution.2.count}})</p></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-senseless"></span> Senseless</p></div>
+                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.1.percentage)}}% ({{ratings_distribution.1.count}})</p></div>
+              </div>
+            </div>
+          </div>
+          <div class="list-ratings">
+            <table class="table table-striped table-hover">
+              {{#ratings}}
+              <tr>
+                <td>{{rating_label}}</td>
+                <td>{{user_name}}</td>
+                <td>{{timestamp_label}}</td>
+              </tr>
+              {{/ratings}}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="waiting-time col-md-4 col-footer-left-border col-spot-footer">
+        <div class="waiting-time-widget">
+          {{#if waiting_time_count}}<span>Waiting time {{waiting_time_average}} minutes ({{waiting_time_count}})</span><button type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>
+          {{else}}<span>There is no waiting times yet</span><button type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>{{/if}}
+        </div>
+        <div id="add_waiting_time_{{id}}" class="add-waiting-time">
+          <input value="{{this.newWaitingTime}}" type="number" class="waiting-time-input" min="0" max="999" />{{#if this.newWaitingTime}}<button onclick="addWaitingTime({{this.newWaitingTime}}, {{id}}, '{{direction}}', {{index}})">Ok</button>{{/if}}
+        </div>
+
+        <div id="spot-waitingtimes-{{id}}" class="spot-waiting-times">
+          <div class="bar-graph-details">
+            <span class="bar-1 graph-bar"></span>
+            <span class="bar-2 graph-bar"></span>
+            <span class="bar-3 graph-bar"></span>
+            <span class="bar-4 graph-bar"></span>
+            <div class="distribution-details">
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-good"></span> &#60; 15 minutes</p></div>
+                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.0.percentage)}}% ({{waiting_times_distribution.0.count}})</p></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-average"></span> &#60; 30 minutes</p></div>
+                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.1.percentage)}}% ({{waiting_times_distribution.1.count}})</p></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-bad"></span> &#60; 60 minutes</p></div>
+                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.2.percentage)}}% ({{waiting_times_distribution.2.count}})</p></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6"><p><span class="bubble bubble-senseless"></span> 1h +</p></div>
+                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.3.percentage)}}% ({{waiting_times_distribution.3.count}})</p></div>
+              </div>
+            </div>
+          </div>
+          <div class="list-waiting-times">
+            <table class="table table-striped table-hover">
+              {{#waiting_times}}
+              <tr>
+                <td>{{waiting_time}} mins</td>
+                <td>{{user_name}}</td>
+                <td>{{timestamp_label}}</td>
+              </tr>
+              {{/waiting_times}}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1 col-spot-footer col-footer-left-border">
+        <div >
+          <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, '{{direction}}', {{index}})"><i class="fa fa-comment-o"></i></button>
+          <!--{{#comment_count}}<i id="comment-spinner-{ {id}}" class="fa fa-spinner fa-spin comment-spinner"></i><span onclick="loadComments({{id}}, false, '{{direction}}', {{index}})" class="comments-box">{{comment_count}}</span>{{/comment_count}}
+          {{^comment_count}}<span onclick="toggleComments({{id}})" class="comments-box">+</span>{{/comment_count}}-->
+        </div>
+      </div>
+      {{#if userId}}
+      <div class="col-md-1 col-spot-footer col-footer-left-border">
+        <button type="button" class="hw-button hw-button-big"><i class="fa fa-edit"></i></button>
+      </div>
+      {{/if}}
     </div>
-    {{/comments}}
-    {{#if userId}}<textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
-    {{else}}<p>Please log in to add a comment</p>{{/if}}
-    {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', '{{direction}}', {{index}})">Add comment</button> {{/if}}
+    <div id="spot-comments-{{id}}" class="spot-comments hide-comment row">
+      {{#comments}}
+      <div class="comment">
+        {{#if user_id==userId}}<i onclick="deleteComment('{{comment_id}}', '{{id}}', '{{direction}}', {{index}})" class="fa fa-trash comment-delete"></i>{{/if}}
+        {{{commenttext}}}
+        <span class="comment-meta">By {{user_name}}, {{timestamp_label}}</span>
+      </div>
+      {{/comments}}
+      {{#if userId}}<textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
+      {{else}}<p>Please log in to add a comment</p>{{/if}}
+      {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', '{{direction}}', {{index}})">Add comment</button> {{/if}}
+    </div>
   </div>
 </div>
 {{/this}}

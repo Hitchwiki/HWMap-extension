@@ -81,7 +81,7 @@ var parseTimestamp = function (timestamp) {
 };
 
 var slideSpeed = 300;
-var slideComment = function (id, state) {
+var slideShow = function (id, state) {
   var content = $(id);
   if(state == 'down') {
     content.css({'display': 'block'});
@@ -108,6 +108,7 @@ var loadComments = function (id, reload, direction, spotIndex) {
   if(typeof commentLoaded[id] === 'undefined' || reload) {
     $('#comment-spinner-'+id).css({'visibility': 'visible'});
     $.get( apiRoot + "/api.php?action=hwgetcomments&format=json&pageid="+id, function(data) {
+      console.log(data);
       if(data.query) {
         //Update spot with new average
         for(var j = 0; j < data.query.comments.length ; j++) {
@@ -117,29 +118,29 @@ var loadComments = function (id, reload, direction, spotIndex) {
         ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.new_comment', '');
         commentLoaded[id] = true;
         if(!reload) {
-          slideComment("#spot-comments-"+id, 'down');
+          slideShow("#spot-comments-"+id, 'down');
         }
       }
       $('#comment-spinner-'+id).css({'visibility': 'hidden'});
     });
   }
   else if (commentLoaded[id] == true){
-    slideComment("#spot-comments-"+id, 'up');
+    slideShow("#spot-comments-"+id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    slideComment("#spot-comments-"+id, 'down');
+    slideShow("#spot-comments-"+id, 'down');
     commentLoaded[id] = true;
   }
 }
 
 var toggleComments = function (id) {
   if (commentLoaded[id] == true){
-    slideComment("#spot-comments-"+id, 'up');
+    slideShow("#spot-comments-"+id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    slideComment("#spot-comments-"+id, 'down');
+    slideShow("#spot-comments-"+id, 'down');
     commentLoaded[id] = true;
   }
 }
@@ -192,25 +193,29 @@ var ratingsLoaded = [];
 var loadRatings = function (id, reload, direction, spotIndex) {
   if(typeof ratingsLoaded[id] === 'undefined' || reload) {
     $.get( apiRoot + "/api.php?action=hwgetratings&format=json&pageid="+id, function(data) {
-      if(data.query) {
+      if(data.query.ratings.length) {
         console.log(data.query);
-        $("#spot-ratings-"+id).show();
+        slideShow("#spot-ratings-"+id, 'down');
         //Update spot with new average
         for(var j = 0; j < data.query.ratings.length ; j++) {
           data.query.ratings[j].rating_label = getRatingLabel(data.query.ratings[j].rating);
           data.query.ratings[j].timestamp_label = parseTimestamp(data.query.ratings[j].timestamp);
         }
-        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.ratings', data.query.ratings);
+        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.ratings', data.query.ratings)
+        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.ratings_distribution', data.query.distribution);
+        for (var key in data.query.distribution) {
+          $('#spot-ratings-'+id+' .bar-'+key).css({'width': data.query.distribution[key].percentage+'%'});
+        }
         ratingsLoaded[id] = true;
       }
     });
   }
   else if (ratingsLoaded[id] == true){
-    $("#spot-ratings-"+id).hide();
+    slideShow("#spot-ratings-"+id, 'up');
     ratingsLoaded[id] = false;
   }
   else {
-    $("#spot-ratings-"+id).show();
+    slideShow("#spot-ratings-"+id, 'down');
     ratingsLoaded[id] = true;
   }
 }
@@ -273,4 +278,76 @@ var deleteRating = function(id, direction, spotIndex) {
       mw.log('Not logged in ');
     }
   });
+}
+
+var showAddWaitingTime = function(id) {
+  $("#add_waiting_time_"+id).show();
+}
+
+var waitingTimesLoaded = [];
+var loadWaintingTimes = function (id, reload, direction, spotIndex) {
+  if(typeof waitingTimesLoaded[id] === 'undefined' || reload) {
+    $.get( apiRoot + "/api.php?action=hwgetwaitingtimes&format=json&pageid="+id, function(data) {
+      if(data.query.waiting_times.length) {
+        console.log(data.query.waiting_times.length);
+        slideShow("#spot-waitingtimes-"+id, 'down');
+        //Update spot with new average
+        for(var j = 0; j < data.query.waiting_times.length ; j++) {
+          data.query.waiting_times[j].timestamp_label = parseTimestamp(data.query.waiting_times[j].timestamp);
+        }
+        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_times', data.query.waiting_times)
+        ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.waiting_times_distribution', data.query.distribution);
+        for (var i = 0; i < data.query.distribution.length; i++) {
+          var barkey = i + 1;
+          $('#spot-waitingtimes-'+id+' .bar-'+barkey).css({'width': data.query.distribution[i].percentage+'%'});
+        }
+        waitingTimesLoaded[id] = true;
+      }
+    });
+  }
+  else if (waitingTimesLoaded[id] == true){
+    slideShow("#spot-waitingtimes-"+id, 'up');
+    waitingTimesLoaded[id] = false;
+  }
+  else {
+    slideShow("#spot-waitingtimes-"+id, 'down');
+    waitingTimesLoaded[id] = true;
+  }
+}
+
+//Add waiting time
+var addWaitingTime = function(newWaitingTime, id, direction, spotIndex) {
+  console.log(newWaitingTime);
+  //Get token
+  getToken(function(token) {
+    if(token) {
+      //Post new rating
+      $.post(  apiRoot + "/api.php?action=hwaddwaitingtime&format=json", {waiting_time: newWaitingTime, pageid: id, token: token})
+      .done(function( data ) {
+        console.log(data);
+        /*
+        if(data.query) {
+          //Update spot with new average
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.timestamp_user', parseTimestamp(data.query.timestamp) );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user', newRating);
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_user_label', getRatingLabel(newRating));
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_average', data.query.average );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.rating_count', data.query.count );
+          ractive.set('spots.groupSpots.'+direction+'.'+spotIndex+'.average_label', getRatingLabel(data.query.average));
+          updateSpotMarker(id, data.query.average);
+          if(typeof ratingsLoaded[id] !== 'undefined') {
+            loadRatings(id, true, direction, spotIndex);
+          }
+        }*/
+      });
+    }
+    else {
+      mw.log('Not logged in ');
+    }
+  });
+}
+
+var loadSpotDetails = function (id, reload, direction, spotIndex) {
+  loadWaintingTimes(id, reload, direction, spotIndex);
+  loadRatings(id, reload, direction, spotIndex);
 }

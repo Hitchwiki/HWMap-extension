@@ -15,90 +15,51 @@
       margin-bottom: 5px;
     }
     .spot{
-      border-bottom: 2px solid @hw-grey-border-light;
+      border-bottom: 2px solid @hw-grey-medium;
       margin-right: 20px;
-      margin-bottom: 10px;
       padding-top: 5px;
-      padding-bottom: 20px;
+      padding-bottom: 5px;
       .spot-head{
-        //float:left;
         span, a {
           font-size: 16px;
           font-weight: bold;
           margin-bottom: 10px;
         }
       }
-      .spot-right{
-        float:right;
-        text-align: right;
-        .edit-button, .comments-box {
-          display: inline-block;
-          border-radius: 3px;
-          margin: 2px;
-          text-align: center;
-          cursor: pointer;
-        }
-        .edit-button{
-          text-transform: uppercase;
-          height: 17px;
-          line-height: 17px;
-          padding: 1px 5px;
-          border: 1px solid @hw-grey-border-light;
-          font-size: 10px;
-        }
-        .edit-button:hover{
-          background-color: @hw-orange;
-        }
-        .comments-box{
-          position: relative;
-          height: 30px;
-          line-height: 30px;
-          min-width: 30px;
-          padding: 2px;
-          background-color: @hw-grey-border-light;
-          color: white;
-          font-weight: bold;
-        }
-        .comments-box:after {
-          content: "";
-          display: block; /* reduce the damage in FF3.0 */
-          position: absolute;
-          bottom: -9px;
-          left: 10px;
-          width: 0;
-          height: 0;
-          border-top: 10px solid @hw-grey-border-light;
-          border-right: 9px solid transparent;
-        }
-        .comments-box:hover {
-          background-color: @hw-orange;
-        }
-        .comments-box:hover:after {
-          border-top: 10px solid @hw-orange;
-        }
-        .comment-spinner {
-          font-size: 16px;
-          margin: 2px;
-          visibility: hidden;
-        }
-      }
     }
     .spot-footer{
-
-      //height: 50px;
-      //line-height: 50px;
-      .ratings, .waiting-time{
-        margin-bottom: 30px;
+      min-height: @hw-footer-height;
+      text-align: center;
+      .col-footer-left-border {
+        border-left: 1px solid @hw-grey-medium;
+      }
+      .col-footer-right-border {
+        border-right: 1px solid @hw-grey-medium;
+      }
+      .col-spot-footer {
+        min-height: @hw-footer-height;
+        //line-height: @hw-footer-height;
+        .hw-button-big {
+          margin-top: 5px;
+        }
+      }
+      .comment-spinner {
+        position: absolute;
+        left: -3px;
+        top: 27px;
+        font-size: 16px;
+        margin: 2px;
+        visibility: hidden;
       }
     }
     //!------ Ratings ------!//
     .ratings{
-      width: 50%;
       .rating-widget{
         font-size: 12px;
         display: inline-block;
         height: @hw-rating-height;
         line-height: @hw-rating-height;
+        margin-top: 10px;
         .average, .rate {
           padding: 0 5px;
           display: inline-block;
@@ -106,7 +67,7 @@
           line-height: @hw-rating-height;
         }
         .average {
-          border: 1px solid @hw-grey-border;
+          border: 1px solid @hw-grey-dark;
           border-radius: 2px 0 0 2px;
           color: white;
         }
@@ -118,8 +79,8 @@
           color: white;
         }
         .rate-null {
-          background-color: @hw-grey-rate;
-          color: @hw-grey-texte;
+          background-color: @hw-grey-light;
+          color: @hw-grey-dark;
         }
         .average-1, .rate-1 {
           background-color: @hw-color-senseless;
@@ -141,31 +102,26 @@
           background-color: @hw-color-verygood;
           color: white;
         }
-        .rate, .your-rate{
-          //color: @hw-grey-texte;
-        }
         .rate{
           cursor: pointer;
-          //background-color: @hw-grey-rate;
           border-bottom: 1px solid;
           border-right: 1px solid;
           border-top: 1px solid;
-          border-color: @hw-grey-border;
+          border-color: @hw-grey-dark;
           border-radius: 0 2px 2px 0;
         }
         .your-rate{
           position: relative;
           float: right;
           z-index: 20;
-          //margin-top: -1px;
-          //margin-left: 38px;
           width: 150px;
-          border: 1px solid @hw-grey-border-light;
-          background-color: @hw-grey-rate-light;
+          border: 1px solid @hw-grey-medium;
+          background-color: @hw-grey-extra-light;
           border-radius: 0 2px 2px;
+          text-align: left;
           .rating-choice-head{
-            border-bottom: 1px solid @hw-grey-border-light;
-            color: @hw-grey-border-light;
+            border-bottom: 1px solid @hw-grey-medium;
+            color: @hw-grey-medium;
             margin: 1px 7px 2px 7px;
             display: block;
             height: @hw-rating-height;
@@ -177,42 +133,20 @@
             display: block;
             height: @hw-rating-height;
             line-height: @hw-rating-height;
-            .bubble{
-              display: inline-block;
-              width: 8px;
-              height: 8px;
-              border-radius: 8px;
-              border: 1px solid @hw-grey-border;
-            }
-            .bubble-verygood{
-              background-color: @hw-color-verygood;
-            }
-            .bubble-good{
-              background-color: @hw-color-good;
-            }
-            .bubble-average{
-              background-color: @hw-color-average;
-            }
-            .bubble-bad{
-              background-color: @hw-color-bad;
-            }
-            .bubble-senseless{
-              background-color: @hw-color-senseless;
-            }
           }
           .rating-choice:hover{
-            background: @hw-grey-rate;
+            background: @hw-grey-light;
           }
           .rating-choice-timestamp{
-            border-top: 1px solid @hw-grey-border-light;
-            color: @hw-grey-border-light;
+            border-top: 1px solid @hw-grey-medium;
+            color: @hw-grey-medium;
             margin: 2px 7px 1px 7px;
             display: block;
             height: @hw-rating-height;
             line-height: @hw-rating-height;
           }
           .rating-choice-remove{
-            color: @hw-grey-border-light;
+            color: @hw-grey-medium;
             margin: 1px 7px 2px 7px;
             display: block;
             height: @hw-rating-height;
@@ -223,52 +157,134 @@
             text-decoration: underline;
           }
         }
-        .rating-count{
-          position: absolute;
-          cursor: pointer;
-          margin-top: 5px;
-          text-size: 12px;
-          color: @hw-grey-border;
-        }
-      }
-      .spot-ratings{
-        display: none;
-        margin-top: 20px;
-        font-size: 10px;
-        width: 100%;
-        table{
-          background-color: #f3d356;
-          border: 1px solid black;
-          text-align: center;
-          width: 100%;
-          tr{
-            th{
-              padding-bottom: 2px;
-              border-bottom: 1px solid black;
-            }
-            td, th{
-              margin: 0 3px 0 3px;
-            }
-          }
-        }
       }
     }
     //!------ Waiting time ------!//
     .waiting-time{
+      margin-bottom: 10px;
+      .waiting-time-widget{
+        display: inline-block;
+        height: 20px;
+        margin-top: 10px;
+      }
+      .waiting-time-button{
+        margin-left: 5px;
+      }
+      .add-waiting-time{
+        display: none;
+        .waiting-time-input{
+          width: 60px;
+        }
+      }
+    }
+    //!------ Detail list ------!//
+    .spot-ratings, .spot-waiting-times{
+      display: none;
+      height: 0px;
+      margin: 20px auto;
+      max-width: 280px;
+    }
+    .list-ratings, .list-waiting-times{
+      margin-top: 6px;
+      font-size: 12px;
+      width: 100%;
+      background-color: @hw-grey-light;
+      border: 1px solid @hw-grey-medium;
+      padding: 7px 5px 7px 5px;
+      max-height: 200px;
+      overflow-y: auto;
+      table{
+        text-align: center;
+        width: 100%;
+        tr{
+          border-bottom: 1px solid @hw-grey-medium;
+          height: 20px;
+          td, th{
+            margin: 0 3px 0 3px;
+            line-height: 0px;
+          }
+        }
+      }
+    }
+    //!------ Bar graph ratings ------!//
+    .bar-graph-details {
+      width: 100%;
+      height: 20px;
+      font-size: 0;
+      position: relative;
+      .graph-bar {
+        display: inline-block;
+        height: 20px;
+        cursor: pointer;
+      }
+      .distribution-details{
+        opacity: 0;
+        transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        visibility: hidden;
+        position: absolute;
+        z-index: 100;
+        margin-top: -5px;
+        width: 100%;
+        background-color: @hw-grey-light;
+        font-size: 12px;
+        text-align: left;
+        padding: 5px 15px;
+        box-shadow: 0px 2px 6px 0px @hw-grey-medium;
+        border-radius: 1px;
+        p{
+          margin:0;
+          line-height: 25px;
+        }
+      }
+      .distribution-details:before{
+        content: "";
+        display: block; /* reduce the damage in FF3.0 */
+        position: relative;
+        top: -15px;
+        left: 50%;
+        margin-left: -15px;
+        width: 0;
+        height: 0;
+        border-bottom: 15px solid @hw-grey-light;
+        border-right: 15px solid transparent;
+        border-left: 15px solid transparent;
+      }
+    }
+    .bar-graph-details:hover {
+      .distribution-details{
+        opacity: 1;
+        margin-top: 5px;
+        visibility: visible;
+        transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+    }
+    //Graph bar colors
+    .spot-waiting-times{
+      .bar-4{background-color: @hw-color-senseless;}
+      .bar-3{background-color: @hw-color-bad;}
+      .bar-2{background-color: @hw-color-average;}
+      .bar-1{background-color: @hw-color-good;}
+    }
+    .spot-ratings{
+      .bar-5{background-color: @hw-color-verygood;}
+      .bar-4{background-color: @hw-color-good;}
+      .bar-3{background-color: @hw-color-average;}
+      .bar-2{background-color: @hw-color-bad;}
+      .bar-1{background-color: @hw-color-senseless;}
     }
     //!------ Comments ------!//
     .spot-comments{
       display: none;
       height: 0px;
       overflow:hidden;
-      margin: 10px -48px 0 -48px;
-      padding: 10px 48px 10px 48px;
+      margin: 10px -60px 0 -42px;
+      padding: 10px 60px 10px 42px;
       box-shadow:
-        inset 0px 11px 8px -10px @hw-grey-border-light,
-        inset 0px -11px 8px -10px @hw-grey-border-light;
-      background-color: @hw-grey-rate;
+        inset 0px 11px 8px -10px @hw-grey-medium,
+        inset 0px -11px 8px -10px @hw-grey-medium;
+      background-color: @hw-grey-light;
       .comment{
-        border-bottom: 1px solid @hw-grey-border-light;
+        border-bottom: 1px solid @hw-grey-medium;
         padding: 10px 0;
         p{
           margin: 0;
@@ -282,34 +298,63 @@
           color: @hw-color-senseless;
         }
         .comment-meta{
-          color: @hw-grey-texte;
+          color: @hw-grey-dark;
         }
-      }
-      .comment-textarea{
-        box-shadow: none;
-        margin-top: 5px;
-        border-radius: 0px;
-        background-color: white;
-        width: 100%;
-      }
-      .comment-button{
-        cursor: pointer;
-        border-radius: 3px;
-        border: 1px solid @hw-grey-border-light;
-        margin-top: 5px;
-        padding: 1px 5px;
-        text-align: center;
-        font-size: 14px;
-      }
-      .comment-button:hover{
-        background-color: white;
       }
     }
   }
-
 }
 
-// Content on left, map on right
+//!------ Buttons ------!//
+.hw-button{
+  background-color: white;
+  border: 1px solid @hw-grey-medium;
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1.42857;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+.hw-button-small {
+  padding: 0px 7px;
+}
+.hw-button-big {
+  padding: 6px 12px;
+}
+.hw-button:active, .hw-button:hover{
+  background-color: @hw-orange
+}
+.hw-button:active{
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset;
+}
+
+//!------ Rating Bubbles ------!//
+.bubble{
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  border: 1px solid @hw-grey-dark;
+}
+.bubble-verygood{
+  background-color: @hw-color-verygood;
+}
+.bubble-good{
+  background-color: @hw-color-good;
+}
+.bubble-average{
+  background-color: @hw-color-average;
+}
+.bubble-bad{
+  background-color: @hw-color-bad;
+}
+.bubble-senseless{
+  background-color: @hw-color-senseless;
+}
+
+//!------ Content on left, map on right ------!//
 @media screen and (min-width: 768px) {
   body.hwmap-page {
     .city-map {

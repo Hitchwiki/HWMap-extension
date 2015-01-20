@@ -98,6 +98,11 @@ class HWMapCityApi extends ApiBase {
         $index++;
       }
 
+      //Create spot indices
+      foreach($spots as $index => $spot) {
+        $spot_indices[$spot->id] = $index;
+      }
+
       //If the rating extension is set, get the rating average
       if ( class_exists( 'HWAvgRatingApi' ) ) {
         $spot_average_rating = new DerivativeRequest(
@@ -113,9 +118,6 @@ class HWMapCityApi extends ApiBase {
         $spot_average_rating_api->execute();
         $spot_average_rating_data = $spot_average_rating_api->getResultData();
 
-        foreach($spots as $index => $spot) {
-          $spot_indices[$spot->id] = $index;
-        }
         foreach($spot_average_rating_data['query']['ratings'] as $rating_res) {
           if(array_key_exists($rating_res['pageid'], $spot_indices)) {
             $index = $spot_indices[$rating_res['pageid']];
@@ -123,6 +125,29 @@ class HWMapCityApi extends ApiBase {
             $spots[$index]->rating_count = $rating_res['rating_count'];
             $spots[$index]->rating_user = $rating_res['rating_user'];
             $spots[$index]->timestamp_user = $rating_res['timestamp_user'];
+          }
+        }
+      }
+
+      //If the waiting time extension is set, get the waiting count and median
+      if ( class_exists( 'HWAvgWaitingTimeApi' ) ) {
+        $spot_waiting_times = new DerivativeRequest(
+          $this->getRequest(),
+          array(
+            'action' => 'hwavgwaitingtime',
+            'pageid' => $ids
+          ),
+          true
+        );
+        $spot_waiting_times_api = new ApiMain( $spot_waiting_times );
+        $spot_waiting_times_api->execute();
+        $spot_waiting_times_data = $spot_waiting_times_api->getResultData();
+
+        foreach($spot_waiting_times_data['query']['waiting_times'] as $waiting_times_res) {
+          if(array_key_exists($waiting_times_res['pageid'], $spot_indices)) {
+            $index = $spot_indices[$waiting_times_res['pageid']];
+            $spots[$index]->waiting_time_average = $waiting_times_res['waiting_time_average'];
+            $spots[$index]->waiting_time_count = $waiting_times_res['waiting_time_count'];
           }
         }
       }
