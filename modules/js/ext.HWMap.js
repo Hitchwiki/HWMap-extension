@@ -2,7 +2,7 @@
  * Hitchwiki Maps
  */
 
-// Defaults
+// Default location (can be overridden in the URL)
 var defaultCenter = [48.6908333333, 9.14055555556], // Europe
     defaultZoom = 5;
 
@@ -47,6 +47,25 @@ function initHWMap() {
 
   // Give up if no element on the page
   if(!document.getElementById("hwmap") || ($.inArray(mw.config.get("wgAction"), ["view", "purge", "submit"]) == -1) ) return;
+
+  var urlParamLat = mw.util.getParamValue('lat'),
+    urlParamLng = mw.util.getParamValue('lng'),
+    urlParamZoom = mw.util.getParamValue('zoom');
+
+  if (urlParamLat && urlParamLng) {
+    var urlParamLatValue = parseFloat(urlParamLat);
+    var urlParamLngValue = parseFloat(urlParamLng);
+    if (!isNaN(urlParamLatValue) && !isNaN(urlParamLngValue)) {
+      defaultCenter = [urlParamLatValue, urlParamLngValue];
+    }
+  }
+
+  if (urlParamZoom) {
+    var urlParamZoomValue = parseInt(urlParamZoom);
+    if (!isNaN(urlParamZoomValue)) {
+      defaultZoom = urlParamZoomValue;
+    }
+  }
 
   L.Icon.Default.imagePath = extensionRoot + 'modules/vendor/leaflet/dist/images';
 
