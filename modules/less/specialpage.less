@@ -9,7 +9,8 @@
     position: absolute;
     top: @header-height;
     bottom: 0;
-    width: 100%;
+    left: 80px;
+    right: 0px;
   }
   #mw-content-text {
     position: absolute;
@@ -22,6 +23,7 @@
     top: 0;
     bottom: 0;
     width: 100%;
+    float:right
   }
   #hwmap {
     position: relative;
@@ -45,7 +47,7 @@
 
   // Button to init the form for adding
   #hwmap-add-wrap {
-    position: fixed;
+    position: absolute;
     bottom: 10px;
     right: 10px;
     width: 300px;
@@ -79,10 +81,11 @@
   // Button to init the adding a new spot
   #hwmap-add {
     display: inline-block;
-    position: fixed;
+    position: absolute;
     bottom: 10px;
     right: 10px;
     padding: 15px 25px;
+    z-index: 900;
   }
 
   // Adding the spot -modal
@@ -90,6 +93,21 @@
     border: 0;
     .box-shadow(5px 5px 15px rgba(0,0,0,0.5));
     border-radius: 5px;
+  }
+
+
+  #hwspot{
+    display: none;
+    position: relative;
+    width: 25%;
+    height: 100%;
+    min-height: 300px;
+    float:right;
+    background-color:white;
+    .close-special-spot {
+      float: right;
+      cursor: pointer;
+    }
   }
 
 }

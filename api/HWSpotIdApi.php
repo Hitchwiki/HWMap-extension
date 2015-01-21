@@ -117,7 +117,7 @@ class HWSpotIdApi extends ApiBase {
           $this->getRequest(),
           array(
             'action' => 'hwgetcommentscount',
-            'pageids' => $page_id
+            'pageid' => $page_id
           ),
           true
         );

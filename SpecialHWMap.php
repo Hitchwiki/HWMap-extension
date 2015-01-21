@@ -11,7 +11,7 @@ class SpecialHWMap extends SpecialPage {
     $output->addModules( 'ext.HWMap' );
 
     // The Map
-    $output->addHTML('<div class="hwmap-container"><div id="hwmap"></div></div>');
+    $output->addHTML('<div class="hwmap-container"><div id="hwmap">');
 
     // Add new spot HTML
     $output->addHTML('<a href="#" id="hwmap-add" style="display:none;">Add new spot</a>');
@@ -24,6 +24,10 @@ class SpecialHWMap extends SpecialPage {
     // More add new spot HTML...
     $output->addHTML('<a href="#" id="hwmap-cancel-adding">Cancel</a>');
     $output->addHTML('</div><!--#hwmap-add-wrap-->');
+    $output->addHTML('</div></div>');
+
+    //The spot
+    $output->addHTML('<div id="hwspot"></div>');
 
   }
 }
