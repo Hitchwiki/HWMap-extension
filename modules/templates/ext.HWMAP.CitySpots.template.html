@@ -127,13 +127,11 @@
       <div class="col-md-1 col-spot-footer col-footer-left-border">
         <div >
           <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, '{{direction}}', {{index}})"><i class="fa fa-comment-o"></i></button>
-          <!--{{#comment_count}}<i id="comment-spinner-{ {id}}" class="fa fa-spinner fa-spin comment-spinner"></i><span onclick="loadComments({{id}}, false, '{{direction}}', {{index}})" class="comments-box">{{comment_count}}</span>{{/comment_count}}
-          {{^comment_count}}<span onclick="toggleComments({{id}})" class="comments-box">+</span>{{/comment_count}}-->
         </div>
       </div>
       {{#if userId}}
       <div class="col-md-1 col-spot-footer col-footer-left-border">
-        <button type="button" class="hw-button hw-button-big"><i class="fa fa-edit"></i></button>
+        <button type="button" class="hw-button hw-button-big" onclick="javascript:editSpotPopup('{{title}}')"><i class="fa fa-edit"></i></button>
       </div>
       {{/if}}
     </div>

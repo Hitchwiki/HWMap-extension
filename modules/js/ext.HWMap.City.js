@@ -133,3 +133,10 @@ var initTemplate = function () {
     });
 
 };
+
+var editSpotPopup = function (title) {
+  var form = $('#spot-edit-form-wrap form');
+  var pageName = form.find("[name='page_name']");
+  pageName.val(title);
+  form.submit();
+}
