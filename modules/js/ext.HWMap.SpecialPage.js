@@ -6,10 +6,13 @@ $.fn.urlHash = function() {
   return document.URL.substr(document.URL.indexOf('#') + 1);
 };
 
+
+
+
 /*
  * Setup big map at Special:HWMap
  */
-function setupSpecialPageMap() {
+var setupSpecialPageMap = function () {
   mw.log('->HWMap->setupSpecialPageMap');
 
   //Set map view
@@ -38,6 +41,8 @@ function setupSpecialPageMap() {
   //Getting spots in bounding box
   hwmap.fireEvent('moveend');
 
+  initSpecialPageTemplate();
+
   // Button for adding new spot (show only for logged in users)
   // wgUserId returns null when not logged in
   if(mw.config.get('wgUserId')) {
@@ -51,3 +56,27 @@ function setupSpecialPageMap() {
     }
   }
 }
+
+var initSpecialPageTemplate = function () {
+  console.log('youpi !');
+  $.get( extensionRoot +'modules/templates/ext.HWMap.SpecialPageSpot.template.html' ).then( function ( template ) {
+    ractive = new Ractive({
+      el: 'hwspot',
+      template: template,
+      data: {}
+    });
+  });
+};
+
+window.closeSpecialPageSpot = function () {
+  $('#hwspot').hide();
+  $('#hwmap').css({'width': '100%'});
+};
+
+window.openSpecialPageSpot = function (id) {
+  $.get( apiRoot + "/api.php?action=hwspotidapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&pageid=" + id, function( data ) {
+    console.log(data);
+  });
+  $('#hwspot').show();
+  $('#hwmap').css({'width': '75%'});
+};
