@@ -46,9 +46,6 @@
   // Button to init the form for adding
   #hwmap-add-wrap {
     position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 300px;
     z-index: 1000;
     background: rgba(0,0,0,0.5);
     text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
@@ -58,6 +55,16 @@
     font-weight: normal;
     color: #fff;
     text-align: center;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    @media (min-width: 480px) {
+      bottom: 10px;
+      left: auto;
+      right: 10px;
+      width: 300px;
+    }
     input[name='page_name'] {
       display: none;
     }
