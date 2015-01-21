@@ -17,6 +17,10 @@ var geonamesUsername = 'hitchwiki';
 var spotCityDistance = 15; // in kilometers
 var minPopulationNonCapital = 500000;
 
+// Base URL of the page, without URL params
+var pageLocation = window.history.location || window.location;
+var pageLocationUrl = location.protocol + '//' + location.host + location.pathname;
+
 // Setup variables
 var hwmap,
     spotsLayer,

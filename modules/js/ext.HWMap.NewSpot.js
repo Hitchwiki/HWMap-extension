@@ -17,6 +17,11 @@ function setupNewSpot() {
     newSpotReverseGeocode(event);
   });
 
+  // Move marker to where user clicked on the map
+  hwmap.on("click", function(event){
+    newSpotMarker.setLatLng(event.latlng);
+  });
+
   newSpotReverseGeocode();
 
   $newSpotWrap.find('#hwmap-cancel-adding').click(function(e){

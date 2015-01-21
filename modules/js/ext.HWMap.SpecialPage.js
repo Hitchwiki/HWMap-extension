@@ -18,6 +18,16 @@ var setupSpecialPageMap = function () {
   //Set map view
   hwmap.setView(defaultCenter, defaultZoom);
 
+  var updateURL = function() {
+    var center = hwmap.getCenter(), zoom = hwmap.getZoom();
+    var state = {
+      "lat": center.lat,
+      "lng": center.lng,
+      "zoom": zoom
+    };
+    history.pushState(state, null, pageLocationUrl + '?' + $.param( state ));
+  };
+
   //Fire event to check when map move
   hwmap.on('moveend', function() {
     //mw.log(spotsLayer._topClusterLevel._childcount);
@@ -36,10 +46,13 @@ var setupSpecialPageMap = function () {
         SWlng:'0'
       };
     }
+
+    updateURL();
   });
 
-  //Getting spots in bounding box
-  hwmap.fireEvent('moveend');
+  hwmap.on('zoomend', function() {
+    updateURL();
+  });
 
   initSpecialPageTemplate();
 
@@ -55,6 +68,9 @@ var setupSpecialPageMap = function () {
       setupNewSpot();
     }
   }
+
+  //Getting spots in bounding box
+  hwmap.fireEvent('moveend');
 }
 
 var initSpecialPageTemplate = function () {
