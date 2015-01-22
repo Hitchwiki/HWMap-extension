@@ -205,7 +205,7 @@ function initHWMap() {
     "OpenStreetMap": mapLayerOSM
   };
   var overlayMaps = {
-    "Spots": spotsLayer
+    //"Spots": spotsLayer
   };
   L.control.layers(baseMaps, overlayMaps).addTo(hwmap);
 
