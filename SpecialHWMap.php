@@ -26,9 +26,6 @@ class SpecialHWMap extends SpecialPage {
     $output->addHTML('</div><!--#hwmap-add-wrap-->');
     $output->addHTML('</div></div>');
 
-    // TODO: do it nicely
-    $output->addHTML('<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />');
-
     //The spot
     $output->addHTML('<div id="hwspot"></div>');
 

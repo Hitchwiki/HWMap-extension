@@ -71,18 +71,6 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
   ),
 
-  'Leaflet.Geonames' => $wgHWMapResourceBoilerplate + array(
-    'dependencies' => array(
-      'leaflet',
-    ),
-    'scripts' => array(
-      'modules/vendor/Leaflet.Geonames/L.Control.Geonames.js',
-    ),
-    'styles' => array(
-      'modules/vendor/Leaflet.Geonames/L.Control.Geonames.css',
-    ),
-  ),
-
   'ractive' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/ractive/ractive.js',
@@ -94,7 +82,6 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'leaflet',
       'bootstrap',
       'PruneCluster',
-      'Leaflet.Geonames',
       'ractive'
     ),
     'scripts' => array(

@@ -6,6 +6,9 @@ $.fn.urlHash = function() {
   return document.URL.substr(document.URL.indexOf('#') + 1);
 };
 
+
+
+
 /*
  * Setup big map at Special:HWMap
  */
@@ -14,18 +17,6 @@ var setupSpecialPageMap = function () {
 
   //Set map view
   hwmap.setView(defaultCenter, defaultZoom);
-
-  var control = L.control.geonames({
-      username: 'hitchwiki',  // Geonames account username.  Must be provided; TODO: use username from config
-      zoomLevel: null,  // Max zoom level to zoom to for location.  If null, will use the map's max zoom level.
-      maxresults: 5,  // Maximum number of results to display per search
-      className: 'fa fa-crosshairs',  // class for icon
-      workingClass: 'fa-spin',  // class for search underway
-      featureClasses: ['A', 'P'],  // feature classes to search against.  See: http://www.geonames.org/export/codes.html
-      baseQuery: 'isNameRequired=true',  // The core query sent to GeoNames, later combined with other parameters above
-      position: 'topleft'
-  });
-  hwmap.addControl(control);
 
   var updateURL = function() {
     var center = hwmap.getCenter(), zoom = hwmap.getZoom();

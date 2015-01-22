@@ -20,7 +20,6 @@
     "ractive": "~0.6.1",
     "geopoint": "https://github.com/davidwood/node-geopoint.git",
     "bootstrap": "~3.3.2",
-    "HTML5-History-API": "https://github.com/devote/HTML5-History-API",
-    "Leaflet.Geonames": "git://github.com/consbio/Leaflet.Geonames.git"
+    "HTML5-History-API": "https://github.com/devote/HTML5-History-API"
   }
 }
