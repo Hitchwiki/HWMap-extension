@@ -18,6 +18,7 @@ $wgExtensionCredits['HWMap'][] = array(
 
 // Register hook
 $wgHooks['ParserFirstCallInit'][] = 'onParserInit';
+$wgHooks['ResourceLoaderGetConfigVars'][] = 'onResourceLoaderGetConfigVars';
 
 // Extension & magic words i18n
 $wgMessagesDirs['HWMap'] = __DIR__ . '/i18n';
@@ -102,17 +103,44 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
 ) );
 
-
 /**
  * The hook registration function.
  */
+
 function onParserInit( Parser $parser ) {
   global $wgOut;
   $parser->setHook( 'hwmap', 'HWMapRender');
   $wgOut->addModules( 'ext.HWMap' );
   return true;
 }
+
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
   $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.City.template.html');
   return $result;
+}
+
+function onResourceLoaderGetConfigVars( array &$vars ) {
+  global $hwConfig;
+
+  $varNames = array( // explicit list to avoid private tokens ending up in JS vars
+      'geonames_username',
+      'mapbox_username',
+      'mapbox_access_token',
+      'mapbox_mapkey_streets',
+      'mapbox_mapkey_satellite'
+  );
+  $vars = array();
+
+  foreach ($varNames as $varName) {
+    if (!isset($hwConfig['vendor'][$varName])) { // doesn't look like there's a better way to handle this case
+      throw new Exception('vendor.' . $hwConfig['vendor'][$varName] . ' config option missing');
+    }
+    $vars[$varName] = $hwConfig['vendor'][$varName];
+  }
+
+  $vars['hwConfig'] = array(
+    'vendor' => $vars
+  );
+
+  return true;
 }
