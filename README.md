@@ -24,6 +24,15 @@ Add to LocalSettings.php
 require_once "$IP/extensions/HWMap/HWMap.php";
 ```
 
+Make sure you have these defined at LocalSettings.php:
+```php
+$hwConfig['vendor']['geonames_username']
+$hwConfig['vendor']['mapbox_username']
+$hwConfig['vendor']['mapbox_access_token']
+$hwConfig['vendor']['mapbox_mapkey_streets']
+$hwConfig['vendor']['mapbox_mapkey_satellite']
+```
+
 [Contact us](http://hitchwiki.org/contact).
 
 # License

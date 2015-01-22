@@ -129,7 +129,6 @@ function onResourceLoaderGetConfigVars( array &$vars ) {
       'mapbox_mapkey_streets',
       'mapbox_mapkey_satellite'
   );
-  $vars = array();
 
   foreach ($varNames as $varName) {
     if (!isset($hwConfig['vendor'][$varName])) { // doesn't look like there's a better way to handle this case

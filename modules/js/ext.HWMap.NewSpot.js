@@ -17,6 +17,12 @@ function setupNewSpot() {
     newSpotReverseGeocode(event);
   });
 
+  // Stop clicking map trough this this area
+  $newSpotWrap.click(function(e){
+    console.log('daaa!');
+    e.stopPropagation();
+  });
+
   // Move marker to where user clicked on the map
   hwmap.on("click", setNewSpotMarkerLocation);
 
