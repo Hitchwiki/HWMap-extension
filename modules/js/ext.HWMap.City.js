@@ -106,6 +106,13 @@ var initTemplate = function () {
         }
       });
 
+      $(".hw-spot-edit-button").click(function(evt) {
+        evt.preventDefault();
+        var $form = $('#spot-edit-form-wrap form');
+        $form.find("input[name='page_name']").val($(this).data('title'));
+        $form.submit();
+      });
+
       // hide all the events
       $(".your-rate").hide();
 
