@@ -126,7 +126,8 @@ function initHWMap() {
     //secure: 1, // Uncomment if we ever start using https
     access_token: mapboxAccessToken
   });
-  var mapBoxAttribution = '<a href="https://www.mapbox.com/map-feedback/#' + mapboxUser + '.' + mapboxStyleStreets + '/' + defaultCenter[0] + '/' + defaultCenter[1] + '/' + defaultZoom + '">Improve this map</a></strong>';
+  var mapBoxAttribution = '<strong><a href="https://www.mapbox.com/map-feedback/#' + mapboxUser + '.' + mapboxStyleStreets + '/' + defaultCenter[1] + '/' + defaultCenter[0] + '/' + defaultZoom + '">Improve this map</a></strong>';
+  var OSMAttribution = '<strong><a href="https://www.openstreetmap.org/login#map=' + defaultZoom + '/' + defaultCenter[0] + '/' + defaultCenter[1] + '">Improve this map</a></strong>';
 
   // https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
   var mapLayerStreets = L.tileLayer(mapBoxUrl, {
@@ -144,12 +145,19 @@ function initHWMap() {
     user: mapboxUser,
     map: mapboxStyleSatellite
   });
+  // OSM layer
+  var mapLayerOSM = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: OSMAttribution,
+    maxZoom: 18,
+    continuousWorld: true
+  });
 
   //Setting up the map
   hwmap = L.map('hwmap', {
     center: defaultCenter,
     zoom: defaultZoom,
-    layers: [mapLayerStreets]
+    layers: [mapLayerStreets],
+    attributionControl: false
   });
 
   hwmap.whenReady(function(){
@@ -196,12 +204,15 @@ function initHWMap() {
   // Add layers
   var baseMaps = {
     "Streets": mapLayerStreets,
-    "Satellite": mapLayerSatellite
+    "Satellite": mapLayerSatellite,
+    "OpenStreetMap": mapLayerOSM
   };
   var overlayMaps = {
-    "Spots": spotsLayer
+    //"Spots": spotsLayer
   };
   L.control.layers(baseMaps, overlayMaps).addTo(hwmap);
+
+  L.control.attribution({position: 'bottomleft', prefix: ''}).addTo(hwmap);
 
   L.control.scale().addTo(hwmap);
 
