@@ -18,9 +18,7 @@ function setupNewSpot() {
   });
 
   // Move marker to where user clicked on the map
-  hwmap.on("click", function(event){
-    newSpotMarker.setLatLng(event.latlng);
-  });
+  hwmap.on("click", setNewSpotMarkerLocation);
 
   newSpotReverseGeocode();
 
@@ -32,6 +30,10 @@ function setupNewSpot() {
 
 }
 
+function setNewSpotMarkerLocation(event){
+  newSpotMarker.setLatLng(event.latlng);
+}
+
 /*
  * Clean out adding new spot form/buttons etc
  */
@@ -40,6 +42,7 @@ function tearApartNewSpot() {
   $newSpotWrap.fadeOut('fast');
   $newSpotInit.fadeIn('fast');
   hwmap.removeLayer(newSpotLayer);
+  hwmap.off("click", setNewSpotMarkerLocation);
   newSpotMarker = null;
   newSpotLayer = null;
 }
