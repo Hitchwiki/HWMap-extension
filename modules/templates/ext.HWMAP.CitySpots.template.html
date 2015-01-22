@@ -23,7 +23,7 @@
         <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, '{{direction}}', {{index}})"><i class="fa fa-comment-o"></i></button>
         <button type="button" class="hw-button hw-button-big" onclick="moveToSpot('{{direction}}', {{index}})"><i class="fa fa-map-marker"></i></button>
         {{#if userId}}
-        <button type="button" class="hw-button hw-button-big"><i class="fa fa-edit"></i></button>
+        <button type="button" class="hw-button hw-button-big hw-spot-edit-button" data-title="{{title}}"><i class="fa fa-edit"></i></button>
         {{/if}}
       </div>
       <div class="ratings col-lg-5 col-md-6 col-spot-footer">
