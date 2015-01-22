@@ -1,8 +1,9 @@
+
 {{#spots.groupSpots:direction}}
 
-<span class="cardinal-direction">
+<div class="cardinal-direction">
   {{direction}}
-</span>
+</div>
 
 {{#this:index}}
 <div class="spot row" id="spot_{{id}}">
@@ -15,13 +16,18 @@
       </div>
     </div>
     <div class="spot-footer row">
-      {{#if rating_count || waiting_time_count}}
-      <div class="col-md-1 col-spot-footer col-footer-right-border ">
+      <div class="col-lg-3  col-md-12 col-spot-footer">
+        {{#if rating_count || waiting_time_count}}
         <button onclick="loadSpotDetails({{id}}, false, '{{direction}}', {{index}})" type="button" class="hw-button hw-button-big"><i class="fa fa-bar-chart"></i></button>
+        {{/if}}
+        <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, '{{direction}}', {{index}})"><i class="fa fa-comment-o"></i></button>
+        <button type="button" class="hw-button hw-button-big" onclick="moveToSpot('{{direction}}', {{index}})"><i class="fa fa-map-marker"></i></button>
+        {{#if userId}}
+        <button type="button" class="hw-button hw-button-big"><i class="fa fa-edit"></i></button>
+        {{/if}}
       </div>
-      {{/if}}
-      <div class="ratings col-md-5 col-spot-footer">
-        <span class="rating-widget average-{{rating_average}}"><span>Hitchability </span>
+      <div class="ratings col-lg-5 col-md-6 col-spot-footer">
+        <span class="rating-widget average-{{rating_average}}">
           <span class="average {{#if rating_average > 0}}average-{{Math.round(rating_average)}}{{else}}average-null{{/if}} {{#if !userId}}average-no-user{{/if}}">{{average_label}} {{#if rating_count > 0}}<small>({{rating_count}})</small>{{/if}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate {{#if rating_user > 0}}rate-{{Math.round(rating_user)}}{{else}}rate-null{{/if}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
           <span id="your_rate_{{id}}" class="your-rate">
             <span class="rating-choice-head">{{#if rating_user}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
@@ -77,7 +83,7 @@
           </div>
         </div>
       </div>
-      <div class="waiting-time col-md-4 col-footer-left-border col-spot-footer">
+      <div class="waiting-time col-lg-4 col-md-6 col-spot-footer">
         <div class="waiting-time-widget">
           {{#if waiting_time_count}}<span>Waiting time {{waiting_time_average}} minutes ({{waiting_time_count}})</span>
           {{else}}<span>There is no waiting times yet</span>{{/if}}<button id="waiting_time_button_{{id}}" type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>
@@ -124,18 +130,6 @@
           </div>
         </div>
       </div>
-      <div class="col-md-1 col-spot-footer col-footer-left-border">
-        <div >
-          <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, '{{direction}}', {{index}})"><i class="fa fa-comment-o"></i></button>
-          <!--{{#comment_count}}<i id="comment-spinner-{ {id}}" class="fa fa-spinner fa-spin comment-spinner"></i><span onclick="loadComments({{id}}, false, '{{direction}}', {{index}})" class="comments-box">{{comment_count}}</span>{{/comment_count}}
-          {{^comment_count}}<span onclick="toggleComments({{id}})" class="comments-box">+</span>{{/comment_count}}-->
-        </div>
-      </div>
-      {{#if userId}}
-      <div class="col-md-1 col-spot-footer col-footer-left-border">
-        <button type="button" class="hw-button hw-button-big"><i class="fa fa-edit"></i></button>
-      </div>
-      {{/if}}
     </div>
     <div id="spot-comments-{{id}}" class="spot-comments hide-comment row">
       {{#comments}}

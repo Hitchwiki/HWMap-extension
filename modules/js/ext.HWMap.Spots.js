@@ -368,3 +368,10 @@ var loadSpotDetails = function (id, reload, direction, spotIndex) {
   loadWaintingTimes(id, reload, direction, spotIndex);
   loadRatings(id, reload, direction, spotIndex);
 }
+
+var moveToSpot = function (direction, spotIndex) {
+  hwmap.setView([
+    spotsData.groupSpots[direction][spotIndex].Location[0].lat,
+    spotsData.groupSpots[direction][spotIndex].Location[0].lon
+  ], 15);
+}

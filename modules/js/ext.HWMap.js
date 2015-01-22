@@ -176,10 +176,10 @@ function initHWMap() {
         }, 'fast');
       });
       leafletMarker.on('mouseover', function(){
-        $('#spot_'+data.id).css('background-color', '#c4c4c4');
+        $('#spot_'+data.id).addClass('spot-over');
       });
       leafletMarker.on('mouseout', function(){
-        $('#spot_'+data.id).css('background-color', 'transparent');
+        $('.spot').removeClass('spot-over');
       });
       leafletMarker.setIcon(data.icon);
     };
