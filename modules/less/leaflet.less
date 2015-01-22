@@ -18,3 +18,12 @@
     }
   }
 }
+
+.leaflet-container a {
+  color: @hw-orange-text;
+  &:hover,
+  &:active {
+    text-decoration: none;
+    color: lighten(@hw-orange-text, 10%);
+  }
+}

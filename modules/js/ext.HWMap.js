@@ -154,7 +154,8 @@ function initHWMap() {
   hwmap = L.map('hwmap', {
     center: defaultCenter,
     zoom: defaultZoom,
-    layers: [mapLayerStreets]
+    layers: [mapLayerStreets],
+    attributionControl: false
   });
 
   hwmap.whenReady(function(){
@@ -208,6 +209,8 @@ function initHWMap() {
     //"Spots": spotsLayer
   };
   L.control.layers(baseMaps, overlayMaps).addTo(hwmap);
+
+  L.control.attribution({position: 'bottomleft', prefix: ''}).addTo(hwmap);
 
   L.control.scale().addTo(hwmap);
 
