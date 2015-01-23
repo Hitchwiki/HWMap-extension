@@ -53,9 +53,9 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'modules/vendor/leaflet/dist/leaflet.css',
     ),
   ),
-  'bootstrap' => $wgHWMapResourceBoilerplate + array(
+  'bootstrap-grid' => $wgHWMapResourceBoilerplate + array(
     'styles' => array(
-      'modules/vendor/bootstrap/dist/css/bootstrap.css',
+      'modules/vendor/bootstrap-grid/dist/bootstrap-grid.css',
     ),
   ),
 
@@ -81,7 +81,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'leaflet',
-      'bootstrap',
+      'bootstrap-grid',
       'PruneCluster',
       'ractive'
     ),
