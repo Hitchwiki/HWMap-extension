@@ -90,7 +90,7 @@ window.closeSpecialPageSpot = function () {
 };
 
 window.openSpecialPageSpot = function (id) {
-  console.log(id);
+  ractive.set({spot: null});
   $.get( apiRoot + "/api.php?action=hwspotidapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=" + id, function( data ) {
     data.query.spot.id = id;
     data.query.spot.average_label = getRatingLabel(data.query.spot.rating_average);
@@ -100,7 +100,6 @@ window.openSpecialPageSpot = function (id) {
     if(data.query.spot.rating_user){
       data.query.spot.rating_user_label = getRatingLabel(data.query.spot.rating_user);
     }
-    console.log(data);
     ractive.set({spot: data.query.spot});
 
     $(".hw-spot-edit-button").click(function(evt) {
