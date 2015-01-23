@@ -171,9 +171,14 @@ function initHWMap() {
   //Check if map is called from the special page
   if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
-      leafletMarker.on('click', function(){
-        openSpecialPageSpot(data.id);
-      });
+      if(data.type == 'spot') {
+        leafletMarker.on('click', function(){
+          openSpecialPageSpot(data.id);
+        });
+      }
+      if(data.type == 'city') {
+
+      }
       leafletMarker.setIcon(data.icon);
     };
   }
@@ -276,6 +281,7 @@ var getBoxSpots = function () {
             //Add icon
             marker.data.icon = iconSpot(spots[i].average_rating);
             marker.data.id = spots[i].id;
+            marker.data.type = 'spot';
 
             //Register marker
             spotsLayer.RegisterMarker(marker);
@@ -288,6 +294,8 @@ var getBoxSpots = function () {
             );
             //Add icon
             marker.data.icon = icons.city;
+            marker.data.id = spots[i].id;
+            marker.data.type = 'city';
             //Register marker
             spotsLayer.RegisterMarker(marker);
           }
