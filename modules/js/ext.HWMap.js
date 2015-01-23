@@ -129,22 +129,6 @@ function initHWMap() {
   var mapBoxAttribution = '<strong><a href="https://www.mapbox.com/map-feedback/#' + mapboxUser + '.' + mapboxStyleStreets + '/' + defaultCenter[1] + '/' + defaultCenter[0] + '/' + defaultZoom + '">Improve this map</a></strong>';
   var OSMAttribution = '<strong><a href="https://www.openstreetmap.org/login#map=' + defaultZoom + '/' + defaultCenter[0] + '/' + defaultCenter[1] + '">Improve this map</a></strong>';
 
-  // https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
-  var mapLayerStreets = L.tileLayer(mapBoxUrl, {
-    attribution: mapBoxAttribution,
-    maxZoom: 18,
-    continuousWorld: true,
-    user: mapboxUser,
-    map: mapboxStyleStreets
-  });
-  // Satellite layer
-  var mapLayerSatellite = L.tileLayer(mapBoxUrl, {
-    attribution: mapBoxAttribution,
-    maxZoom: 18,
-    continuousWorld: true,
-    user: mapboxUser,
-    map: mapboxStyleSatellite
-  });
   // OSM layer
   var mapLayerOSM = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: OSMAttribution,
@@ -152,14 +136,50 @@ function initHWMap() {
     continuousWorld: true
   });
 
-  //Setting up the map
+  // defaultLayer is shown at map init
+  var defaultLayer = mapLayerOSM;
+
+  // Layers for Layer controller
+  var baseMaps = {
+    "OpenStreetMap": mapLayerOSM
+  };
+
+  // Streets layer
+  // https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
+  if(mapboxStyleStreets) {
+    var mapLayerStreets = L.tileLayer(mapBoxUrl, {
+      attribution: mapBoxAttribution,
+      maxZoom: 18,
+      continuousWorld: true,
+      user: mapboxUser,
+      map: mapboxStyleStreets
+    });
+    defaultLayer = mapLayerStreets;
+    baseMaps["Streets"] = mapLayerStreets;
+  }
+
+  // Satellite layer
+  if(mapboxStyleSatellite) {
+    var mapLayerSatellite = L.tileLayer(mapBoxUrl, {
+      attribution: mapBoxAttribution,
+      maxZoom: 18,
+      continuousWorld: true,
+      user: mapboxUser,
+      map: mapboxStyleSatellite
+    });
+    baseMaps["Satellite"] = mapLayerSatellite;
+  }
+
+  // Map init
   hwmap = L.map('hwmap', {
     center: defaultCenter,
     zoom: defaultZoom,
-    layers: [mapLayerStreets],
+    layers: [defaultLayer],
     attributionControl: false
   });
 
+  // Fixes map loading partially, probably some sort of a CSS issue but this fixes it...
+  // Feel free to fix if you have spare time. ;-)
   hwmap.whenReady(function(){
     setTimeout(function(){ hwmap.invalidateSize(); }, 500);
   });
@@ -201,19 +221,18 @@ function initHWMap() {
 
   hwmap.addLayer(spotsLayer);
 
-  // Add layers
-  var baseMaps = {
-    "Streets": mapLayerStreets,
-    "Satellite": mapLayerSatellite,
-    "OpenStreetMap": mapLayerOSM
-  };
-  var overlayMaps = {
-    //"Spots": spotsLayer
-  };
-  L.control.layers(baseMaps, overlayMaps).addTo(hwmap);
+  // Layer control
+  L.control.layers(
+    // Tile layers:
+    baseMaps,
+    // Overlay maps:
+    {}
+  ).addTo(hwmap);
 
+  // Add attribution layer again (was set false at map init)
   L.control.attribution({position: 'bottomleft', prefix: ''}).addTo(hwmap);
 
+  // Scale control
   L.control.scale().addTo(hwmap);
 
   //Check if map is called from the special page
