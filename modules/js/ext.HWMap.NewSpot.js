@@ -19,7 +19,6 @@ function setupNewSpot() {
 
   // Stop clicking map trough this this area
   $newSpotWrap.click(function(e){
-    console.log('daaa!');
     e.stopPropagation();
   });
 
@@ -34,7 +33,54 @@ function setupNewSpot() {
 
   $newSpotWrap.fadeIn('fast');
 
+  /**
+   * Modifying Mediawiki SemanticForms popup to please our needs
+   */
+  $newSpotWrap.find( 'form.popupforminput' ).submit(function(evt){
+      var iframeTimer,
+          needsRender,
+          $popup = $(".popupform-innerdocument");
+
+      // store initial readystate
+      var readystate = $popup.contents()[0].readyState;
+
+      // set up iframeTimer for waiting on the document in the iframe to be dom-ready
+      // this sucks, but there is no other way to catch that event
+      // onload is already too late
+      //
+      // This code is from SemanticForms SF_popupform.js
+      iframeTimer = setInterval(function(){
+          // if the readystate changed
+          if ( readystate !== $popup.contents()[0].readyState ) {
+          	// store new readystate
+          	readystate = $popup.contents()[0].readyState;
+          	// if dom is built but document not yet displayed
+          	if ( readystate === 'interactive' ) {
+          		needsRender = false; // flag that rendering is already done
+              setupNewSpotFormContents(iframeTimer, $popup);
+          	}
+          }
+      }, 100 );
+      // fallback in case we did not catch the dom-ready state
+      $popup.on('load', function( event ){
+          if ( needsRender ) { // rendering not already done?
+            setupNewSpotFormContents(iframeTimer, $popup);
+          }
+          needsRender = true;
+      });
+  });
+
 }
+
+function setupNewSpotFormContents(iframeTimer, $popup) {
+  clearTimeout(iframeTimer);
+  // Modify contents of that popup
+  $popup
+      .contents()
+      .find("#firstHeading").hide().end()
+      .contents();
+}
+
 
 function setNewSpotMarkerLocation(event){
   newSpotMarker.setLatLng(event.latlng);
@@ -44,7 +90,6 @@ function setNewSpotMarkerLocation(event){
  * Clean out adding new spot form/buttons etc
  */
 function tearApartNewSpot() {
-  mw.log('->tearApartNewSpot');
   $newSpotWrap.fadeOut('fast');
   $newSpotInit.fadeIn('fast');
   hwmap.removeLayer(newSpotLayer);
