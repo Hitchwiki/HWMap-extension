@@ -301,12 +301,28 @@
   .bar-1{background-color: @hw-color-senseless;}
 }
 //!------ Comments ------!//
+
+.city-comments {
+  margin-right: -39px;
+  margin-left: -63px;
+  .spot-comments{
+    padding: 10px 39px 10px 63px;
+  }
+}
+.big-map-comments {
+  .spot-comments{
+    border-left: 1px solid @hw-grey-medium;
+  }
+}
+
 .spot-comments{
+    margin-top: 10px;
   display: none;
   height: 0px;
   overflow:hidden;
-  margin: 10px -36px 0 -57px;
-  padding: 10px 36px 10px 57px;
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   box-shadow:
     inset 0px 11px 8px -10px @hw-grey-medium,
     inset 0px -11px 8px -10px @hw-grey-medium;
@@ -331,6 +347,7 @@
   }
 }
 
+
 //!------ Buttons ------!//
 .hw-button{
   background-color: white;
@@ -342,6 +359,7 @@
   white-space: nowrap;
   vertical-align: middle;
   border-radius: 4px;
+  cursor: pointer;
 }
 .hw-button-small {
   padding: 0px 7px;

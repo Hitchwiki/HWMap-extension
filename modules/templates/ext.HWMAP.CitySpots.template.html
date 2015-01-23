@@ -132,17 +132,19 @@
         </div>
       </div>
     </div>
-    <div id="spot-comments-{{id}}" class="spot-comments hide-comment row">
-      {{#comments}}
-      <div class="comment">
-        {{#if user_id==userId}}<i onclick="deleteComment('{{comment_id}}', '{{id}}', 'spots.groupSpots.{{direction}}.{{index}}')" class="fa fa-trash comment-delete"></i>{{/if}}
-        {{{commenttext}}}
-        <span class="comment-meta">By {{user_name}}, {{timestamp_label}}</span>
+    <div class="city-comments row">
+      <div id="spot-comments-{{id}}" class="spot-comments hide-comment col-md-12">
+        {{#comments}}
+        <div class="comment">
+          {{#if user_id==userId}}<i onclick="deleteComment('{{comment_id}}', '{{id}}', 'spots.groupSpots.{{direction}}.{{index}}')" class="fa fa-trash comment-delete"></i>{{/if}}
+          {{{commenttext}}}
+          <span class="comment-meta">By {{user_name}}, {{timestamp_label}}</span>
+        </div>
+        {{/comments}}
+        {{#if userId}}<textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
+        {{else}}<p>Please log in to add a comment</p>{{/if}}
+        {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', 'spots.groupSpots.{{direction}}.{{index}}')">Add comment</button> {{/if}}
       </div>
-      {{/comments}}
-      {{#if userId}}<textarea class="comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
-      {{else}}<p>Please log in to add a comment</p>{{/if}}
-      {{#if this.new_comment.length}}<button class="comment-button" onclick="addComment('{{id}}', 'spots.groupSpots.{{direction}}.{{index}}')">Add comment</button> {{/if}}
     </div>
   </div>
 </div>
