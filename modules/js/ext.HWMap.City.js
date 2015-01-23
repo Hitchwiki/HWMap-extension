@@ -112,7 +112,6 @@ var initTemplate = function () {
         $form.submit();
       });
 
-      // hide all the events
       $(".your-rate").hide();
 
       $(".rating-widget .rate").click(function(evt) {

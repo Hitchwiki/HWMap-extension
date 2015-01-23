@@ -19,11 +19,12 @@
     width: 100%;
   }
   .hwmap-container {
-    position: absolute;
-    top: 0;
+    position: fixed;
+    top: 48px;
     bottom: 0;
-    width: 100%;
-    float:right
+    left: 80px;
+    bottom: 0;
+    right: 0;
   }
   #hwmap {
     position: relative;
@@ -105,8 +106,15 @@
     float:right;
     background-color:white;
     .close-special-spot {
+      position: absolute;
       float: right;
       cursor: pointer;
+      top: 15px;
+      right: 15px;
+      font-size: 14px;
+    }
+    .row-special-spot{
+      margin: 0;
     }
   }
 
