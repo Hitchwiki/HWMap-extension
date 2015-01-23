@@ -1,13 +1,14 @@
 
 {{#spots.groupSpots:direction}}
-
-<div class="cardinal-direction">
+<div class="row">
+<div class="col-md-12 cardinal-direction">
   {{direction}}
+</div>
 </div>
 
 {{#this:index}}
 <div class="spot row" id="spot_{{id}}">
-  <div class="col-md-12">
+  <div class="col-md-12 spot-main-col">
     <div class="spot-main row">
       <div class="spot-head col-xs-12">
         {{#if CitiesDirection}}<span>Towards </span>{{/if}}
