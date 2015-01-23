@@ -74,12 +74,12 @@ var setupSpecialPageMap = function () {
 }
 
 var initSpecialPageTemplate = function () {
-  console.log('youpi !');
+  var spot = {};
   $.get( extensionRoot +'modules/templates/ext.HWMap.SpecialPageSpot.template.html' ).then( function ( template ) {
     ractive = new Ractive({
       el: 'hwspot',
       template: template,
-      data: {}
+      data: {userId: userId}
     });
   });
 };
@@ -90,8 +90,49 @@ window.closeSpecialPageSpot = function () {
 };
 
 window.openSpecialPageSpot = function (id) {
-  $.get( apiRoot + "/api.php?action=hwspotidapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&pageid=" + id, function( data ) {
+  console.log(id);
+  $.get( apiRoot + "/api.php?action=hwspotidapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=" + id, function( data ) {
+    data.query.spot.id = id;
+    data.query.spot.average_label = getRatingLabel(data.query.spot.rating_average);
+    if(data.query.spot.timestamp_user){
+      data.query.spot.timestamp_user = parseTimestamp(data.query.spot.timestamp_user);
+    }
+    if(data.query.spot.rating_user){
+      data.query.spot.rating_user_label = getRatingLabel(data.query.spot.rating_user);
+    }
     console.log(data);
+    ractive.set({spot: data.query.spot});
+
+    $(".hw-spot-edit-button").click(function(evt) {
+      evt.preventDefault();
+      var $form = $('#spot-edit-form-wrap form');
+      $form.find("input[name='page_name']").val($(this).data('title'));
+      $form.submit();
+    });
+
+    $(".your-rate").hide();
+
+    $(".rating-widget .rate").click(function(evt) {
+      $(".your-rate").hide();
+      $(".rate").show();
+      evt.preventDefault();
+      $(this).hide();
+      var id = $(this).attr('id').replace(/rate_/, '');
+
+      $("#your_rate_" + id).show();
+    });
+
+    $(document).mouseup(function (e) {
+      var container = $(".rating-widget .rate");
+
+      if (!container.is(e.target) // if the target of the click isn't the container...
+          && container.has(e.target).length === 0) // ... nor a descendant of the container
+      {
+        $(".your-rate").hide();
+        $(".rate").show();
+      }
+    });
+
   });
   $('#hwspot').show();
   $('#hwmap').css({'width': '75%'});

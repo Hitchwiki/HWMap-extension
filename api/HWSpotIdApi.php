@@ -51,13 +51,13 @@ class HWSpotIdApi extends ApiBase {
       foreach($properties_array as $propertie) {
         //Check if the propertie have multiple value
         if($result['printouts'][$propertie][0]['fulltext']) {
-          $spot->$propertie = null;
+          $spot->$propertie = [];
           for($i = 0; $i < count($result['printouts'][$propertie]); ++$i) {
-            $spot->$propertie = $spot->$propertie.$result['printouts'][$propertie][$i]['fulltext'];
+            array_push($spot->$propertie, $result['printouts'][$propertie][$i]['fulltext']);
           }
         }
         else{
-          $spot->$propertie = $result['printouts'][$propertie];
+          $spot->$propertie =  $result['printouts'][$propertie];
         }
       }
 
