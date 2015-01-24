@@ -200,7 +200,10 @@ function initHWMap() {
         });
       }
       if(data.type == 'city') {
-
+        if(leafletMarker._icon) {
+          leafletMarker._icon.id = "city-marker";
+          $("#city-marker").tipsy({fallback: 'Open city page', gravity: $.fn.tipsy.autoNS});
+        }
       }
       leafletMarker.setIcon(data.icon);
     };
@@ -214,10 +217,10 @@ function initHWMap() {
         }, 'fast');
       });
       leafletMarker.on('mouseover', function(){
-        $('#spot_'+data.id).addClass('spot-over');
+        $('#spot_'+data.id).addClass('spot-hover');
       });
       leafletMarker.on('mouseout', function(){
-        $('.spot').removeClass('spot-over');
+        $('.spot').removeClass('spot-hover');
       });
       leafletMarker.setIcon(data.icon);
     };

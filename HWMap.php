@@ -80,6 +80,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
+      'jquery.tipsy',
       'leaflet',
       'bootstrap-grid',
       'PruneCluster',
