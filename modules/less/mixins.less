@@ -46,3 +46,34 @@
   font-size: 12px;
   line-height: 13px;
 }
+
+
+
+
+
+// @TODO: combine with above
+//!------ Buttons ------!//
+.hw-button{
+  background-color: white;
+  border: 1px solid @hw-grey-medium;
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1.42857;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.hw-button-small {
+  padding: 0px 7px;
+}
+.hw-button-big {
+  padding: 5px 10px;
+}
+.hw-button:active, .hw-button:hover{
+  background-color: @hw-orange
+}
+.hw-button:active{
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset;
+}

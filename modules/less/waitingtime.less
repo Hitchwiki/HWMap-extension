@@ -1,0 +1,38 @@
+/*
+ * Waiting time widget
+ */
+.waiting-time {
+  margin-bottom: 10px;
+  .waiting-time-widget {
+    display: inline-block;
+    height: 20px;
+    margin-top: 10px;
+  }
+  .waiting-time-button {
+    margin-left: 5px;
+  }
+  .add-waiting-time {
+    display: none;
+    margin-top: 5px;
+    .waiting-time-input{
+      background-color: @hw-grey-lighter;
+      width: 60px;
+      border-radius: 0px;
+      border: 1px solid @hw-grey-medium;
+      text-align: center;
+      height: 30px;
+      font-size: 14px;
+    }
+    .waiting-time-input:focus {
+      background-color: @hw-grey-light;
+    }
+    .hw-button {
+      margin: 0 5px;
+    }
+    .add-time-help {
+      color: grey;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+  }
+}

@@ -1,6 +1,3 @@
-@import 'variables';
-@import 'mixins';
-
 /*
  * Hitchwiki Maps
  */
@@ -8,21 +5,16 @@
   min-height: 300px;
 }
 
+
+@import 'variables';
+@import 'mixins';
 @import 'leaflet';
 @import 'specialpage';
-@import 'spots';
 @import 'city';
 @import 'country';
+@import 'spots';
+@import 'waitingtime';
+@import 'barstats';
+@import 'rating';
+@import 'comments';
 @import 'new-spot-form';
-
-* {
-  .box-sizing(border-box);
-}
-*:before,
-*:after {
-  .box-sizing(border-box);
-}
-
-body {
-  margin: 0;
-}
