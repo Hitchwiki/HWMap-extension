@@ -372,7 +372,7 @@ window.loadSpotDetails = function (id, reload, spotObjectPath) {
 
 window.moveToSpot = function (spotObjectPath) {
   hwmap.setView([
-    spotsData.groupSpots[direction][spotIndex].Location[0].lat,
-    spotsData.groupSpots[direction][spotIndex].Location[0].lon
+    ractive.get(spotObjectPath+'.Location.0.lat'),
+    ractive.get(spotObjectPath+'.Location.0.lon')
   ], 15);
 };
