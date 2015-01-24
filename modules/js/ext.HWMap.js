@@ -220,7 +220,7 @@ function initHWMap() {
         $('#spot_'+data.id).addClass('spot-hover');
       });
       leafletMarker.on('mouseout', function(){
-        $('.spot').removeClass('spot-hover');
+        $('.spot-hover').removeClass('spot-hover');
       });
       leafletMarker.setIcon(data.icon);
     };
