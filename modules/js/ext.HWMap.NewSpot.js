@@ -77,7 +77,15 @@ function setupNewSpotFormContents(iframeTimer, $popup) {
   // Modify contents of that popup
   $popup
       .contents()
+
+      // No title at this form
       .find("#firstHeading").hide().end()
+
+      // For some odd reason, these had fixed min-style:600px
+      // That sucks. Removing it (they're handled at HitchwikiVector/resources/styles/forms.less instead)
+      // @TODO: doesn't function right now — occurs perhaps before select2() ?
+      .find(".select2-container").attr("style", "").end()
+
       .contents();
 }
 
