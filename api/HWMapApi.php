@@ -32,6 +32,7 @@ class HWMapApi extends ApiBase {
 
         //Build the api result
         foreach( $res as $row ) {
+          if(!$params['category'] || $row->cl_to == $params['category']) {
             $vals = array(
                 'id' => $row->gt_page_id,
                 'location' => array(
@@ -43,6 +44,7 @@ class HWMapApi extends ApiBase {
                 'average_rating' => $row->hw_average_rating
             );
             $this->getResult()->addValue( array( 'query', 'spots' ), null, $vals );
+          }
         }
 
       }
@@ -104,6 +106,9 @@ class HWMapApi extends ApiBase {
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true
 			),
+			'category' => array (
+				ApiBase::PARAM_TYPE => 'string'
+			),
 		);
 	}
 
@@ -113,7 +118,8 @@ class HWMapApi extends ApiBase {
 			'NElat' => 'North East latitude of the bounding box',
 			'NElon' => 'North East longitude of the bounding box',
 			'SWlat' => 'South West latitude of the bounding box',
-			'SWlon' => 'South West longitude of the bounding box'
+			'SWlon' => 'South West longitude of the bounding box',
+			'category' => 'Restricted category',
 		) );
 	}
 }
