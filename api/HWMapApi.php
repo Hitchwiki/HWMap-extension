@@ -9,8 +9,8 @@ class HWMapApi extends ApiBase {
 
       if ( class_exists( 'HWAvgRatingApi' ) ) {
        $res = $dbr->select(
-            array( 'geo_tags', 'categorylinks', 'hw_ratings_avg'),
-            array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to', 'hw_average_rating'),
+            array( 'geo_tags', 'categorylinks', 'hw_ratings_avg', 'page'),
+            array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to', 'hw_average_rating', 'page_title'),
             array(
                 'gt_lat <'.$params['NElat'],
                 'gt_lat >'.$params['SWlat'],
@@ -24,6 +24,8 @@ class HWMapApi extends ApiBase {
 		'gt_page_id=cl_from' ) ),
               'hw_ratings_avg' => array( 'LEFT JOIN ', array(
 		'gt_page_id=hw_page_id' ) ),
+              'page' => array( 'LEFT JOIN ', array(
+		'gt_page_id=page_id' ) ),
             )
         );
 
@@ -36,6 +38,7 @@ class HWMapApi extends ApiBase {
                     $row->gt_lat,
                     $row->gt_lon
                 ),
+                'title' => $row->page_title,
                 'category' => $row->cl_to,
                 'average_rating' => $row->hw_average_rating
             );
