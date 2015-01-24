@@ -66,7 +66,7 @@ var setupSpecialPageMap = function () {
     });
 
     // Link at the sidebar, so that we wouldn't have unessessary page-refresh
-    $("#n-New-spot").click(function(e){
+    $("#n-New-spot a").click(function(e){
       e.preventDefault();
       setupNewSpot();
     });
