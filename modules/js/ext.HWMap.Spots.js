@@ -148,7 +148,7 @@ window.addComment = function (id, spotObjectPath) {
   //Get token
   getToken(function(token) {
     if(token) {
-      newComment = spotsData.groupSpots[direction][spotIndex].new_comment.replace(/\n/g, '<br />');
+      newComment = ractive.get(spotObjectPath+'.new_comment').replace(/\n/g, '<br />');
       //Post new rating
       $.post(  apiRoot + "/api.php?action=hwaddcomment&format=json", {commenttext: newComment, pageid: id, token: token})
       .done(function( data ) {
