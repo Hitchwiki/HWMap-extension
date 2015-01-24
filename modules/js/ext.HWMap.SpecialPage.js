@@ -65,6 +65,12 @@ var setupSpecialPageMap = function () {
       setupNewSpot();
     });
 
+    // Link at the sidebar, so that we wouldn't have unessessary page-refresh
+    $("#n-New-spot").click(function(e){
+      e.preventDefault();
+      setupNewSpot();
+    });
+
     if ($(this).urlHash() == 'add') {
       setupNewSpot();
     }
