@@ -266,6 +266,10 @@ function initHWMap() {
 
 // Get markers in the current bbox
 var getBoxSpots = function (category) {
+  if(!category) {
+    category = "";
+  }
+
   bounds = hwmap.getBounds();
 
   if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng) {
