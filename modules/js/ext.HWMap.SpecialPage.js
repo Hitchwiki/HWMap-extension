@@ -61,6 +61,7 @@ var setupSpecialPageMap = function () {
   if(mw.config.get('wgUserId')) {
     $newSpotInit.show().click(function(e){
       e.preventDefault();
+      e.stopPropagation();//Prevent clicks ending up to map layer
       setupNewSpot();
     });
 
