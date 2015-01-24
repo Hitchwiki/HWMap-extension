@@ -265,7 +265,7 @@ function initHWMap() {
 }
 
 // Get markers in the current bbox
-var getBoxSpots = function () {
+var getBoxSpots = function (category) {
   bounds = hwmap.getBounds();
 
   if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng) {
@@ -277,7 +277,7 @@ var getBoxSpots = function () {
     lastBounds.SWlng = parseInt(bounds._southWest.lng) - 1;
 
     // Query HWCoordinateAPI
-    $.get( apiRoot + "/api.php?action=hwmapapi&SWlat=" + lastBounds.SWlat + "&SWlon=" + lastBounds.SWlng + "&NElat=" + lastBounds.NElat + "&NElon=" + lastBounds.NElng + "&format=json", function( data ) {
+    $.get( apiRoot + "/api.php?action=hwmapapi&SWlat=" + lastBounds.SWlat + "&SWlon=" + lastBounds.SWlng + "&NElat=" + lastBounds.NElat + "&NElon=" + lastBounds.NElng + "&category=" + category + "&format=json", function( data ) {
 
       if(data.error) {
         mw.log.warn(data.error);
