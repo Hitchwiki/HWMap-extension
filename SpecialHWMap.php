@@ -26,6 +26,10 @@ class SpecialHWMap extends SpecialPage {
     $output->addHTML('</div><!--#hwmap-add-wrap-->');
     $output->addHTML('</div></div>');
 
+
+    // Semantic form for editing new spot
+    $output->addWikiText('<div id="spot-edit-form-wrap">{{#forminput:form=Spot|size=|default value=|button text=Continue|page name=|query string=Spot[Location]=&Spot[Country]=&Spot[Cities]=|popup}}</div>');
+
     //The spot
     $output->addHTML('<div id="hwspot"></div>');
 
