@@ -1,24 +1,20 @@
 /*
  * Hitchhiking spots
  */
-.cardinal-direction {
-  text-transform: uppercase;
-  font-size: 22px;
-  font-weight: bold;
-  margin-top: 10px;
-}
 .spot {
   .spot-main-col {
-  border-bottom: 2px solid @hw-grey-medium;
-  padding-top: 5px;
-  padding-bottom: 5px;
-
+    border-bottom: 2px solid @hw-grey-medium;
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
   .spot-head {
-    span, a {
+    margin-bottom: 10px;
+  }
+  .spot-towards {
+    &, a {
       font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 10px;
+      color: @hw-grey-dark;
+      font-weight: normal;
     }
   }
 }
@@ -120,4 +116,22 @@
 
 #spot-edit-form-wrap {
   display: none;
+}
+
+.hw-cardinal-direction {
+  font-size: 24px;
+  line-height: 25px;
+  font-weight: normal;
+  display: inline-block;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  &, a {
+    color: #333;
+    text-decoration: none;
+  }
+  a:hover,
+  a:active {
+    text-decoration: none;
+    color: lighten(#333, 10%);
+  }
 }

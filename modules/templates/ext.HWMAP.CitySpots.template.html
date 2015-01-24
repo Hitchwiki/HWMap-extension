@@ -1,9 +1,9 @@
 
 {{#spots.groupSpots:direction}}
-<div class="row">
-<div class="col-md-12 cardinal-direction">
-  {{direction}}
-</div>
+<div class="row" id="{{direction}}">
+  <div class="col-md-12">
+    <a href="#{{direction}}" class="hw-cardinal-direction"><i class="fa fa-location-arrow"></i> {{direction}}</a>
+  </div>
 </div>
 
 {{#this:index}}
@@ -11,8 +11,13 @@
   <div class="col-md-12 spot-main-col" id="spot_{{id}}">
     <div class="spot-main row">
       <div class="spot-head col-xs-12">
-        {{#if CitiesDirection}}<span>Towards </span>{{/if}}
-        {{#CitiesDirection:i}}{{#if i>0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}{{#RoadsDirection}},&nbsp;<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
+        <div class="spot-towards">
+        {{#if CitiesDirection}}
+          Towards
+          {{#CitiesDirection:i}}{{#if i>0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}
+        {{/if}}
+        {{#RoadsDirection}},&nbsp;<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
+        </div>
         <p>{{{Description}}}</p>
       </div>
     </div>
