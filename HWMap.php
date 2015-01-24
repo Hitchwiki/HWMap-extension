@@ -91,6 +91,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'modules/js/ext.HWMap.Spots.js',
       'modules/js/ext.HWMap.NewSpot.js',
       'modules/js/ext.HWMap.SpecialPage.js',
+      'modules/js/ext.HWMap.Country.js',
       'modules/js/ext.HWMap.City.js',
       'modules/js/ext.HWMap.js'
     ),

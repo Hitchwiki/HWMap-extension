@@ -264,14 +264,6 @@ function initHWMap() {
 
 }
 
-/*
- * Setup big map at city article
- */
-function setupCountryMap() {
-  $("body").addClass("hwmap-page");
-  // @todo
-}
-
 // Get markers in the current bbox
 var getBoxSpots = function () {
   bounds = hwmap.getBounds();
