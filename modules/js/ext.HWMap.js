@@ -190,6 +190,9 @@ function initHWMap() {
 
   //Check if map is called from the special page
   if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
+
+    hwmap.on('click', closeSpecialPageSpot);
+
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
       if(data.type == 'spot') {
         leafletMarker.on('click', function(){
