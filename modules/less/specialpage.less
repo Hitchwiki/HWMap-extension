@@ -3,12 +3,29 @@
  */
 .page-Special_HWMap {
 
+
+  @media screen and (min-width: 768px) {
+    .mw-body-content {
+      left: 80px;
+    }
+    .hwmap-container {
+      left: 80px;
+    }
+  }
+  @media screen and (max-width: 767px) {
+    .mw-body-content {
+      left: 0px;
+    }
+    .hwmap-container {
+      left: 0px;
+    }
+  }
+
   // Make the map BIG
   .mw-body-content {
     position: absolute;
     top: @hw-header-height;
     bottom: 0;
-    left: 80px;
     right: 0px;
   }
   #mw-content-text {
@@ -21,7 +38,6 @@
     position: fixed;
     top: 48px;
     bottom: 0;
-    left: 80px;
     bottom: 0;
     right: 0;
   }
