@@ -48,6 +48,9 @@ var getRatingLabel = function (rating) {
   }
 };
 
+var animateMarker = function(id) {
+}
+
 //Update spot marker with new rating
 window.updateSpotMarker = function(id, newRating) {
   for(var i = 0; i < spotsLayer.Cluster._markers.length; i++) {
@@ -370,9 +373,27 @@ window.loadSpotDetails = function (id, reload, spotObjectPath) {
   loadRatings(id, reload, spotObjectPath);
 };
 
-window.moveToSpot = function (spotObjectPath) {
+window.moveToSpot = function (spotObjectPath, id) {
   hwmap.setView([
     ractive.get(spotObjectPath+'.Location.0.lat'),
     ractive.get(spotObjectPath+'.Location.0.lon')
   ], 15);
+  animateSpot(id);
 };
+
+var animateSpot = function (id) {
+  animatedSpot = false;
+  $(".animateSpot").removeClass("animateSpot");
+  var waitForIcon = setInterval(function(){
+    console.log($("#marker-"+id));
+    if($("#marker-"+id).length != 0) {
+      $("#marker-"+id).addClass("animateSpot");
+      console.log($("#marker-"+id).hasClass("animateSpot"));
+      if($("#marker-"+id).hasClass("animateSpot")) {
+        animatedSpot = id;
+        clearInterval(waitForIcon);
+      }
+    }
+  }, 10);
+}
+

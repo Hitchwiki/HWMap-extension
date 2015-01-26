@@ -19,7 +19,7 @@
             <button onclick="loadSpotDetails({{id}}, false, 'spot')" type="button" class="hw-button hw-button-big"><i class="fa fa-bar-chart"></i></button>
             {{/if}}
             <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, 'spot')"><i class="fa fa-comment-o"></i></button>
-            <button type="button" class="hw-button hw-button-big" onclick="moveToSpot('spot')"><i class="fa fa-map-marker"></i></button>
+            <button type="button" class="hw-button hw-button-big" onclick="moveToSpot('spot', '{{id}}')"><i class="fa fa-map-marker"></i></button>
             {{#if userId}}
             <button type="button" class="hw-button hw-button-big hw-spot-edit-button" data-title="{{title}}"><i class="fa fa-edit"></i></button>
             {{/if}}

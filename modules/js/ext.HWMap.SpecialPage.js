@@ -97,6 +97,7 @@ window.closeSpecialPageSpot = function () {
 };
 
 window.openSpecialPageSpot = function (id) {
+  animateSpot(id);
   ractive.set({spot: null});
   $('#hw-special-page-spinner').show();
   $.get( apiRoot + "/api.php?action=hwspotidapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=" + id, function( data ) {

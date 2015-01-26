@@ -41,7 +41,8 @@ var hwmap,
     extensionRoot = mw.config.get("wgExtensionAssetsPath") + "/HWMap/",
     userId = mw.config.get("wgUserId"),
     token,
-    ractive;
+    ractive,
+    animatedSpot = false;
 
 
 
@@ -194,18 +195,34 @@ function initHWMap() {
     hwmap.on('click', closeSpecialPageSpot);
 
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
+      leafletMarker.setIcon(data.icon);
+      console.log(leafletMarker);
       if(data.type == 'spot') {
+        var waitForIcon = setInterval(function(){
+          if(leafletMarker._icon) {
+            leafletMarker._icon.id = 'marker-'+data.id;
+            clearInterval(waitForIcon);
+            if(animatedSpot == data.id) {
+              animateSpot(data.id);
+            }
+          }
+        }, 1);
         leafletMarker.on('click', function(){
           openSpecialPageSpot(data.id);
         });
       }
       if(data.type == 'city') {
-        if(leafletMarker._icon) {
-          leafletMarker._icon.id = "city-marker";
-          $("#city-marker").tipsy({fallback: 'Open city page', gravity: $.fn.tipsy.autoNS});
-        }
+        var waitForIcon = setInterval(function(){
+          if(leafletMarker._icon) {
+            leafletMarker._icon.id = "city-marker";
+            $("#city-marker").tipsy({fallback: 'Open city page', gravity: $.fn.tipsy.autoNS});
+            clearInterval(waitForIcon);
+          }
+        }, 1);
+        leafletMarker.on('click', function(){
+          window.location = wgArticlePath.replace('$1', data.title);
+        });
       }
-      leafletMarker.setIcon(data.icon);
     };
   }
   //Check if map is called from a city page
@@ -215,6 +232,7 @@ function initHWMap() {
         $('html, body').animate({
           scrollTop:$('#spot_'+data.id).offset().top -48
         }, 'fast');
+        animateSpot(data.id);
       });
       leafletMarker.on('mouseover', function(){
         $('#spot_'+data.id).addClass('spot-hover');
@@ -222,7 +240,18 @@ function initHWMap() {
       leafletMarker.on('mouseout', function(){
         $('.spot-hover').removeClass('spot-hover');
       });
+      //Setting the icon
       leafletMarker.setIcon(data.icon);
+      //Wait that the icon is created and then add an #id
+      var waitForIcon = setInterval(function(){
+        if(leafletMarker._icon) {
+          leafletMarker._icon.id = 'marker-'+data.id;
+          if(animatedSpot == data.id) {
+            animateSpot(data.id);
+          }
+          clearInterval(waitForIcon);
+        }
+      }, 1);
     };
   }
   //Check if map is called from a country page
@@ -316,6 +345,7 @@ var getBoxSpots = function (category) {
             //Add icon
             marker.data.icon = icons.city;
             marker.data.id = spots[i].id;
+            marker.data.title = spots[i].title;
             marker.data.type = 'city';
             //Register marker
             spotsLayer.RegisterMarker(marker);
