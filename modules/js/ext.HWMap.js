@@ -194,16 +194,15 @@ function initHWMap() {
     hwmap.on('click', closeSpecialPageSpot);
 
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
-      if(data.type == 'spot') {
+      if(data.HWtype == 'spot') {
         leafletMarker.on('click', function(){
           openSpecialPageSpot(data.id);
         });
       }
-      if(data.type == 'city') {
-        if(leafletMarker._icon) {
-          leafletMarker._icon.id = "city-marker";
-          $("#city-marker").tipsy({fallback: 'Open city page', gravity: $.fn.tipsy.autoNS});
-        }
+      else if(data.HWtype == 'city' && leafletMarker._icon) {
+        leafletMarker._icon.id = "city-marker";
+        console.log(leafletMarker)
+        $("#city-marker").tipsy({fallback: 'See ' . leafletMarker.title, gravity: $.fn.tipsy.autoNS});
       }
       leafletMarker.setIcon(data.icon);
     };
@@ -211,13 +210,13 @@ function initHWMap() {
   //Check if map is called from a city page
   else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
-      leafletMarker.on('click', function(){
+      leafletMarker.on('click', function() {
         $('html, body').animate({
-          scrollTop:$('#spot_'+data.id).offset().top -48
+          scrollTop: $('#spot_' + data.id).offset().top - 48
         }, 'fast');
       });
       leafletMarker.on('mouseover', function(){
-        $('#spot_'+data.id).addClass('spot-hover');
+        $('#spot_' + data.id).addClass('spot-hover');
       });
       leafletMarker.on('mouseout', function(){
         $('.spot-hover').removeClass('spot-hover');
@@ -301,8 +300,9 @@ var getBoxSpots = function (category) {
             );
             //Add icon
             marker.data.icon = iconSpot(spots[i].average_rating);
-            marker.data.id = spots[i].id;
-            marker.data.type = 'spot';
+            marker.data.HWid = spots[i].id;
+            marker.data.HWtype = 'spot';
+            marker.data.icon.HWid = spots[i].id;
 
             //Register marker
             spotsLayer.RegisterMarker(marker);
@@ -314,9 +314,12 @@ var getBoxSpots = function (category) {
               spots[i].location[1]
             );
             //Add icon
+            console.log(spots[i]);
             marker.data.icon = icons.city;
-            marker.data.id = spots[i].id;
-            marker.data.type = 'city';
+            marker.data.HWtype = 'city';
+            marker.data.HWid = spots[i].id;
+            marker.data.icon.title = spots[i].title;
+            marker.data.icon.HWid = spots[i].id;
             //Register marker
             spotsLayer.RegisterMarker(marker);
           }
@@ -335,3 +338,56 @@ jQuery(document).ready(function($){
   initHWMap();
 
 });//jQuery
+
+
+
+
+
+
+
+
+
+
+(function () {
+	var originalOnAdd = L.Marker.prototype.onAdd,
+	    originalOnRemove = L.Marker.prototype.onRemove,
+	    originalSetIcon = L.Marker.prototype.setIcon;
+
+	L.Marker.include({
+
+		onAdd: function (map) {
+      console.log('-----------');
+      console.log('->onAdd:');
+      console.log(this);
+			originalOnAdd.call(this, map);
+		},
+
+		onRemove: function (map) {
+			originalOnRemove.call(this, map);
+		},
+
+		setIcon: function (icon) {
+      console.log('-----------');
+      console.log('->setIcon: ' + icon.HWid);
+      console.log('->setIcon----------before:');
+      console.log(icon);
+      console.log(this);
+      console.log(this._icon);
+
+      if(icon.HWid && this._icon) {// && this._icon.attributes
+        console.log('-->->setIcon setNamedItem: ' + icon.HWid);
+
+        var idAttr = document.createAttribute("id");
+        idAttr.value = 'hw_' + icon.HWid;
+        this._icon.attributes.setNamedItem(idAttr);
+        //this._icon.id = 'hw_' + icon.HWid;
+      }
+
+      console.log('->setIcon----------after:');
+      console.log(icon);
+      console.log(this);
+
+			originalSetIcon.call(this, icon);
+		}
+	});
+})();
