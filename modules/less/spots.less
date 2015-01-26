@@ -136,18 +136,15 @@
   }
 }
 
-.animateSpot {
-  animation: fadeSpot 1s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
+.hw-highlight-spot {
+  padding: 3px;
+  margin: -3px;
+  box-shadow: 0 0 2px @hw-blue-shadow;
+  transition: all 0.3s;
 }
 
-@keyframes fadeSpot {
-    0% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.4;
-    }
-    100% {
-      opacity: 1;
-    };
+.hw-spot-icon {
+  background-color: @hw-blue;
+  border-radius: 50%;
+  transition: all 0.3s;
 }

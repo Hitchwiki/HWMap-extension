@@ -94,6 +94,8 @@ var initSpecialPageTemplate = function () {
 window.closeSpecialPageSpot = function () {
   $('#hwspot').hide();
   $('#hwmap').css({'width': '100%'});
+  animatedSpot = false;
+  $(".hw-highlight-spot").removeClass("hw-highlight-spot");
 };
 
 window.openSpecialPageSpot = function (id) {

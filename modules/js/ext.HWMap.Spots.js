@@ -383,17 +383,8 @@ window.moveToSpot = function (spotObjectPath, id) {
 
 var animateSpot = function (id) {
   animatedSpot = false;
-  $(".animateSpot").removeClass("animateSpot");
-  var waitForIcon = setInterval(function(){
-    console.log($("#marker-"+id));
-    if($("#marker-"+id).length != 0) {
-      $("#marker-"+id).addClass("animateSpot");
-      console.log($("#marker-"+id).hasClass("animateSpot"));
-      if($("#marker-"+id).hasClass("animateSpot")) {
-        animatedSpot = id;
-        clearInterval(waitForIcon);
-      }
-    }
-  }, 10);
+  $(".hw-highlight-spot").removeClass("hw-highlight-spot");
+  $("#marker-"+id).addClass("hw-highlight-spot");
+  animatedSpot = id;
 }
 

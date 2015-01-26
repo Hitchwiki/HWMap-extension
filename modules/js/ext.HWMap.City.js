@@ -81,7 +81,9 @@ var setupCityMap = function setupCityMap() {
         //Add icon
         marker.data.icon = iconSpot(citySpots[i].rating_average);
         //Add id
-        marker.data.id = citySpots[i].id;
+        console.log(citySpots[i].id);
+        marker.data.HWid = citySpots[i].id;
+        marker.data.HWtype = 'spot';
         marker.data.average = citySpots[i].rating_average;
         //Register marker
         spotsLayer.RegisterMarker(marker);

@@ -88,27 +88,33 @@ function initHWMap() {
   });
   icons.unknown = L.icon({
     iconUrl:  extensionRoot + 'icons/0-none.png',
-    iconRetinaUrl: extensionRoot + 'icons/0-none@2x.png'
+    iconRetinaUrl: extensionRoot + 'icons/0-none@2x.png',
+    className: 'hw-spot-icon'
   });
   icons.verygood = L.icon({
     iconUrl:  extensionRoot + 'icons/1-very-good.png',
-    iconRetinaUrl: extensionRoot + 'icons/1-very-good@2x.png'
+    iconRetinaUrl: extensionRoot + 'icons/1-very-good@2x.png',
+    className: 'hw-spot-icon'
   });
   icons.good = L.icon({
     iconUrl:  extensionRoot + 'icons/2-good.png',
-    iconRetinaUrl: extensionRoot + 'icons/2-good@2x.png'
+    iconRetinaUrl: extensionRoot + 'icons/2-good@2x.png',
+    className: 'hw-spot-icon'
   });
   icons.average = L.icon({
     iconUrl:  extensionRoot + 'icons/3-average.png',
-    iconRetinaUrl: extensionRoot + 'icons/3-average@2x.png'
+    iconRetinaUrl: extensionRoot + 'icons/3-average@2x.png',
+    className: 'hw-spot-icon'
   });
   icons.bad = L.icon({
     iconUrl:  extensionRoot + 'icons/4-bad.png',
-    iconRetinaUrl: extensionRoot + 'icons/4-bad@2x.png'
+    iconRetinaUrl: extensionRoot + 'icons/4-bad@2x.png',
+    className: 'hw-spot-icon'
   });
   icons.senseless = L.icon({
     iconUrl:  extensionRoot + 'icons/5-senseless.png',
-    iconRetinaUrl: extensionRoot + 'icons/5-senseless@2x.png'
+    iconRetinaUrl: extensionRoot + 'icons/5-senseless@2x.png',
+    className: 'hw-spot-icon'
   });
   icons.new = L.icon({
     iconUrl:  extensionRoot + 'icons/new.png',
@@ -195,30 +201,17 @@ function initHWMap() {
     hwmap.on('click', closeSpecialPageSpot);
 
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
-      leafletMarker.setIcon(data.icon);
-      console.log(leafletMarker);
-      if(data.type == 'spot') {
-        var waitForIcon = setInterval(function(){
-          if(leafletMarker._icon) {
-            leafletMarker._icon.id = 'marker-'+data.id;
-            clearInterval(waitForIcon);
-            if(animatedSpot == data.id) {
-              animateSpot(data.id);
-            }
-          }
-        }, 1);
+      leafletMarker.setIcon(data.icon, data.HWid);
+      if(data.HWtype == 'spot') {
+        if(animatedSpot == data.HWid) {
+          animateSpot(data.HWid);
+        }
         leafletMarker.on('click', function(){
-          openSpecialPageSpot(data.id);
+          openSpecialPageSpot(data.HWid);
         });
       }
-      if(data.type == 'city') {
-        var waitForIcon = setInterval(function(){
-          if(leafletMarker._icon) {
-            leafletMarker._icon.id = "city-marker";
-            $("#city-marker").tipsy({fallback: 'Open city page', gravity: $.fn.tipsy.autoNS});
-            clearInterval(waitForIcon);
-          }
-        }, 1);
+      if(data.HWtype == 'city') {
+        $("#marker-" + data.HWid).tipsy({fallback: 'Open ' + data.title, gravity: $.fn.tipsy.autoNS});
         leafletMarker.on('click', function(){
           window.location = wgArticlePath.replace('$1', data.title);
         });
@@ -228,30 +221,22 @@ function initHWMap() {
   //Check if map is called from a city page
   else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
-      leafletMarker.on('click', function(){
+      leafletMarker.setIcon(data.icon, data.HWid);
+      leafletMarker.on('click', function() {
         $('html, body').animate({
-          scrollTop:$('#spot_'+data.id).offset().top -48
+          scrollTop: $('#spot_' + data.HWid).offset().top - 48
         }, 'fast');
-        animateSpot(data.id);
+        animateSpot(data.HWid);
       });
       leafletMarker.on('mouseover', function(){
-        $('#spot_'+data.id).addClass('spot-hover');
+        $('#spot_' + data.HWid).addClass('spot-hover');
       });
       leafletMarker.on('mouseout', function(){
         $('.spot-hover').removeClass('spot-hover');
       });
-      //Setting the icon
-      leafletMarker.setIcon(data.icon);
-      //Wait that the icon is created and then add an #id
-      var waitForIcon = setInterval(function(){
-        if(leafletMarker._icon) {
-          leafletMarker._icon.id = 'marker-'+data.id;
-          if(animatedSpot == data.id) {
-            animateSpot(data.id);
-          }
-          clearInterval(waitForIcon);
-        }
-      }, 1);
+      if(animatedSpot == data.HWid) {
+        animateSpot(data.HWid);
+      }
     };
   }
   //Check if map is called from a country page
@@ -330,8 +315,8 @@ var getBoxSpots = function (category) {
             );
             //Add icon
             marker.data.icon = iconSpot(spots[i].average_rating);
-            marker.data.id = spots[i].id;
-            marker.data.type = 'spot';
+            marker.data.HWid = spots[i].id;
+            marker.data.HWtype = 'spot';
 
             //Register marker
             spotsLayer.RegisterMarker(marker);
@@ -344,9 +329,9 @@ var getBoxSpots = function (category) {
             );
             //Add icon
             marker.data.icon = icons.city;
-            marker.data.id = spots[i].id;
+            marker.data.HWid = spots[i].id;
+            marker.data.HWtype = 'city';
             marker.data.title = spots[i].title;
-            marker.data.type = 'city';
             //Register marker
             spotsLayer.RegisterMarker(marker);
           }
@@ -365,3 +350,21 @@ jQuery(document).ready(function($){
   initHWMap();
 
 });//jQuery
+
+
+//Let's hook into this leaflet so it let us add ID to spots
+(function () {
+  var original_initIcon = L.Marker.prototype._initIcon,
+      originalsetIcon = L.Marker.prototype.setIcon;
+
+  L.Marker.include({
+    setIcon: function (icon, id) {
+      this.options.id = id;
+      originalsetIcon.call(this, icon);
+    },
+    _initIcon: function () {
+      original_initIcon.call(this);
+      this._icon.id = "marker-" + this.options.id;
+    }
+  });
+})();
