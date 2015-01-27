@@ -215,20 +215,30 @@ function initHWMap() {
   else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
       leafletMarker.setIcon(data.icon, data.HWid);
-      leafletMarker.on('click', function() {
-        $('html, body').animate({
-          scrollTop: $('#spot_' + data.HWid).offset().top - 48
-        }, 'fast');
-        animateSpot(data.HWid);
-      });
-      leafletMarker.on('mouseover', function(){
-        $('#spot_' + data.HWid).addClass('spot-hover');
-      });
-      leafletMarker.on('mouseout', function(){
-        $('.spot-hover').removeClass('spot-hover');
-      });
-      if(animatedSpot == data.HWid) {
-        animateSpot(data.HWid);
+      if(data.HWtype == 'spot') {
+        leafletMarker.on('click', function() {
+          $('html, body').animate({
+            scrollTop: $('#spot_' + data.HWid).offset().top - 150
+          }, 'fast');
+          animateSpot(data.HWid);
+        });
+        leafletMarker.on('mouseover', function(){
+          $('#spot_' + data.HWid).addClass('spot-hover');
+        });
+        leafletMarker.on('mouseout', function(){
+          $('.spot-hover').removeClass('spot-hover');
+        });
+        if(animatedSpot == data.HWid) {
+          animateSpot(data.HWid);
+        }
+      }
+      else if(data.HWtype == 'city') {
+        leafletMarker.on('click', function() {
+          $('html, body').animate({
+            scrollTop: $('body').offset().top
+          }, 'fast');
+          animateSpot(data.HWid);
+        });
       }
     };
   }

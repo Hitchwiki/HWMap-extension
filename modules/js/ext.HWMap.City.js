@@ -22,6 +22,7 @@ var setupCityMap = function setupCityMap() {
 
       //Add icon
       marker.data.icon = icons.city;
+      marker.data.HWtype = 'city';
 
       //Register marker
       spotsLayer.RegisterMarker(marker);
