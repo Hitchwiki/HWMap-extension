@@ -65,7 +65,9 @@ var setupCityMap = function setupCityMap() {
         }
 
       }
-      spotsData.groupSpots['Other directions'] = otherDirections;
+      if(otherDirections.length) {
+        spotsData.groupSpots['Other directions'] = otherDirections;
+      }
 
       console.log(spotsData);
       //Init template
