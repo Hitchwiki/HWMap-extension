@@ -194,7 +194,9 @@ window.loadRatings = function (id, reload, spotObjectPath) {
   if(typeof ratingsLoaded[id] === 'undefined' || reload) {
     $.get( apiRoot + "/api.php?action=hwgetratings&format=json&pageid="+id, function(data) {
       if(data.query.ratings.length) {
-        slideShow("#spot-ratings-"+id, 'down');
+        if(!reload) {
+          slideShow("#spot-ratings-"+id, 'down');
+        }
         //Update spot with new average
         for(var j = 0; j < data.query.ratings.length ; j++) {
           data.query.ratings[j].rating_label = getRatingLabel(data.query.ratings[j].rating);
@@ -291,7 +293,9 @@ window.loadWaintingTimes = function (id, reload, spotObjectPath) {
   if(typeof waitingTimesLoaded[id] === 'undefined' || reload) {
     $.get( apiRoot + "/api.php?action=hwgetwaitingtimes&format=json&pageid="+id, function(data) {
       if(data.query.waiting_times.length) {
-        slideShow("#spot-waitingtimes-"+id, 'down');
+        if(!reload) {
+          slideShow("#spot-waitingtimes-"+id, 'down');
+        }
         //Update spot with new average
         for(var j = 0; j < data.query.waiting_times.length ; j++) {
           data.query.waiting_times[j].timestamp_label = parseTimestamp(data.query.waiting_times[j].timestamp);
