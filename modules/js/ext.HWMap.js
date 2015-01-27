@@ -78,42 +78,35 @@ function initHWMap() {
 
   // Icons
   icons.country = L.icon({
-    iconUrl:  extensionRoot + 'icons/city.png',
-    iconRetinaUrl: extensionRoot + 'icons/city@2x.png'
+    iconUrl:  extensionRoot + 'icons/city.svg',
+    iconSize: [24, 24]
   });
   icons.city = L.icon({
-    iconUrl:  extensionRoot + 'icons/city.png',
-    iconRetinaUrl: extensionRoot + 'icons/city@2x.png',
-    iconAnchor: [14, 14]
+    iconUrl:  extensionRoot + 'icons/city.svg',
+    iconSize: [24, 24]
   });
   icons.unknown = L.icon({
-    iconUrl:  extensionRoot + 'icons/0-none.png',
-    iconRetinaUrl: extensionRoot + 'icons/0-none@2x.png',
+    iconUrl:  extensionRoot + 'icons/0-none.svg',
     className: 'hw-spot-icon'
   });
   icons.verygood = L.icon({
-    iconUrl:  extensionRoot + 'icons/1-very-good.png',
-    iconRetinaUrl: extensionRoot + 'icons/1-very-good@2x.png',
+    iconUrl:  extensionRoot + 'icons/1-very-good.svg',
     className: 'hw-spot-icon'
   });
   icons.good = L.icon({
-    iconUrl:  extensionRoot + 'icons/2-good.png',
-    iconRetinaUrl: extensionRoot + 'icons/2-good@2x.png',
+    iconUrl:  extensionRoot + 'icons/2-good.svg',
     className: 'hw-spot-icon'
   });
   icons.average = L.icon({
-    iconUrl:  extensionRoot + 'icons/3-average.png',
-    iconRetinaUrl: extensionRoot + 'icons/3-average@2x.png',
+    iconUrl:  extensionRoot + 'icons/3-average.svg',
     className: 'hw-spot-icon'
   });
   icons.bad = L.icon({
-    iconUrl:  extensionRoot + 'icons/4-bad.png',
-    iconRetinaUrl: extensionRoot + 'icons/4-bad@2x.png',
+    iconUrl:  extensionRoot + 'icons/4-bad.svg',
     className: 'hw-spot-icon'
   });
   icons.senseless = L.icon({
-    iconUrl:  extensionRoot + 'icons/5-senseless.png',
-    iconRetinaUrl: extensionRoot + 'icons/5-senseless@2x.png',
+    iconUrl:  extensionRoot + 'icons/5-senseless.svg',
     className: 'hw-spot-icon'
   });
   icons.new = L.icon({

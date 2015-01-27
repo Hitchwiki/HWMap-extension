@@ -54,7 +54,7 @@ var animateMarker = function(id) {
 //Update spot marker with new rating
 window.updateSpotMarker = function(id, newRating) {
   for(var i = 0; i < spotsLayer.Cluster._markers.length; i++) {
-    if(spotsLayer.Cluster._markers[i].data.id == id) {
+    if(spotsLayer.Cluster._markers[i].data.HWid == id) {
       if(spotsLayer.Cluster._markers[i].data.average != newRating) {
         spotsLayer.Cluster._markers[i].data.icon = iconSpot(newRating);
         spotsLayer.Cluster._markers[i].data.average = newRating;
