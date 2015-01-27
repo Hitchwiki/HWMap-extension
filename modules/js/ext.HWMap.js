@@ -237,7 +237,6 @@ function initHWMap() {
           $('html, body').animate({
             scrollTop: $('body').offset().top
           }, 'fast');
-          animateSpot(data.HWid);
         });
       }
     };
