@@ -213,6 +213,9 @@ function initHWMap() {
   }
   //Check if map is called from a city page
   else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
+
+    hwmap.on('click', stopAnimateSpot);
+
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
       leafletMarker.setIcon(data.icon, data.HWid);
       if(data.HWtype == 'spot') {
