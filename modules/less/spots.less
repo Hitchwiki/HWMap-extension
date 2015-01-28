@@ -136,22 +136,12 @@
   }
 }
 
-#hwmap {
-  .hw-highlight-spot {
-    padding: 3px;
-    width: 21px;
-    height: 21px;
-    margin: -11px;
-    box-shadow: 0 0 2px @hw-blue-shadow;
-    transition: all 0.2s;
-  }
-}
 .hw-spot-icon {
-  margin-left: -8px;
-  margin-top: -8px;
-  width: 16px;
-  height: 16px;
-  background-color: @hw-blue;
   border-radius: 50%;
-  transition: all 0.2s;
+  transition: 'box-shadow' 0.05s;
+  border: 2px solid transparent;
+  &.hw-highlight-spot {
+    border: 2px solid fade(@hw-rating-hover, 70%);
+    box-shadow: 0 0 15px @hw-rating-hover;
+  }
 }
