@@ -92,7 +92,7 @@ var initSpecialPageTemplate = function () {
 };
 
 window.closeSpecialPageSpot = function () {
-  $('#hwspot').hide();
+  $('#hwspot').css({'width': '0%'});
   $('#hwmap').css({'width': '100%'});
   animatedSpot = false;
   $(".hw-highlight-spot").removeClass("hw-highlight-spot");
@@ -145,6 +145,6 @@ window.openSpecialPageSpot = function (id) {
     });
 
   });
-  $('#hwspot').show();
+  $('#hwspot').css({'width': '25%'});
   $('#hwmap').css({'width': '75%'});
 };
