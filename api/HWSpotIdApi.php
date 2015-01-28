@@ -110,6 +110,26 @@ class HWSpotIdApi extends ApiBase {
 
       }
 
+      //If the waiting time extension is set
+      if ( class_exists( 'HWAvgWaitingTimeApi' ) ) {
+        //Get the waiting time median and count
+        $spot_waiting_times = new DerivativeRequest(
+          $this->getRequest(),
+          array(
+            'action' => 'hwavgwaitingtime',
+            'pageid' => $page_id
+          ),
+          true
+        );
+        $spot_waiting_times_api = new ApiMain( $spot_waiting_times );
+        $spot_waiting_times_api->execute();
+        $spot_waiting_times_data = $spot_waiting_times_api->getResultData();
+        $spot->waiting_time_average = $spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_average'];
+        $spot->waiting_time_count = $spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_count'];
+
+      }
+
+
       //If the comment extension is set
       if ( class_exists( 'HWGetCommentsCountApi' ) ) {
         //Get the comments count
