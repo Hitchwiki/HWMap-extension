@@ -111,6 +111,7 @@ window.openSpecialPageSpot = function (id) {
       data.query.spot.rating_user_label = getRatingLabel(data.query.spot.rating_user);
     }
     ractive.set({spot: data.query.spot});
+    loadComments(id, false, 'spot')
      $('#hw-special-page-spinner').hide();
 
     $(".hw-spot-edit-button").click(function(evt) {
