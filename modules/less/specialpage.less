@@ -49,6 +49,9 @@
     min-height: 300px;
     border-left: 1px solid @hw-orange-border;
   }
+  #hwmap.hw-open-spot-map{
+    width: 75%;
+  }
 
   // Hide certain contents
   #contentSub,
@@ -114,7 +117,6 @@
 
 
   #hwspot{
-    //display: none;
     position: relative;
     width: 0%;
     transition: width 0.1s;
@@ -150,6 +152,9 @@
         color: lighten(@hw-grey-dark, 10%);
       }
     }
+  }
+  #hwspot.hw-open-spot{
+    width: 25%;
   }
 
 }

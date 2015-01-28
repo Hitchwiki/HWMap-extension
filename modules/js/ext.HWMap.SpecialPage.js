@@ -92,8 +92,8 @@ var initSpecialPageTemplate = function () {
 };
 
 window.closeSpecialPageSpot = function () {
-  $('#hwspot').css({'width': '0%'});
-  $('#hwmap').css({'width': '100%'});
+  $('#hwspot').removeClass('hw-open-spot');
+  $('#hwmap').removeClass('hw-open-spot-map');
   stopAnimateSpot();
 };
 
@@ -144,6 +144,6 @@ window.openSpecialPageSpot = function (id) {
     });
 
   });
-  $('#hwspot').css({'width': '25%'});
-  $('#hwmap').css({'width': '75%'});
+  $('#hwspot').addClass('hw-open-spot');
+  $('#hwmap').addClass('hw-open-spot-map');
 };
