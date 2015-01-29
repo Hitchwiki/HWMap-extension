@@ -1,4 +1,8 @@
 <?php
+/*
+ * The main map special page
+ * Can be accessed on [[Special:HWMap]]
+ */
 class SpecialHWMap extends SpecialPage {
   function __construct() {
     parent::__construct( 'HWMap' );
