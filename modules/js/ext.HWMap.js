@@ -276,6 +276,7 @@ function initHWMap() {
   //Check if map is called from a country page
   else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
     setupCountryMap();
+    initCountryRatingsTemplate();
   }
 
   // Make sure map sits properly in its surrounding div

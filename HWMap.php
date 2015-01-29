@@ -93,6 +93,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'modules/js/ext.HWMap.SpecialPage.js',
       'modules/js/ext.HWMap.Country.js',
       'modules/js/ext.HWMap.City.js',
+      'modules/js/ext.HWMap.Country.Rating.js',
       'modules/js/ext.HWMap.js'
     ),
     'styles' => array(
@@ -101,8 +102,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     // Other ensures this loads after the Vector skin styles
     'group' => 'other',
     'position' => 'bottom',
-  ),
-
+  )
 ) );
 
 /**
@@ -112,12 +112,18 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 function onParserInit( Parser $parser ) {
   global $wgOut;
   $parser->setHook( 'hwmap', 'HWMapRender');
+  $parser->setHook( 'rate', 'HWRatingRender');
   $wgOut->addModules( 'ext.HWMap' );
   return true;
 }
 
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
   $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.City.template.html');
+  return $result;
+}
+
+function HWRatingRender( $input, array $args, Parser $parser, PPFrame $frame ) {
+  $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.Country.Rating.html');
   return $result;
 }
 

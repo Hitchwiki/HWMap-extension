@@ -194,9 +194,6 @@ window.loadRatings = function (id, reload, spotObjectPath) {
   if(typeof ratingsLoaded[id] === 'undefined' || reload) {
     $.get( apiRoot + "/api.php?action=hwgetratings&format=json&pageid="+id, function(data) {
       if(data.query.ratings.length) {
-        if(!reload) {
-          slideShow("#spot-ratings-"+id, 'down');
-        }
         //Update spot with new average
         for(var j = 0; j < data.query.ratings.length ; j++) {
           data.query.ratings[j].rating_label = getRatingLabel(data.query.ratings[j].rating);
@@ -207,7 +204,13 @@ window.loadRatings = function (id, reload, spotObjectPath) {
         for (var key in data.query.distribution) {
           $('#spot-ratings-'+id+' .bar-'+key).css({'width': data.query.distribution[key].percentage+'%'});
         }
+        if(!reload) {
+          slideShow("#spot-ratings-"+id, 'down');
+        }
         ratingsLoaded[id] = true;
+      }
+      else {
+        ractive.set(spotObjectPath+'.ratings', null);
       }
     });
   }
