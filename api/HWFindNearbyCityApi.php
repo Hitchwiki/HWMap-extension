@@ -33,6 +33,9 @@ class HWFindNearbyCityApi extends ApiBase {
         $south = $sw_bound->getLat();
         $west = $sw_bound->getLng();
 
+        // Empty result result by default
+        $this->getResult()->addValue( array(), 'cities', array() );
+
         // Query for cities within the bounding box
         $dbr = wfGetDB( DB_SLAVE );
         $res = $dbr->select(
@@ -89,7 +92,7 @@ class HWFindNearbyCityApi extends ApiBase {
         if (count($cities) > 0) {
             $closest_cities[] = $cities[0];
             if (count($cities) > 1) {
-                if ($cities[1]['distance'] - $closest_cities[0]['distance'] < $wgHwMapCityCloseDistance) {
+                if ($cities[1]['distance'] - $closest_cities[0]['distance'] <= $wgHwMapCityCloseDistance) {
                     $closest_cities[] = $cities[1];
                 }
             }
@@ -98,9 +101,8 @@ class HWFindNearbyCityApi extends ApiBase {
             return true;
         }
 
-        // Empty result result by default
-        $this->getResult()->addValue( array(), 'cities', array() );
-
+        // Fall back on GeoNames when no city article has been found
+        $closest_cities = array();
         $response = Http::get('http://api.geonames.org/citiesJSON?' . http_build_query(array(
             'north' => $north,
             'east' => $east,
@@ -122,25 +124,66 @@ class HWFindNearbyCityApi extends ApiBase {
         }
 
         $place = $response->geonames[0];
+
         $is_big_city = (
             ($place->fcode && in_array($place->fcode, ['PPLC', 'PPLA'])) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
             ($place->population && $place->population >= $wgHwMapBigCityMinPopulation) // populated city (eg. Rotterdam)
         );
-
-        if ($is_big_city) {
-            $this->getResult()->addValue( array(), 'cities', array(
-                'page_id' => 0,
-                'name' => $place->name,
-                'location' => array(
-                    $place->lat,
-                    $place->lng
-                ),
-                'distance' => round(SphericalGeometry::computeDistanceBetween( // round for reliable comparison later on
-                    new LatLng($place->lat, $place->lng),
-                    new LatLng($lat, $lng) // (lat; lng) from $params
-                ))
-            ) );
+        if (!$is_big_city) {
+            return true;
         }
+
+        // Add first city to the result set
+        $closest_cities[] = array(
+            'page_id' => 0,
+            'name' => $place->name,
+            'location' => array(
+                $place->lat,
+                $place->lng
+            ),
+            'distance' => round(SphericalGeometry::computeDistanceBetween( // round for reliable comparison later on
+                new LatLng($place->lat, $place->lng),
+                new LatLng($lat, $lng) // (lat; lng) from $params
+            ))
+        );
+        $this->getResult()->addValue( 'cities', array(), $closest_cities[0] );
+
+        if (count($response->geonames) == 1) {
+             return true;
+        }
+
+        $place = $response->geonames[1];
+
+
+        // Check if the second city is a big city too
+        $is_big_city = (
+            ($place->fcode && in_array($place->fcode, ['PPLC', 'PPLA'])) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
+            ($place->population && $place->population >= $wgHwMapBigCityMinPopulation) // populated city (eg. Rotterdam)
+        );
+        if (!$is_big_city) {
+            return true;
+        }
+
+        $city = array(
+            'page_id' => 0,
+            'name' => $place->name,
+            'location' => array(
+                $place->lat,
+                $place->lng
+            ),
+            'distance' => round(SphericalGeometry::computeDistanceBetween( // round for reliable comparison later on
+                new LatLng($place->lat, $place->lng),
+                new LatLng($lat, $lng) // (lat; lng) from $params
+            ))
+        );
+
+        // Check if the second city is almost as close to the spot, as the first city
+        if ($city['distance'] - $closest_cities[0]['distance'] > $wgHwMapCityCloseDistance) {
+            return true;
+        }
+
+        // Add second city to the result set
+        $this->getResult()->addValue( 'cities', array(), $city );
 
         return true;
     }
