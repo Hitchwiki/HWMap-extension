@@ -16,6 +16,8 @@ git clone https://github.com/Hitchwiki/HWMap-extension.git extensions/HWMap
 Install assets running bower under HWMap folder
 ```bash
 cd extensions/HWMap
+curl -sS https://getcomposer.org/installer | php
+php composer.phar install
 bower install
 ```
 
