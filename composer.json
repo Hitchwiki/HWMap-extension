@@ -26,5 +26,25 @@
   "scripts": {
     "post-update-cmd": "bower update",
     "post-install-cmd": "bower install"
+  },
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "SphericalGeometry",
+        "version": "1.1.1",
+        "source": {
+          "url": "https://github.com/tubalmartin/spherical-geometry-php.git",
+          "type": "git",
+          "reference": "1.1.1"
+        }
+      }
+    }
+  ],
+  "require": {
+    "SphericalGeometry": "*"
+  },
+  "config": {
+    "vendor-dir": "lib/"
   }
 }

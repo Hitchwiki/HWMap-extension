@@ -31,12 +31,15 @@ $wgAutoloadClasses['SpecialHWMap'] = $IP . '/extensions/HWMap/SpecialHWMap.php';
 $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 
 //Register API
+$wgAutoloadClasses['SphericalGeometry'] = __DIR__ . '/lib/SphericalGeometry/spherical-geometry.class.php';
 $wgAutoloadClasses['HWMapApi'] = __DIR__ . '/api/HWMapApi.php';
 $wgAutoloadClasses['HWMapCityApi'] = __DIR__ . '/api/HWMapCityApi.php';
 $wgAutoloadClasses['HWSpotIdApi'] = __DIR__ . '/api/HWSpotIdApi.php';
+$wgAutoloadClasses['HWFindNearbyCityApi'] = __DIR__ . '/api/HWFindNearbyCityApi.php';
 $wgAPIModules['hwmapapi'] = 'HWMapApi';
 $wgAPIModules['hwmapcityapi'] = 'HWMapCityApi';
 $wgAPIModules['hwspotidapi'] = 'HWSpotIdApi';
+$wgAPIModules['hwfindnearbycityapi'] = 'HWFindNearbyCityApi';
 
 // Register assets
 $wgHWMapResourceBoilerplate = array(
