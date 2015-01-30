@@ -1,6 +1,9 @@
 <?php
 class HWFindNearbyCityApi extends ApiBase {
     public function execute() {
+        global $wgHwMapCityRelevanceRadius;
+        global $wgHwMapCityCloseDistance;
+
         // Get parameters
         $params = $this->extractRequestParams();
         $lat = (double) $params['lat'];
@@ -20,7 +23,7 @@ class HWFindNearbyCityApi extends ApiBase {
          * |              |
          * SW-------------
          */
-        $bounds = SphericalGeometry::computeBounds(new LatLng($lat, $lng), 20000);
+        $bounds = SphericalGeometry::computeBounds(new LatLng($lat, $lng), $wgHwMapCityRelevanceRadius);
         $ne_bound = $bounds->getNorthEast();
         $sw_bound = $bounds->getSouthWest();
         $north = $ne_bound->getLat();
@@ -78,7 +81,7 @@ class HWFindNearbyCityApi extends ApiBase {
         if (count($cities) > 0) {
             $closest_cities[] = $cities[0];
             if (count($cities) > 1) {
-                if ($cities[1]['distance'] - $closest_cities[0]['distance'] < 2500) {
+                if ($cities[1]['distance'] - $closest_cities[0]['distance'] < $wgHwMapCityCloseDistance) {
                     $closest_cities[] = $cities[1];
                 }
             }

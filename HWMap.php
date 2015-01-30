@@ -5,6 +5,39 @@ if ( !defined( 'MEDIAWIKI' ) ) die();
  * <hwmap></hwmap>
  */
 
+/**
+ * "Radius" of the square bounding box within which cities are deemed relevant
+ * to the spot
+ *
+ * Reference: http://www.movable-type.co.uk/scripts/latlong-db.html
+ *
+ *  -------------NE
+ * |              |
+ * |        radius|
+ * |       o------|
+ * |              |
+ * |              |
+ * SW-------------
+ *
+ * Relevant for HWFindNearbyCity API call
+ */
+
+$wgHwMapCityRelevanceRadius = 15000; // in meters
+
+/**
+ * Difference between distances from the spot to the two closest cities
+ * that is considered small enough to consider them both equally relevant
+ *
+ * If the difference is higher than this value, only one closest city will be
+ * included in the result set
+ *
+ * Relevant for HWFindNearbyCity API call
+ */
+
+$wgHwMapCityCloseDistance = 2500; // in meters
+
+/* ------------------------------------------------------------------------ */
+
 // Kudos
 $wgExtensionCredits['HWMap'][] = array(
   'path' => __FILE__,
