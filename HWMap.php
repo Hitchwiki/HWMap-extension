@@ -36,6 +36,15 @@ $wgHwMapCityRelevanceRadius = 15000; // in meters
 
 $wgHwMapCityCloseDistance = 2500; // in meters
 
+/**
+ * Minimum population of a place to be considered a "big city", when it's
+ * neither a country capital, nor a regional capital (eg. Rotterdam)
+ *
+ * Relevant for HWFindNearbyCity API call
+ */
+
+$wgHwMapBigCityMinPopulation = 500000;
+
 /* ------------------------------------------------------------------------ */
 
 // Kudos

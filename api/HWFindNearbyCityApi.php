@@ -3,6 +3,8 @@ class HWFindNearbyCityApi extends ApiBase {
     public function execute() {
         global $wgHwMapCityRelevanceRadius;
         global $wgHwMapCityCloseDistance;
+        global $wgHwMapBigCityMinPopulation;
+        global $hwConfig;
 
         // Get parameters
         $params = $this->extractRequestParams();
@@ -34,8 +36,8 @@ class HWFindNearbyCityApi extends ApiBase {
         // Query for cities within the bounding box
         $dbr = wfGetDB( DB_SLAVE );
         $res = $dbr->select(
-            array( 'geo_tags', 'categorylinks' ),
-            array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to' ),
+            array( 'geo_tags', 'categorylinks', 'page' ),
+            array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to', 'page_title' ),
             array(
                 'gt_lat < ' . $north,
                 'gt_lat > ' . $south,
@@ -45,20 +47,26 @@ class HWFindNearbyCityApi extends ApiBase {
             ),
             __METHOD__,
             array(),
-            array( 'categorylinks' => array( 'JOIN', array(
-                'gt_page_id = cl_from'
-            ) ) )
+            array(
+                'page' => array( 'JOIN', array(
+                    'page_id = cl_from'
+                ) ),
+                'categorylinks' => array( 'JOIN', array(
+                    'gt_page_id = cl_from'
+                ) )
+            )
         );
 
         $cities = array();
         foreach( $res as $row ) {
             $cities[] = array(
                 'page_id' => $row->gt_page_id,
+                'name' => urldecode(str_replace('_', ' ', $row->page_title)),
+                //'category' => $row->cl_to,
                 'location' => array(
                     $row->gt_lat,
                     $row->gt_lon
                 ),
-                'category' => $row->cl_to,
                 'distance' => round(SphericalGeometry::computeDistanceBetween( // round for reliable comparison later on
                     new LatLng($row->gt_lat, $row->gt_lon),
                     new LatLng($lat, $lng) // (lat; lng) from $params
@@ -85,9 +93,54 @@ class HWFindNearbyCityApi extends ApiBase {
                     $closest_cities[] = $cities[1];
                 }
             }
+
+            $this->getResult()->addValue( array(), 'cities', $closest_cities );
+            return true;
         }
 
-        $this->getResult()->addValue( array(), 'cities', $closest_cities );
+        // Empty result result by default
+        $this->getResult()->addValue( array(), 'cities', array() );
+
+        $response = Http::get('http://api.geonames.org/citiesJSON?' . http_build_query(array(
+            'north' => $north,
+            'east' => $east,
+            'south' => $south,
+            'west' => $west,
+            'style' => 'full',
+            'maxRows' => 2,
+            'lang' => 'en',
+            'username' => $hwConfig['vendor']['geonames_username']
+        ) ) );
+
+        if ($response === false) {
+            return true;
+        }
+
+        $response = json_decode($response);
+        if (!$response || empty($response->geonames)) {
+             return true;
+        }
+
+        $place = $response->geonames[0];
+        $is_big_city = (
+            ($place->fcode && in_array($place->fcode, ['PPLC', 'PPLA'])) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
+            ($place->population && $place->population >= $wgHwMapBigCityMinPopulation) // populated city (eg. Rotterdam)
+        );
+
+        if ($is_big_city) {
+            $this->getResult()->addValue( array(), 'cities', array(
+                'page_id' => 0,
+                'name' => $place->name,
+                'location' => array(
+                    $place->lat,
+                    $place->lng
+                ),
+                'distance' => round(SphericalGeometry::computeDistanceBetween( // round for reliable comparison later on
+                    new LatLng($place->lat, $place->lng),
+                    new LatLng($lat, $lng) // (lat; lng) from $params
+                ))
+            ) );
+        }
 
         return true;
     }
