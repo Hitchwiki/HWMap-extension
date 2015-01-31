@@ -3,6 +3,10 @@ class HWMapApi extends ApiBase {
 	public function execute() {
 		// Get parameters
         $params = $this->extractRequestParams();
+        $ne_lat = (double) $params['NElat'];
+        $sw_lat = (double) $params['SWlat'];
+        $sw_lon = (double) $params['SWlon'];
+        $ne_lon = (double) $params['NElon'];
 
         //Send the query do the database
         $dbr = wfGetDB( DB_SLAVE );
@@ -12,10 +16,10 @@ class HWMapApi extends ApiBase {
             array( 'geo_tags', 'categorylinks', 'hw_ratings_avg', 'page'),
             array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to', 'hw_average_rating', 'page_title'),
             array(
-                'gt_lat <'.$params['NElat'],
-                'gt_lat >'.$params['SWlat'],
-                'gt_lon >'.$params['SWlon'],
-                'gt_lon <'.$params['NElon']
+                'gt_lat <'.$ne_lat,
+                'gt_lat >'.$sw_lat,
+                'gt_lon >'.$sw_lon,
+                'gt_lon <'.$ne_lon
             ),
             __METHOD__,
             array(),
@@ -53,10 +57,10 @@ class HWMapApi extends ApiBase {
             array( 'geo_tags', 'categorylinks'),
             array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to'),
             array(
-                'gt_lat <'.$params['NElat'],
-                'gt_lat >'.$params['SWlat'],
-                'gt_lon >'.$params['SWlon'],
-                'gt_lon <'.$params['NElon']
+                'gt_lat <'.$ne_lat,
+                'gt_lat >'.$sw_lat,
+                'gt_lon >'.$sw_lon,
+                'gt_lon <'.$ne_lon
             ),
             __METHOD__,
             array(),
