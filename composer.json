@@ -24,25 +24,16 @@
     "source": "https://github.com/Hitchwiki/HWMap-extension"
   },
   "scripts": {
-    "post-update-cmd": "bower update --config.interactive=false",
-    "post-install-cmd": "bower install --config.interactive=false"
-  },
-  "repositories": [
-    {
-      "type": "package",
-      "package": {
-        "name": "SphericalGeometry",
-        "version": "1.1.1",
-        "source": {
-          "url": "https://github.com/tubalmartin/spherical-geometry-php.git",
-          "type": "git",
-          "reference": "1.1.1"
-        }
-      }
-    }
-  ],
-  "require": {
-    "SphericalGeometry": "*"
+    "post-update-cmd": [
+      "git clone -b master 'https://github.com/tubalmartin/spherical-geometry-php.git' lib/SphericalGeometry",
+      "cd lib/SphericalGeometry && git checkout tags/1.1.1",
+      "bower update --config.interactive=false"
+    ],
+    "post-install-cmd": [
+      "git clone -b master 'https://github.com/tubalmartin/spherical-geometry-php.git' lib/SphericalGeometry",
+      "cd lib/SphericalGeometry && git checkout tags/1.1.1",
+      "bower install --config.interactive=false"
+    ]
   },
   "config": {
     "vendor-dir": "lib/"
