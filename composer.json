@@ -24,16 +24,8 @@
     "source": "https://github.com/Hitchwiki/HWMap-extension"
   },
   "scripts": {
-    "post-update-cmd": [
-      "git clone -b master 'https://github.com/tubalmartin/spherical-geometry-php.git' lib/SphericalGeometry",
-      "cd lib/SphericalGeometry && git checkout tags/1.1.1",
-      "bower update --config.interactive=false"
-    ],
-    "post-install-cmd": [
-      "git clone -b master 'https://github.com/tubalmartin/spherical-geometry-php.git' lib/SphericalGeometry",
-      "cd lib/SphericalGeometry && git checkout tags/1.1.1",
-      "bower install --config.interactive=false"
-    ]
+    "post-update-cmd": "./update-dependencies.sh",
+    "post-install-cmd": "./update-dependencies.sh"
   },
   "config": {
     "vendor-dir": "lib/"
