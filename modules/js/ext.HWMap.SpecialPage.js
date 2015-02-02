@@ -12,7 +12,7 @@ $.fn.urlHash = function() {
 /*
  * Setup big map at Special:HWMap
  */
-var setupSpecialPageMap = function () {
+var setupSpecialPageMap = function (urlParamSpot) {
   mw.log('->HWMap->setupSpecialPageMap');
 
   //Set map view
@@ -54,7 +54,7 @@ var setupSpecialPageMap = function () {
     updateURL();
   });
 
-  initSpecialPageTemplate();
+  initSpecialPageTemplate(urlParamSpot);
 
   // Button for adding new spot (show only for logged in users)
   // wgUserId returns null when not logged in
@@ -80,7 +80,7 @@ var setupSpecialPageMap = function () {
   hwmap.fireEvent('moveend');
 }
 
-var initSpecialPageTemplate = function () {
+var initSpecialPageTemplate = function (urlParamSpot) {
   var spot = {};
   $.get( extensionRoot +'modules/templates/ext.HWMap.SpecialPageSpot.template.html' ).then( function ( template ) {
     ractive = new Ractive({
@@ -88,6 +88,9 @@ var initSpecialPageTemplate = function () {
       template: template,
       data: {userId: userId}
     });
+    if(typeof urlParamSpot != undefined) {
+      openSpecialPageSpot(urlParamSpot, true);
+    }
   });
 };
 
@@ -97,7 +100,7 @@ window.closeSpecialPageSpot = function () {
   stopAnimateSpot();
 };
 
-window.openSpecialPageSpot = function (id) {
+window.openSpecialPageSpot = function (id, moveTo) {
   animateSpot(id);
   ractive.set({spot: null});
   $('#hw-special-page-spinner').show();
@@ -111,6 +114,9 @@ window.openSpecialPageSpot = function (id) {
       data.query.spot.rating_user_label = getRatingLabel(data.query.spot.rating_user);
     }
     ractive.set({spot: data.query.spot});
+    if(moveTo) {
+      moveToSpot('spot', id);
+    }
     loadComments(id, false, 'spot')
      $('#hw-special-page-spinner').hide();
 
