@@ -156,8 +156,8 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
 function onParserInit( Parser $parser ) {
   global $wgOut;
-  $parser->setHook( 'hwmap', 'HWMapRender');
-  $parser->setHook( 'rate', 'HWRatingRender');
+  $parser->setHook( 'hw-map', 'HWMapRender');
+  $parser->setHook( 'hw-rate', 'HWRatingRender');
   $wgOut->addModules( 'ext.HWMap' );
   return true;
 }
