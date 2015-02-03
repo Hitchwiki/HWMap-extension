@@ -51,12 +51,10 @@
       background-color: @hw-color-verygood;
       color: white;
     }
-    .rate{
+    .rate {
       cursor: pointer;
-      border-bottom: 1px solid;
-      border-right: 1px solid;
-      border-top: 1px solid;
-      border-color: @hw-grey-dark;
+      border: 1px solid @hw-grey-dark;
+      border-left: 0;
       border-radius: 0 2px 2px 0;
     }
     .your-rate {
@@ -68,7 +66,7 @@
       background-color: @hw-grey-lighter;
       border-radius: 0 2px 2px;
       text-align: left;
-      .rating-choice-head{
+      .rating-choice-head {
         border-bottom: 1px solid @hw-grey-medium;
         color: @hw-grey-medium;
         margin: 1px 7px 2px 7px;
@@ -76,34 +74,36 @@
         height: @hw-rating-height;
         line-height: @hw-rating-height;
       }
-      .rating-choice{
+      .rating-choice {
         cursor: pointer;
         padding: 1px 7px 1px 7px;
         display: block;
         height: @hw-rating-height;
         line-height: @hw-rating-height;
+        &:hover{
+          background: @hw-grey-light;
+        }
       }
-      .rating-choice:hover{
-        background: @hw-grey-light;
-      }
-      .rating-choice-timestamp{
+      .rating-choice-timestamp {
+        display: block;
         border-top: 1px solid @hw-grey-medium;
         color: @hw-grey-medium;
         margin: 2px 7px 1px 7px;
-        display: block;
-        height: @hw-rating-height;
-        line-height: @hw-rating-height;
+        padding: 2px 0 0 0;
+        font-size: 11px;
+        line-height: 13px;
       }
       .rating-choice-remove{
+        display: block;
         color: @hw-grey-medium;
         margin: 1px 7px 2px 7px;
-        display: block;
-        height: @hw-rating-height;
+        font-size: 11px;
+        line-height: 13px;
         line-height: @hw-rating-height;
         cursor: pointer;
-      }
-      .rating-choice-remove:hover{
-        text-decoration: underline;
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }
