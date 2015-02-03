@@ -19,13 +19,13 @@ class HWMapApi extends ApiBase {
                 'gt_lat <'.$ne_lat,
                 'gt_lat >'.$sw_lat,
                 'gt_lon >'.$sw_lon,
-                'gt_lon <'.$ne_lon
+                'gt_lon <'.$ne_lon,
             ),
             __METHOD__,
             array(),
             array(
               'categorylinks' => array( 'JOIN', array(
-		'gt_page_id=cl_from' ) ),
+		'gt_page_id=cl_from AND cl_to = \'Cities\' OR gt_page_id=cl_from AND cl_to = \'Spots\'' ) ),
               'hw_ratings_avg' => array( 'LEFT JOIN ', array(
 		'gt_page_id=hw_page_id' ) ),
               'page' => array( 'LEFT JOIN ', array(
