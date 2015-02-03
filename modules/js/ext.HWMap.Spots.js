@@ -106,8 +106,8 @@ var slideShow = function (id, state) {
 }
 
 var commentLoaded = [];
-window.loadComments = function (id, reload, spotObjectPath) {
-  if(typeof commentLoaded[id] === 'undefined' || reload) {
+window.loadComments = function (id, reload, spotObjectPath, specialPageLoad) {
+  if(typeof commentLoaded[id] === 'undefined' || reload || specialPageLoad) {
     $('#comment-spinner-'+id).css({'visibility': 'visible'});
     $.get( apiRoot + "/api.php?action=hwgetcomments&format=json&pageid="+id, function(data) {
       if(data.query) {

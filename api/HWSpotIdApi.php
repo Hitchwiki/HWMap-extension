@@ -8,6 +8,7 @@ class HWSpotIdApi extends ApiBase {
       $params = $this->extractRequestParams();
       $page_id = $params['page_id'];
       $properties = $params['properties'];
+      $user_id = $params['user_id'];
 
       //Make an array from the properties
       $properties_array = explode(',', $properties);
@@ -84,7 +85,8 @@ class HWSpotIdApi extends ApiBase {
           $this->getRequest(),
           array(
             'action' => 'hwavgrating',
-            'pageid' => $page_id
+            'pageid' => $page_id,
+            'user_id' => $user_id
           ),
           true
         );
@@ -93,6 +95,8 @@ class HWSpotIdApi extends ApiBase {
         $spot_average_rating_data = $spot_average_rating_api->getResultData();
         $spot->rating_average = $spot_average_rating_data['query']['ratings'][0]['rating_average'];
         $spot->rating_count = $spot_average_rating_data['query']['ratings'][0]['rating_count'];
+        $spot->rating_user =  $spot_average_rating_data['query']['ratings'][0]['rating_user'];
+        $spot->timestamp_user =  $spot_average_rating_data['query']['ratings'][0]['timestamp_user'];
 
         //And tget the average detail
         $spot_average_detail = new DerivativeRequest(
@@ -181,6 +185,10 @@ class HWSpotIdApi extends ApiBase {
 			'properties' => array (
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true
+			),
+			'user_id' => array (
+				ApiBase::PARAM_TYPE => 'string',
+				ApiBase::PARAM_REQUIRED => true
 			)
 		);
 	}
@@ -189,7 +197,8 @@ class HWSpotIdApi extends ApiBase {
 	public function getParamDescription() {
 		return array_merge( parent::getParamDescription(), array(
 			'page_title' => 'Page title',
-			'properties' => 'Page propeties to query'
+			'properties' => 'Page propeties to query',
+			'user_id' => 'Current user id'
 		) );
 	}
 }

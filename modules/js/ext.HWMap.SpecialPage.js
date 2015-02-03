@@ -104,7 +104,7 @@ window.openSpecialPageSpot = function (id, moveTo) {
   animateSpot(id);
   ractive.set({spot: null});
   $('#hw-special-page-spinner').show();
-  $.get( apiRoot + "/api.php?action=hwspotidapi&format=json&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=" + id, function( data ) {
+  $.get( apiRoot + "/api.php?action=hwspotidapi&format=json&user_id=" + userId + "&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=" + id, function( data ) {
     data.query.spot.id = id;
     data.query.spot.average_label = getRatingLabel(data.query.spot.rating_average);
     if(data.query.spot.timestamp_user){
@@ -117,8 +117,8 @@ window.openSpecialPageSpot = function (id, moveTo) {
     if(moveTo) {
       moveToSpot('spot', id);
     }
-    loadComments(id, false, 'spot')
-     $('#hw-special-page-spinner').hide();
+    loadComments(id, false, 'spot', true);
+    $('#hw-special-page-spinner').hide();
 
     $(".hw-spot-edit-button").click(function(evt) {
       evt.preventDefault();
