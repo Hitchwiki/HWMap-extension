@@ -55,42 +55,53 @@ function initHWMap() {
   // Give up if no element on the page
   if(!document.getElementById("hwmap") || ($.inArray(mw.config.get("wgAction"), ["view", "purge", "submit"]) == -1) ) return;
 
-
-
+  // Define icons
   L.Icon.Default.imagePath = extensionRoot + 'modules/vendor/leaflet/dist/images';
-
-  // Icons
   icons.country = L.icon({
     iconUrl:  extensionRoot + 'icons/city.svg',
-    iconSize: [24, 24]
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
   });
   icons.city = L.icon({
     iconUrl:  extensionRoot + 'icons/city.svg',
-    iconSize: [24, 24]
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
   });
   icons.unknown = L.icon({
     iconUrl:  extensionRoot + 'icons/0-none.svg',
-    className: 'hw-spot-icon'
+    className: 'hw-spot-icon',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
   });
   icons.verygood = L.icon({
     iconUrl:  extensionRoot + 'icons/1-very-good.svg',
-    className: 'hw-spot-icon'
+    className: 'hw-spot-icon',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
   });
   icons.good = L.icon({
     iconUrl:  extensionRoot + 'icons/2-good.svg',
-    className: 'hw-spot-icon'
+    className: 'hw-spot-icon',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
   });
   icons.average = L.icon({
     iconUrl:  extensionRoot + 'icons/3-average.svg',
-    className: 'hw-spot-icon'
+    className: 'hw-spot-icon',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
   });
   icons.bad = L.icon({
     iconUrl:  extensionRoot + 'icons/4-bad.svg',
-    className: 'hw-spot-icon'
+    className: 'hw-spot-icon',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
   });
   icons.senseless = L.icon({
     iconUrl:  extensionRoot + 'icons/5-senseless.svg',
-    className: 'hw-spot-icon'
+    className: 'hw-spot-icon',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
   });
   icons.new = L.icon({
     iconUrl:  extensionRoot + 'icons/new.png',
@@ -103,8 +114,8 @@ function initHWMap() {
     popupAnchor:  [-3, -17] // point from which the popup should open relative to the iconAnchor
   });
 
-  // Using Mapbox tiles developed for Trustroots+Hitchwiki
 
+  // Using Mapbox tiles developed for Trustroots+Hitchwiki
   var mapBoxUrl = '//{s}.tiles.mapbox.com/v4/{user}.{map}/{z}/{x}/{y}.png' + L.Util.getParamString({
     //secure: 1, // Uncomment if we ever start using https
     access_token: mapboxAccessToken

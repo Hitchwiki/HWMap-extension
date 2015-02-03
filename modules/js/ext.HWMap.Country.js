@@ -46,4 +46,3 @@ var setupCountryMap = function setupCountryMap() {
 
   });
 }
-

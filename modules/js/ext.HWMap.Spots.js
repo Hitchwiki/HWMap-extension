@@ -399,4 +399,3 @@ var stopAnimateSpot = function () {
   animatedSpot = false;
   $(".hw-highlight-spot").removeClass("hw-highlight-spot");
 }
-
