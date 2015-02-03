@@ -70,38 +70,38 @@ function initHWMap() {
   icons.unknown = L.icon({
     iconUrl:  extensionRoot + 'icons/0-none.svg',
     className: 'hw-spot-icon',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
   icons.verygood = L.icon({
     iconUrl:  extensionRoot + 'icons/1-very-good.svg',
     className: 'hw-spot-icon',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
   icons.good = L.icon({
     iconUrl:  extensionRoot + 'icons/2-good.svg',
     className: 'hw-spot-icon',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
   icons.average = L.icon({
     iconUrl:  extensionRoot + 'icons/3-average.svg',
     className: 'hw-spot-icon',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
   icons.bad = L.icon({
     iconUrl:  extensionRoot + 'icons/4-bad.svg',
     className: 'hw-spot-icon',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
   icons.senseless = L.icon({
     iconUrl:  extensionRoot + 'icons/5-senseless.svg',
     className: 'hw-spot-icon',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
   icons.new = L.icon({
     iconUrl:  extensionRoot + 'icons/new.png',
