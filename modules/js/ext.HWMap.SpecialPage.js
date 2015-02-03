@@ -88,7 +88,7 @@ var initSpecialPageTemplate = function (urlParamSpot) {
       template: template,
       data: {userId: userId}
     });
-    if(typeof urlParamSpot != undefined) {
+    if(urlParamSpot) {
       openSpecialPageSpot(urlParamSpot, true);
     }
   });
