@@ -32,8 +32,9 @@ var setupSpecialPageMap = function (urlParamSpot) {
   hwmap.on('moveend', function() {
     //mw.log(spotsLayer._topClusterLevel._childcount);
     //Get spots when zoom is bigger than 6
-    if(hwmap.getZoom() > 5) {
-      getBoxSpots();
+    var zoom = hwmap.getZoom();
+    if(zoom > 5) {
+      getBoxSpots("", zoom);
     }
     //When zoom is smaller than 6 we clear the markers if not already cleared
     else if(spotsLayer._objectsOnMap.length > 0){

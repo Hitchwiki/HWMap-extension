@@ -35,6 +35,7 @@ var hwmap,
     $newSpotWrap = $("#hwmap-add-wrap"),
     $newSpotForm = $newSpotWrap.find("form"),
     $newSpotInit = $("#hwmap-add"),
+    spots,
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
     apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
@@ -179,7 +180,7 @@ function initHWMap() {
   });
 
   // Layers
-  spotsLayer = new PruneClusterForLeaflet(60, 60);
+  spotsLayer = new PruneClusterForLeaflet(120, 0);
   //spotsLayer.Cluster.Size = 10;
 
   //Check if map is called from the special page
@@ -300,14 +301,14 @@ function initHWMap() {
 }
 
 // Get markers in the current bbox
-var getBoxSpots = function (category) {
+var getBoxSpots = function (category, zoom) {
   if(!category) {
     category = "";
   }
 
   bounds = hwmap.getBounds();
 
-  if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng) {
+  if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng || zoom != lastZoom) {
 
     //Make the bounds a bit bigger
     lastBounds.NElat = bounds._northEast.lat +1;
@@ -326,8 +327,8 @@ var getBoxSpots = function (category) {
         spotsLayer.RemoveMarkers();
 
         //Add the new markers
-        var spots = data.query.spots;
-        for (var i in spots) {
+        spots = data.query.spots;
+        for (var i = -1, len = spots.length; ++i < len;) {
           if(spots[i].category == 'Spots') {
             //Build marker
             var marker = new PruneCluster.Marker(
@@ -357,9 +358,25 @@ var getBoxSpots = function (category) {
             spotsLayer.RegisterMarker(marker);
           }
         }
-        spotsLayer.ProcessView();
       }
 
+      //Change cluster size depending on the zoom level
+      if(zoom != lastZoom) {
+        lastZoom = zoom;
+        if(zoom < 8) {
+          spotsLayer.Cluster.Size = parseInt(120);
+          console.log(spotsLayer.Cluster.Size);
+        }
+        else if(zoom < 11) {
+          spotsLayer.Cluster.Size = parseInt(80);
+          console.log(spotsLayer.Cluster.Size);
+        }
+        else {
+          spotsLayer.Cluster.Size = parseInt(10);
+          console.log(spotsLayer.Cluster.Size);
+        }
+      }
+      spotsLayer.ProcessView();
     });
   }
 }
