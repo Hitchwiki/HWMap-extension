@@ -310,10 +310,10 @@ var getBoxSpots = function (category) {
   if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng) {
 
     //Make the bounds a bit bigger
-    lastBounds.NElat = parseInt(bounds._northEast.lat) + 1;
-    lastBounds.NElng = parseInt(bounds._northEast.lng) + 1;
-    lastBounds.SWlat = parseInt(bounds._southWest.lat) - 1;
-    lastBounds.SWlng = parseInt(bounds._southWest.lng) - 1;
+    lastBounds.NElat = bounds._northEast.lat +1;
+    lastBounds.NElng = bounds._northEast.lng +1;
+    lastBounds.SWlat = bounds._southWest.lat -1;
+    lastBounds.SWlng = bounds._southWest.lng -1;
 
     // Query HWCoordinateAPI
     $.get( apiRoot + "/api.php?action=hwmapapi&SWlat=" + lastBounds.SWlat + "&SWlon=" + lastBounds.SWlng + "&NElat=" + lastBounds.NElat + "&NElon=" + lastBounds.NElng + "&category=" + category + "&format=json", function( data ) {
