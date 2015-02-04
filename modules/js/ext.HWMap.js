@@ -2,20 +2,20 @@
  * Hitchwiki Maps
  */
 
-var hwConfig = mw.config.get( 'hwConfig' );
+var hwConf = mw.config.get( 'hwConfig' );
 
 // Default location (can be overridden in the URL)
 var defaultCenter = [48.6908333333, 9.14055555556], // Europe
     defaultZoom = 5;
 
 // Mapbox settings
-var mapboxUser = hwConfig.vendor.mapbox_username,
-    mapboxStyleStreets = hwConfig.vendor.mapbox_mapkey_streets, //Trustroots maps
-    mapboxStyleSatellite = hwConfig.vendor.mapbox_mapkey_satellite, //Trustroots maps
-    mapboxAccessToken = hwConfig.vendor.mapbox_access_token;
+var mapboxUser = hwConf.vendor.mapbox_username,
+    mapboxStyleStreets = hwConf.vendor.mapbox_mapkey_streets, //Trustroots maps
+    mapboxStyleSatellite = hwConf.vendor.mapbox_mapkey_satellite, //Trustroots maps
+    mapboxAccessToken = hwConf.vendor.mapbox_access_token;
 
 // Geonames settings
-var geonamesUsername = hwConfig.vendor.geonames_username;
+var geonamesUsername = hwConf.vendor.geonames_username;
 var spotCityDistance = 15; // in kilometers
 var minPopulationNonCapital = 500000;
 
