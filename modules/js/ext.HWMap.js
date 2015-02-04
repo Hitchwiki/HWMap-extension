@@ -179,8 +179,8 @@ function initHWMap() {
   });
 
   // Layers
-  spotsLayer = new PruneClusterForLeaflet();
-  spotsLayer.Cluster.Size = 10;
+  spotsLayer = new PruneClusterForLeaflet(60, 60);
+  //spotsLayer.Cluster.Size = 10;
 
   //Check if map is called from the special page
   if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
