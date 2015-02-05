@@ -365,15 +365,12 @@ var getBoxSpots = function (category, zoom) {
         lastZoom = zoom;
         if(zoom < 8) {
           spotsLayer.Cluster.Size = parseInt(120);
-          console.log(spotsLayer.Cluster.Size);
         }
         else if(zoom < 11) {
           spotsLayer.Cluster.Size = parseInt(80);
-          console.log(spotsLayer.Cluster.Size);
         }
         else {
           spotsLayer.Cluster.Size = parseInt(10);
-          console.log(spotsLayer.Cluster.Size);
         }
       }
       spotsLayer.ProcessView();
