@@ -4,6 +4,9 @@
 var setupCityMap = function setupCityMap() {
   mw.log('->HWMap->setupCityMap');
 
+  //Cluster size
+  spotsLayer.Cluster.Size = parseInt(10);
+
   //Getting the current coordinate
   $.get( apiRoot + "/api.php?action=query&prop=coordinates&titles=" + mw.config.get("wgTitle") + "&format=json", function( data ) {
     for (var i in data.query.pages) {
