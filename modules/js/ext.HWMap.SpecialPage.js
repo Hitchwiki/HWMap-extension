@@ -30,16 +30,23 @@ var setupSpecialPageMap = function (urlParamSpot) {
 
   //Fire event to check when map move
   hwmap.on('moveend', function() {
+    $(".tipsy").remove();
     //mw.log(spotsLayer._topClusterLevel._childcount);
     //Get spots when zoom is bigger than 6
     var zoom = hwmap.getZoom();
-    if(zoom > 5) {
+    if(zoom > 6 && zoom < 8) {
+      getBoxSpots("Cities", zoom);
+    }
+    else if(zoom > 7) {
       getBoxSpots("", zoom);
     }
     //When zoom is smaller than 6 we clear the markers if not already cleared
-    else if(spotsLayer._objectsOnMap.length > 0){
+    else if(spotsLayer._objectsOnMap.length > 0 || cityLayer._objectsOnMap.length > 0){
       //Clear the markers and last boundings
       spotsLayer.RemoveMarkers();
+      cityLayer.RemoveMarkers();
+      spotsLayer.ProcessView();
+      cityLayer.ProcessView();
       lastBounds = {
         NElat:'0',
         NElng:'0',

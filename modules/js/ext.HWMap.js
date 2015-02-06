@@ -26,6 +26,7 @@ var pageLocationUrl = location.protocol + '//' + location.host + location.pathna
 // Setup variables
 var hwmap,
     spotsLayer,
+    cityLayer,
     newSpotMarker,
     newSpotLayer,
     icons = {},
@@ -65,6 +66,7 @@ function initHWMap() {
   });
   icons.city = L.icon({
     iconUrl:  extensionRoot + 'icons/city.svg',
+    className: 'hw-city-icon',
     iconSize: [24, 24],
     iconAnchor: [12, 12]
   });
@@ -181,7 +183,7 @@ function initHWMap() {
 
   // Layers
   spotsLayer = new PruneClusterForLeaflet(120, 0);
-  //spotsLayer.Cluster.Size = 10;
+  cityLayer = new PruneClusterForLeaflet(5, 0);
 
   //Check if map is called from the special page
   if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
@@ -211,20 +213,18 @@ function initHWMap() {
 
     spotsLayer.PrepareLeafletMarker = function(leafletMarker, data) {
       leafletMarker.setIcon(data.icon, data.HWid);
-      if(data.HWtype == 'spot') {
         if(animatedSpot == data.HWid) {
           animateSpot(data.HWid);
         }
         leafletMarker.on('click', function(){
           openSpecialPageSpot(data.HWid);
         });
-      }
-      if(data.HWtype == 'city') {
-        $("#marker-" + data.HWid).tipsy({fallback: 'Open ' + data.title, gravity: $.fn.tipsy.autoNS});
-        leafletMarker.on('click', function(){
-          window.location = wgArticlePath.replace('$1', data.title);
-        });
-      }
+    };
+    cityLayer.PrepareLeafletMarker = function(leafletMarker, data) {
+      leafletMarker.setIcon(data.icon, data.HWid, data.title);
+      leafletMarker.on('click', function(){
+        window.location = wgArticlePath.replace('$1', data.title);
+      });
     };
   }
   //Check if map is called from a city page
@@ -262,10 +262,16 @@ function initHWMap() {
   }
   //Check if map is called from a country page
   else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
-    //@todo
+    cityLayer.PrepareLeafletMarker = function(leafletMarker, data) {
+      leafletMarker.setIcon(data.icon, data.HWid, data.title);
+      leafletMarker.on('click', function(){
+        window.location = wgArticlePath.replace('$1', data.title);
+      });
+    };
   }
 
   hwmap.addLayer(spotsLayer);
+  hwmap.addLayer(cityLayer);
 
   // Layer control
   L.control.layers(
@@ -325,6 +331,7 @@ var getBoxSpots = function (category, zoom) {
       else if(data.query) {
         //Clear the current markers
         spotsLayer.RemoveMarkers();
+        cityLayer.RemoveMarkers();
 
         //Add the new markers
         spots = data.query.spots;
@@ -355,7 +362,7 @@ var getBoxSpots = function (category, zoom) {
             marker.data.HWtype = 'city';
             marker.data.title = spots[i].title;
             //Register marker
-            spotsLayer.RegisterMarker(marker);
+            cityLayer.RegisterMarker(marker);
           }
         }
       }
@@ -374,6 +381,12 @@ var getBoxSpots = function (category, zoom) {
         }
       }
       spotsLayer.ProcessView();
+      cityLayer.ProcessView();
+      $(".tipsy").remove();
+      $(".hw-city-icon").tipsy({title: function() {
+        var orginalTitle = this.getAttribute('original-title');
+        return "Open " + orginalTitle.replace(/_/g," ");
+      }, gravity: $.fn.tipsy.autoNS});
     });
   }
 }
@@ -393,8 +406,9 @@ jQuery(document).ready(function($){
       originalsetIcon = L.Marker.prototype.setIcon;
 
   L.Marker.include({
-    setIcon: function (icon, id) {
+    setIcon: function (icon, id, title) {
       this.options.id = id;
+      this.options.title = title;
       originalsetIcon.call(this, icon);
     },
     _initIcon: function () {
