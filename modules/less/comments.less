@@ -16,7 +16,7 @@
 }
 
 .spot-comments{
-    margin-top: 10px;
+  margin-top: 10px;
   display: none;
   height: 0px;
   overflow: hidden;
@@ -26,11 +26,22 @@
   box-shadow:
     inset 0px 11px 8px -10px @hw-grey-medium,
     inset 0px -11px 8px -10px @hw-grey-medium;
-  background-color: @hw-grey-light;
+  //background-color: @hw-grey-lighter;
   .comment-textarea {
+    //border: 1px solid @hw-grey-dark;
     padding: 5px;
+    margin: 0 0 5px 0;
     font-size: 13px;
     line-height: 18px;
+    //&:focus {
+    //  outline: none;
+    //  border-color: @hw-orange-border;
+    //}
+  }
+  .comment-button {
+    //.hwbutton();
+    //.hwbutton-secondary();
+    //.hwbutton-small();
   }
   .comment {
     border-bottom: 1px solid @hw-grey-medium;
@@ -43,7 +54,7 @@
       cursor: pointer;
       margin: 2px;
       &:hover {
-        color: @hw-color-senseless;
+        color: @hw-color-warning;
       }
     }
     .comment-meta {

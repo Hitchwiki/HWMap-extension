@@ -1,6 +1,15 @@
 /*
  * Hitchhiking spots
  */
+
+// Spots list main title (h2)
+#spots {
+  &, a {
+    color: #333;
+  }
+}
+
+// Single spot
 .spot {
   .spot-main-col {
     border-bottom: 2px solid @hw-grey-medium;
@@ -17,13 +26,30 @@
       font-weight: normal;
     }
   }
+  .spot-locate {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    background: @hw-gray-light;
+    color: @hw-gray-medium;
+    text-decoration: none;
+    overflow: hidden;
+    &:active,
+    &:hover {
+      outline: none;
+      background: lighten(@hw-gray-light);
+    }
+  }
 }
 .spot-hover {
   background-color: @hw-grey-light;
 }
 .spot-footer {
   min-height: @hw-footer-height;
-  text-align: center;
+  text-align: left;
   .col-footer-left-border {
     border-left: 1px solid @hw-grey-medium;
   }
@@ -55,19 +81,19 @@
   border-radius: 8px;
   border: 1px solid @hw-grey-dark;
 }
-.bubble-verygood{
+.bubble-verygood {
   background-color: @hw-color-verygood;
 }
-.bubble-good{
+.bubble-good {
   background-color: @hw-color-good;
 }
-.bubble-average{
+.bubble-average {
   background-color: @hw-color-average;
 }
-.bubble-bad{
+.bubble-bad {
   background-color: @hw-color-bad;
 }
-.bubble-senseless{
+.bubble-senseless {
   background-color: @hw-color-senseless;
 }
 
@@ -76,7 +102,7 @@
 .spot-waiting-times {
   display: none;
   height: 0px;
-  margin: 20px auto;
+  margin: 20px 0;
   max-width: 280px;
   width: 95%;
 }
@@ -90,8 +116,8 @@
   padding: 7px 5px 7px 5px;
   max-height: 200px;
   overflow-y: auto;
-  table{
-    text-align: center;
+  table {
+    text-align: left;
     width: 100%;
     tr {
       border-bottom: 1px solid @hw-grey-medium;
@@ -119,13 +145,13 @@
 }
 
 .hw-cardinal-direction {
-  font-size: 24px;
-  line-height: 25px;
   font-weight: normal;
   display: inline-block;
   margin-top: 30px;
   margin-bottom: 10px;
   &, a {
+    font-size: 24px;
+    line-height: 25px;
     color: #333;
     text-decoration: none;
   }

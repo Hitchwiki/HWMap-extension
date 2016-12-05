@@ -1,16 +1,15 @@
+<h2 id="spots"><a href="#spots">Hitchhiking spots</a></h2>
 
 {{#spots.groupSpots:direction}}
-<div class="row" id="{{direction}}">
-  <div class="col-md-12">
-    <a href="#{{direction}}" class="hw-cardinal-direction"><i class="fa fa-location-arrow"></i> {{direction}}</a>
-  </div>
+<div class="visualClear" id="{{direction}}">
+  <h3 class="hw-cardinal-direction"><a href="#{{direction}}"><i class="fa fa-location-arrow"></i> {{direction}}</a></h3>
 </div>
 
 {{#this:index}}
 <div class="spot row">
   <div class="col-md-12 spot-main-col" id="spot_{{id}}">
     <div class="spot-main row">
-      <div class="spot-head col-xs-12">
+      <div class="spot-head">
         <div class="spot-towards">
         {{#if CitiesDirection}}
           Towards
@@ -22,16 +21,8 @@
       </div>
     </div>
     <div class="spot-footer row">
-      <div class="col-lg-3  col-md-12 col-spot-footer">
-        {{#if rating_count || waiting_time_count}}
-        <button onclick="loadSpotDetails({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')" type="button" class="hw-button hw-button-big"><i class="fa fa-bar-chart"></i></button>
-        {{/if}}
-        <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')"><i class="fa fa-comment-o"></i></button>
-        <button type="button" class="hw-button hw-button-big" onclick="moveToSpot('spots.groupSpots.{{direction}}.{{index}}', '{{id}}')"><i class="fa fa-map-marker"></i></button>
-        {{#if userId}}
-        <button type="button" class="hw-button hw-button-big hw-spot-edit-button" data-title="{{title}}"><i class="fa fa-edit"></i></button>
-        {{/if}}
-      </div>
+
+      <!-- Ratings -->
       <div class="ratings col-lg-5 col-md-6 col-spot-footer">
         <span class="rating-widget average-{{rating_average}}">
           <span class="average {{#if rating_average > 0}}average-{{Math.round(rating_average)}}{{else}}average-null{{/if}} {{#if !userId}}average-no-user{{/if}}">{{average_label}} {{#if rating_count > 0}}<small>({{rating_count}})</small>{{/if}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate {{#if rating_user > 0}}rate-{{Math.round(rating_user)}}{{else}}rate-null{{/if}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
@@ -89,7 +80,10 @@
           </div>
         </div>
       </div>
-      <div class="waiting-time col-lg-4 col-md-6 col-spot-footer">
+      <!-- /Ratings -->
+
+      <!-- Waiting times -->
+      <div class="waiting-time col-md-6 col-lg-4 col-spot-footer">
         <div class="waiting-time-widget">
           {{#if waiting_time_count}}<span>Waiting time {{waiting_time_average}} minutes ({{waiting_time_count}})</span>
           {{else}}<span>No waiting times yet. Add your experiences?</span>{{/if}}<button id="waiting_time_button_{{id}}" type="button" onclick="showAddWaitingTime('{{id}}')" class="waiting-time-button hw-button hw-button-small">+</button>
@@ -136,6 +130,21 @@
           </div>
         </div>
       </div>
+      <!-- /Waiting times -->
+
+      <!-- Buttons -->
+      <div class="col-sm-12 col-md-3 col-spot-footer">
+        {{#if rating_count || waiting_time_count}}
+        <button onclick="loadSpotDetails({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')" type="button" class="hw-button hw-button-big"><i class="fa fa-bar-chart"></i></button>
+        {{/if}}
+        <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')"><i class="fa fa-comment-o"></i></button>
+        <button type="button" class="hw-button hw-button-big" onclick="moveToSpot('spots.groupSpots.{{direction}}.{{index}}', '{{id}}')"><i class="fa fa-map-marker"></i></button>
+        {{#if userId}}
+        <button type="button" class="hw-button hw-button-big hw-spot-edit-button" data-title="{{title}}"><i class="fa fa-edit"></i></button>
+        {{/if}}
+      </div>
+      <!-- /Buttons -->
+
     </div>
     <div class="city-comments row">
       <div id="spot-comments-{{id}}" class="spot-comments hide-comment col-md-12">

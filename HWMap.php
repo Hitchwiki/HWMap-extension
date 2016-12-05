@@ -123,6 +123,12 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     )
   ),
 
+  'autogrow' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/vendor/autogrow/autogrow.js',
+    )
+  ),
+
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'mediawiki.page.startup',
@@ -131,7 +137,8 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'leaflet',
       'bootstrap-grid',
       'PruneCluster',
-      'ractive'
+      'ractive',
+      'autogrow'
     ),
     'scripts' => array(
       'modules/js/ext.HWMap.HwGeoPoint.js',

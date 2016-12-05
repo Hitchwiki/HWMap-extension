@@ -122,6 +122,7 @@ window.loadComments = function (id, reload, spotObjectPath, specialPageLoad) {
           slideShow('#spot-comments-'+id, 'down');
         }
       }
+      mw.log('show comments')
       $('#comment-spinner-'+id).css({'visibility': 'hidden'});
     });
   }
