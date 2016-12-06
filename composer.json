@@ -23,23 +23,8 @@
     "issues": "https://github.com/Hitchwiki/HWMap-extension/issues",
     "source": "https://github.com/Hitchwiki/HWMap-extension"
   },
-  "repositories": [
-    {
-      "type": "package",
-      "package": {
-        "name": "sphericalgeometry",
-        "version": "@dev",
-        "type": "mediawiki-extension",
-        "dist": {
-          "url": "https://github.com/tubalmartin/spherical-geometry-php/archive/1.1.1.zip",
-          "type": "zip"
-        }
-      }
-    }
-  ],
   "require": {
-		"mediawiki/semantic-media-wiki": "~2.0",
-    "sphericalgeometry": "@dev"
+		"mediawiki/semantic-media-wiki": "~2.0"
   },
   "scripts": {
     "post-update-cmd": "bower install --config.interactive=false --allow-root",
