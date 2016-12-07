@@ -32,7 +32,7 @@ class HWMapCityApi extends ApiBase {
       );
       $linked_spots_api = new ApiMain( $linked_spots );
       $linked_spots_api->execute();
-      $linked_spots_data = $linked_spots_api->getResultData();
+      $linked_spots_data = $linked_spots_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
 
       //Go through the result
       $titles = ''; $index = 0;
@@ -71,7 +71,7 @@ class HWMapCityApi extends ApiBase {
         );
         $spot_text_api = new ApiMain( $spot_text );
         $spot_text_api->execute();
-        $spot_text_data = $spot_text_api->getResultData();
+        $spot_text_data = $spot_text_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
         $spots[$index]->Description = $spot_text_data['parse']['text']['*'];
 
         $index++;
@@ -88,7 +88,7 @@ class HWMapCityApi extends ApiBase {
       );
       $title_id_api = new ApiMain( $title_id );
       $title_id_api->execute();
-      $title_id_data = $title_id_api->getResultData();
+      $title_id_data = $title_id_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
       $ids = ''; $index = 0;
       foreach($title_id_data['query']['pages'] as  $key => $result) {
         if (!empty($ids))
@@ -116,7 +116,7 @@ class HWMapCityApi extends ApiBase {
         );
         $spot_average_rating_api = new ApiMain( $spot_average_rating );
         $spot_average_rating_api->execute();
-        $spot_average_rating_data = $spot_average_rating_api->getResultData();
+        $spot_average_rating_data = $spot_average_rating_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
 
         foreach($spot_average_rating_data['query']['ratings'] as $rating_res) {
           if(array_key_exists($rating_res['pageid'], $spot_indices)) {
@@ -141,7 +141,7 @@ class HWMapCityApi extends ApiBase {
         );
         $spot_waiting_times_api = new ApiMain( $spot_waiting_times );
         $spot_waiting_times_api->execute();
-        $spot_waiting_times_data = $spot_waiting_times_api->getResultData();
+        $spot_waiting_times_data = $spot_waiting_times_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
 
         foreach($spot_waiting_times_data['query']['waiting_times'] as $waiting_times_res) {
           if(array_key_exists($waiting_times_res['pageid'], $spot_indices)) {
@@ -164,7 +164,7 @@ class HWMapCityApi extends ApiBase {
         );
         $spot_comment_count_api = new ApiMain( $spot_comment_count );
         $spot_comment_count_api->execute();
-        $spot_comment_count_data = $spot_comment_count_api->getResultData();
+        $spot_comment_count_data = $spot_comment_count_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
         foreach($spot_comment_count_data['query']['comment_counts'] as $count_res) {
           for($index = 0; $index < count($spots) && $spots[$index]->id != $count_res['pageid']; $index++) {
             //Looking for the spot ...
