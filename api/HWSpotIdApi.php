@@ -28,7 +28,7 @@ class HWSpotIdApi extends ApiBase {
       );
       $get_title_api = new ApiMain( $get_title );
       $get_title_api->execute();
-      $get_title_data = $get_title_api->getResultData();
+      $get_title_data = $get_title_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
       $first_key = key($get_title_data['query']['pages']);
       $title = $get_title_data['query']['pages'][$first_key]['title'];
       $spot->title = $title;
@@ -44,7 +44,7 @@ class HWSpotIdApi extends ApiBase {
       );
       $get_spotdata_api = new ApiMain( $get_spotdata );
       $get_spotdata_api->execute();
-      $get_spotdata_data = $get_spotdata_api->getResultData();
+      $get_spotdata_data = $get_spotdata_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
       $first_key = key($get_spotdata_data['query']['results']);
       $result = $get_spotdata_data['query']['results'][$first_key];
 
@@ -75,7 +75,7 @@ class HWSpotIdApi extends ApiBase {
       );
       $spot_text_api = new ApiMain( $spot_text );
       $spot_text_api->execute();
-      $spot_text_data = $spot_text_api->getResultData();
+      $spot_text_data = $spot_text_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
       $spot->Description = $spot_text_data['parse']['text']['*'];
 
       //If the rating extension is set
@@ -92,7 +92,7 @@ class HWSpotIdApi extends ApiBase {
         );
         $spot_average_rating_api = new ApiMain( $spot_average_rating );
         $spot_average_rating_api->execute();
-        $spot_average_rating_data = $spot_average_rating_api->getResultData();
+        $spot_average_rating_data = $spot_average_rating_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
         $spot->rating_average = $spot_average_rating_data['query']['ratings'][0]['rating_average'];
         $spot->rating_count = $spot_average_rating_data['query']['ratings'][0]['rating_count'];
         $spot->rating_user =  $spot_average_rating_data['query']['ratings'][0]['rating_user'];
@@ -109,7 +109,7 @@ class HWSpotIdApi extends ApiBase {
         );
         $spot_average_detail_api = new ApiMain( $spot_average_detail );
         $spot_average_detail_api->execute();
-        $spot_average_detail_data = $spot_average_detail_api->getResultData();
+        $spot_average_detail_data = $spot_average_detail_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
         $spot->ratings = $spot_average_detail_data['query']['ratings'];
 
       }
@@ -127,7 +127,7 @@ class HWSpotIdApi extends ApiBase {
         );
         $spot_waiting_times_api = new ApiMain( $spot_waiting_times );
         $spot_waiting_times_api->execute();
-        $spot_waiting_times_data = $spot_waiting_times_api->getResultData();
+        $spot_waiting_times_data = $spot_waiting_times_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
         $spot->waiting_time_average = $spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_average'];
         $spot->waiting_time_count = $spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_count'];
 
@@ -147,7 +147,7 @@ class HWSpotIdApi extends ApiBase {
         );
         $spot_comment_count_api = new ApiMain( $spot_comment_count );
         $spot_comment_count_api->execute();
-        $spot_comment_count_data = $spot_comment_count_api->getResultData();
+        $spot_comment_count_data = $spot_comment_count_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
         $spot->comment_count = $spot_comment_count_data['query']['comment_counts'][0]['comment_count'];
 
         //And get the comments details
@@ -161,7 +161,7 @@ class HWSpotIdApi extends ApiBase {
         );
         $spot_comment_detail_api = new ApiMain( $spot_comment_detail );
         $spot_comment_detail_api->execute();
-        $spot_comment_detail_data = $spot_comment_detail_api->getResultData();
+        $spot_comment_detail_data = $spot_comment_detail_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
         $spot->comments = $spot_comment_detail_data['query']['comments'];
       }
 
