@@ -69,7 +69,7 @@ window.updateSpotMarker = function(id, newRating) {
 //Function to get edit token
 var getToken = function (callback) {
   if(userId) {
-    $.get( apiRoot + '/api.php?action=query&meta=tokens&format=json', function( data ) {
+    $.get( mw.util.wikiScript('api') + '?action=query&meta=tokens&format=json', function( data ) {
       callback(data.query.tokens.csrftoken);
     });
   }
@@ -109,7 +109,7 @@ var commentLoaded = [];
 window.loadComments = function (id, reload, spotObjectPath, specialPageLoad) {
   if(typeof commentLoaded[id] === 'undefined' || reload || specialPageLoad) {
     $('#comment-spinner-'+id).css({'visibility': 'visible'});
-    $.get( apiRoot + '/api.php?action=hwgetcomments&format=json&pageid='+id, function(data) {
+    $.get( mw.util.wikiScript('api') + '?action=hwgetcomments&format=json&pageid='+id, function(data) {
       if(data.query) {
         //Update spot with new average
         for(var j = 0; j < data.query.comments.length ; j++) {
@@ -153,7 +153,7 @@ window.addComment = function (id, spotObjectPath) {
     if(token) {
       newComment = ractive.get(spotObjectPath+'.new_comment').replace(/\n/g, '<br />');
       //Post new rating
-      $.post(  apiRoot + '/api.php?action=hwaddcomment&format=json', {commenttext: newComment, pageid: id, token: token})
+      $.post( mw.util.wikiScript('api') + '?action=hwaddcomment&format=json', {commenttext: newComment, pageid: id, token: token})
       .done(function( data ) {
         if(data) {
           loadComments(id, true, spotObjectPath);
@@ -174,7 +174,7 @@ window.deleteComment = function (commentId, id, spotObjectPath) {
     if(token) {
       if(window.confirm('Delete comment ?')){
         //Post new rating
-        $.post(  apiRoot + '/api.php?action=hwdeletecomment&format=json', {comment_id: commentId, token: token})
+        $.post( mw.util.wikiScript('api') + '?action=hwdeletecomment&format=json', {comment_id: commentId, token: token})
         .done(function( data ) {
           if(data) {
             loadComments(id, true, spotObjectPath);
@@ -192,7 +192,7 @@ window.deleteComment = function (commentId, id, spotObjectPath) {
 var ratingsLoaded = [];
 window.loadRatings = function (id, reload, spotObjectPath) {
   if(typeof ratingsLoaded[id] === 'undefined' || reload) {
-    $.get( apiRoot + '/api.php?action=hwgetratings&format=json&pageid='+id, function(data) {
+    $.get( mw.util.wikiScript('api') + '?action=hwgetratings&format=json&pageid='+id, function(data) {
       if(data.query.ratings.length) {
         //Update spot with new average
         for(var j = 0; j < data.query.ratings.length ; j++) {
@@ -230,7 +230,7 @@ window.addRatings = function(newRating, id, spotObjectPath) {
   getToken(function(token) {
     if(token) {
       //Post new rating
-      $.post(  apiRoot + '/api.php?action=hwaddrating&format=json', { rating: newRating, pageid: id, token: token})
+      $.post( mw.util.wikiScript('api') + '?action=hwaddrating&format=json', { rating: newRating, pageid: id, token: token})
       .done(function( data ) {
         if(data.query.average) {
           //Update spot with new average
@@ -259,7 +259,7 @@ window.deleteRating = function(id, spotObjectPath) {
   getToken(function(token) {
     if(token) {
       //Post new rating
-      $.post(  apiRoot + '/api.php?action=hwdeleterating&format=json', {pageid: id, token: token})
+      $.post( mw.util.wikiScript('api') + '?action=hwdeleterating&format=json', {pageid: id, token: token})
       .done(function( data ) {
         if(data.query) {
           //Update spot with new average
@@ -294,7 +294,7 @@ window.hideAddWaitingTime = function(id) {
 var waitingTimesLoaded = [];
 window.loadWaintingTimes = function (id, reload, spotObjectPath) {
   if(typeof waitingTimesLoaded[id] === 'undefined' || reload) {
-    $.get( apiRoot + '/api.php?action=hwgetwaitingtimes&format=json&pageid='+id, function(data) {
+    $.get( mw.util.wikiScript('api') + '?action=hwgetwaitingtimes&format=json&pageid='+id, function(data) {
       if(data.query.waiting_times.length) {
         if(!reload) {
           slideShow('#spot-waitingtimes-'+id, 'down');
@@ -330,7 +330,11 @@ window.addWaitingTime = function(newWaitingTime, id, spotObjectPath) {
   getToken(function(token) {
     if(token) {
       //Post new rating
-      $.post(  apiRoot + '/api.php?action=hwaddwaitingtime&format=json', {waiting_time: newWaitingTime, pageid: id, token: token})
+      $.post( mw.util.wikiScript('api') + '?action=hwaddwaitingtime&format=json', {
+        waiting_time: newWaitingTime,
+        pageid: id,
+        token: token
+      })
       .done(function( data ) {
         if(data.query) {
           //Update spot with new average
@@ -355,7 +359,10 @@ window.deleteWaitingTime = function(waiting_time_id, id, spotObjectPath) {
     if(token) {
       if(window.confirm('Delete waiting time ?')){
         //Post new rating
-        $.post(  apiRoot + '/api.php?action=hwdeletewaitingtime&format=json', {waiting_time_id: waiting_time_id, token: token})
+        $.post( mw.util.wikiScript('api') + '?action=hwdeletewaitingtime&format=json', {
+          waiting_time_id: waiting_time_id,
+          token: token
+        })
         .done(function( data ) {
           if(data.query) {
             //Update spot with new average

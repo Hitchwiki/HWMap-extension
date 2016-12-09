@@ -6,7 +6,7 @@ var setupCountryMap = function setupCountryMap() {
   $('body').addClass('hwmap-page');
 
   // Getting the current coordinate
-  $.get( apiRoot + '/api.php?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function( data ) {
+  $.get( mw.util.wikiScript('api') + '?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function( data ) {
     for (var i in data.query.pages) {
       page = data.query.pages[i];
       break;

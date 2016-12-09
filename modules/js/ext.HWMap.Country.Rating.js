@@ -10,7 +10,7 @@ var initCountryRatingsTemplate = function initCountryRatingsTemplate() {
       }
     });
 
-    $.get( apiRoot + '/api.php?action=hwavgrating&format=json&pageid=' + mw.util.rawurlencode(mw.config.get('wgArticleId')) + '&user_id=' + userId, function( data ) {
+    $.get( mw.util.wikiScript('api') + '?action=hwavgrating&format=json&pageid=' + mw.util.rawurlencode(mw.config.get('wgArticleId')) + '&user_id=' + userId, function( data ) {
       if(data.query.ratings[0]) {
         data.query.ratings[0].average_label = getRatingLabel(data.query.ratings[0].rating_average);
         if(data.query.ratings[0].timestamp_user) {

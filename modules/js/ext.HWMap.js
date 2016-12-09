@@ -39,7 +39,6 @@ var hwmap,
     spots,
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
-    apiRoot = mw.config.get('wgServer') + mw.config.get('wgScriptPath'),
     extensionRoot = mw.config.get('wgExtensionAssetsPath') + '/HWMap/',
     userId = mw.config.get('wgUserId'),
     token,
@@ -323,7 +322,7 @@ var getBoxSpots = function (category, zoom) {
     lastBounds.SWlng = bounds._southWest.lng -1;
 
     // Query HWCoordinateAPI
-    $.get( apiRoot + '/api.php?action=hwmapapi&SWlat=' + lastBounds.SWlat + '&SWlon=' + lastBounds.SWlng + '&NElat=' + lastBounds.NElat + '&NElon=' + lastBounds.NElng + '&category=' + category + '&format=json', function( data ) {
+    $.get( mw.util.wikiScript('api') + '?action=hwmapapi&SWlat=' + lastBounds.SWlat + '&SWlon=' + lastBounds.SWlng + '&NElat=' + lastBounds.NElat + '&NElon=' + lastBounds.NElng + '&category=' + category + '&format=json', function( data ) {
 
       if(data.error) {
         mw.log.warn(data.error);

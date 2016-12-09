@@ -112,7 +112,7 @@ window.openSpecialPageSpot = function (id, moveTo) {
   animateSpot(id);
   ractive.set({spot: null});
   $('#hw-special-page-spinner').show();
-  $.get( apiRoot + '/api.php?action=hwspotidapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=' + id, function( data ) {
+  $.get( mw.util.wikiScript('api') + '?action=hwspotidapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=' + id, function( data ) {
     data.query.spot.id = id;
     data.query.spot.average_label = getRatingLabel(data.query.spot.rating_average);
     if(data.query.spot.timestamp_user){
