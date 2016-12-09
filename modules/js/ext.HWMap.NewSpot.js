@@ -63,13 +63,13 @@ function setupNewSpot() {
     iframeTimer = setInterval(function() {
       // if the readystate changed
       if ( readystate !== $popup.contents()[0].readyState ) {
-      	// store new readystate
-      	readystate = $popup.contents()[0].readyState;
-      	// if dom is built but document not yet displayed
-      	if (readystate === 'interactive') {
-      		needsRender = false; // flag that rendering is already done
+        // store new readystate
+        readystate = $popup.contents()[0].readyState;
+        // if dom is built but document not yet displayed
+        if (readystate === 'interactive') {
+          needsRender = false; // flag that rendering is already done
           setupNewSpotFormContents(iframeTimer, $popup);
-      	}
+        }
       }
     }, 100 );
     // fallback in case we did not catch the dom-ready state
