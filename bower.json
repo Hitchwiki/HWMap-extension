@@ -1,10 +1,10 @@
 {
   "name": "HWMap",
-  "version": "0.0.1",
   "homepage": "https://github.com/Hitchwiki/hitchwiki",
   "authors": [
     "Remigr <remiclaude@free.fr>",
-    "Mikael Korpela <mikael@ihminen.org>"
+    "Mikael Korpela <mikael@ihminen.org>",
+    "Olexandr Melnyk"
   ],
   "license": "MIT",
   "ignore": [

@@ -37,37 +37,37 @@ function setupNewSpot() {
    * Modifying Mediawiki SemanticForms popup to please our needs
    */
   $newSpotWrap.find( 'form.popupforminput' ).submit(function(evt){
-      var iframeTimer,
-          needsRender,
-          $popup = $('.popupform-innerdocument');
+    var iframeTimer,
+        needsRender,
+        $popup = $('.popupform-innerdocument');
 
-      // store initial readystate
-      var readystate = $popup.contents()[0].readyState;
+    // store initial readystate
+    var readystate = $popup.contents()[0].readyState;
 
-      // set up iframeTimer for waiting on the document in the iframe to be dom-ready
-      // this sucks, but there is no other way to catch that event
-      // onload is already too late
-      //
-      // This code is from SemanticForms SF_popupform.js
-      iframeTimer = setInterval(function(){
-          // if the readystate changed
-          if ( readystate !== $popup.contents()[0].readyState ) {
-          	// store new readystate
-          	readystate = $popup.contents()[0].readyState;
-          	// if dom is built but document not yet displayed
-          	if ( readystate === 'interactive' ) {
-          		needsRender = false; // flag that rendering is already done
-              setupNewSpotFormContents(iframeTimer, $popup);
-          	}
-          }
-      }, 100 );
-      // fallback in case we did not catch the dom-ready state
-      $popup.on('load', function( event ){
-          if ( needsRender ) { // rendering not already done?
-            setupNewSpotFormContents(iframeTimer, $popup);
-          }
-          needsRender = true;
-      });
+    // set up iframeTimer for waiting on the document in the iframe to be dom-ready
+    // this sucks, but there is no other way to catch that event
+    // onload is already too late
+    //
+    // This code is from SemanticForms SF_popupform.js
+    iframeTimer = setInterval(function(){
+      // if the readystate changed
+      if ( readystate !== $popup.contents()[0].readyState ) {
+      	// store new readystate
+      	readystate = $popup.contents()[0].readyState;
+      	// if dom is built but document not yet displayed
+      	if ( readystate === 'interactive' ) {
+      		needsRender = false; // flag that rendering is already done
+          setupNewSpotFormContents(iframeTimer, $popup);
+      	}
+      }
+    }, 100 );
+    // fallback in case we did not catch the dom-ready state
+    $popup.on('load', function( event ){
+      if ( needsRender ) { // rendering not already done?
+        setupNewSpotFormContents(iframeTimer, $popup);
+      }
+      needsRender = true;
+    });
   });
 
 }
@@ -76,17 +76,19 @@ function setupNewSpotFormContents(iframeTimer, $popup) {
   clearTimeout(iframeTimer);
   // Modify contents of that popup
   $popup
-      .contents()
+    .contents()
 
-      // No title at this form
-      .find('#firstHeading').hide().end()
+    // No title at this form
+    .find('#firstHeading').hide().end()
 
-      // For some odd reason, these had fixed min-style:600px
-      // That sucks. Removing it (they're handled at HitchwikiVector/resources/styles/forms.less instead)
-      // @TODO: doesn't function right now — occurs perhaps before select2() ?
-      .find('.select2-container').attr('style', '').end()
+    // For some odd reason, these Select2 inputs have fixed min-style:600px
+    // That sucks. This removes them, and they're handled at
+    // HitchwikiVector/resources/styles/forms.less instead.
+    //
+    // Removed: doesn't function right now — occurs perhaps before `select2()` ?
+    // .find('.select2-container').attr('style', '').end()
 
-      .contents();
+    .contents();
 }
 
 
@@ -118,22 +120,29 @@ function newSpotReverseGeocode(event) {
     if (city != '') {
       placeName += city;
       if (isBigCity) {
-        $newSpotForm.find('input[name="Spot[Cities]"]').val( city );
+        $newSpotForm.find('input[name="Spot[Cities]"]').val(city);
       }
     }
 
     // Prefill country input at the form
     if (country != '') {
-      if (placeName != '')
+      if (placeName != '') {
         placeName += ', ';
+      }
       placeName += country;
-      $newSpotForm.find('input[name="Spot[Country]"]').val( country );
+      $newSpotForm.find('input[name="Spot[Country]"]').val(country);
     }
 
     // Add coordinates to the spot title to ensure its uniqueness
-    if (placeName != '')
+    var titleCoordinates = Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6));
+    if (placeName != '') {
+      // Append coordinates to title in brackets
       placeName += ' ';
-    placeName += '(' + Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6)) + ')';
+      placeName += '(' + titleCoordinates + ')';
+    } else {
+      // If place name was empty, it'll be just coordinates without brackets
+      placeName += titleCoordinates;
+    }
 
     // Prefill name input at the form
     $newSpotForm.find('input[name="page_name"]').val(placeName);
@@ -147,7 +156,7 @@ function newSpotReverseGeocode(event) {
   var newSpotLocation = (event) ? event.target.getLatLng() : hwmap.getCenter();
 
   // Spot coordinates
-  $newSpotForm.find('input[name="Spot[Location]"]').val( newSpotLocation.lat + ',' + newSpotLocation.lng );
+  $newSpotForm.find('input[name="Spot[Location]"]').val(newSpotLocation.lat + ',' + newSpotLocation.lng);
 
   var point = new GeoPoint(newSpotLocation.lat, newSpotLocation.lng);
   var bbox = point.boundingCoordinates(20, null, true);

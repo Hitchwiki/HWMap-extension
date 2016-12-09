@@ -25,30 +25,30 @@ var initCountryRatingsTemplate = function initCountryRatingsTemplate() {
 
       ractive.set({countryRating: data.query.ratings[0]});
 
-    $('.your-rate').hide();
-
-    $('.rating-widget .rate').click(function(evt) {
       $('.your-rate').hide();
-      $('.rate').show();
-      evt.preventDefault();
-      $(this).hide();
-      var id = $(this).attr('id').replace(/rate_/, '');
 
-      $('#your_rate_' + id).show();
-    });
-
-    $(document).mouseup(function (e) {
-      var container = $('.rating-widget .rate');
-
-      if (!container.is(e.target) // if the target of the click isn't the container...
-          && container.has(e.target).length === 0) // ... nor a descendant of the container
-      {
+      $('.rating-widget .rate').click(function(evt) {
         $('.your-rate').hide();
         $('.rate').show();
-      }
-    });
+        evt.preventDefault();
+        $(this).hide();
+        var id = $(this).attr('id').replace(/rate_/, '');
 
+        $('#your_rate_' + id).show();
       });
+
+      $(document).mouseup(function (e) {
+        var container = $('.rating-widget .rate');
+
+        if (!container.is(e.target) // if the target of the click isn't the container...
+            && container.has(e.target).length === 0) // ... nor a descendant of the container
+        {
+          $('.your-rate').hide();
+          $('.rate').show();
+        }
+      });
+
+    });
 
   });
 };

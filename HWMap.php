@@ -54,7 +54,7 @@ $wgExtensionCredits['HWMap'][] = array(
   'descriptionmsg' => 'hwmaps-desc',
   'author' => array('Rémi Claude', 'Mikael Korpela', 'Olexandr Melnyk'),
   'url' => 'https://github.com/Hitchwiki/HWMap-extension',
-  'version' => '2.0.0',
+  'version' => '2.1.0',
   'license-name' => 'MIT'
 );
 
@@ -85,7 +85,7 @@ $wgAPIModules['hwfindnearbycityapi'] = 'HWFindNearbyCityApi';
 
 // Register assets
 $wgHWMapResourceBoilerplate = array(
-  'localBasePath' =>  __DIR__,
+  'localBasePath' => __DIR__,
   'remoteExtPath' => 'HWMap',
 );
 $wgResourceModules = array_merge( $wgResourceModules, array(
@@ -158,9 +158,9 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
 function onParserInit( Parser $parser ) {
   global $wgOut;
-  $parser->setHook( 'hw-map', 'HWMapRender');
-  $parser->setHook( 'hw-rate', 'HWRatingRender');
-  $wgOut->addModules( 'ext.HWMap' );
+  $parser->setHook('hw-map', 'HWMapRender');
+  $parser->setHook('hw-rate', 'HWRatingRender');
+  $wgOut->addModules('ext.HWMap');
   return true;
 }
 
