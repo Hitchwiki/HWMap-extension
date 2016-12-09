@@ -1,6 +1,7 @@
 function setupNewSpot() {
-  mw.log('->setupNewSpot');
+  mw.log('->HWMap->setupNewSpot');
 
+  // Hide "add new spot" button
   $newSpotInit.hide();
 
   // Craete new spot marker + layer
@@ -9,11 +10,13 @@ function setupNewSpot() {
     draggable: true,
     title: 'Drag me!'
   });
+
+  // Leaflet layer for adding the new spot
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
 
   // Dragged location of the new spot
   // Preset some values at the form
-  newSpotMarker.on('dragend', function(event){
+  newSpotMarker.on('dragend', function(event) {
     newSpotReverseGeocode(event);
   });
 
@@ -55,22 +58,23 @@ function setupNewSpot() {
     // this sucks, but there is no other way to catch that event
     // onload is already too late
     //
-    // This code is from SemanticForms SF_popupform.js
-    iframeTimer = setInterval(function(){
+    // This code is from SemanticForms PF_popupform.js
+    // https://github.com/wikimedia/mediawiki-extensions-PageForms/blob/REL1_28/libs/PF_popupform.js
+    iframeTimer = setInterval(function() {
       // if the readystate changed
       if ( readystate !== $popup.contents()[0].readyState ) {
       	// store new readystate
       	readystate = $popup.contents()[0].readyState;
       	// if dom is built but document not yet displayed
-      	if ( readystate === 'interactive' ) {
+      	if (readystate === 'interactive') {
       		needsRender = false; // flag that rendering is already done
           setupNewSpotFormContents(iframeTimer, $popup);
       	}
       }
     }, 100 );
     // fallback in case we did not catch the dom-ready state
-    $popup.on('load', function( event ){
-      if ( needsRender ) { // rendering not already done?
+    $popup.on('load', function( event ) {
+      if (needsRender) { // rendering not already done?
         setupNewSpotFormContents(iframeTimer, $popup);
       }
       needsRender = true;
@@ -79,6 +83,10 @@ function setupNewSpot() {
 
 }
 
+/**
+ * After popup and iframe inside it has loaded,
+ * tweak some contents to suit us better.
+ */
 function setupNewSpotFormContents(iframeTimer, $popup) {
   clearTimeout(iframeTimer);
   // Modify contents of that popup
@@ -99,7 +107,7 @@ function setupNewSpotFormContents(iframeTimer, $popup) {
 }
 
 
-function setNewSpotMarkerLocation(event){
+function setNewSpotMarkerLocation(event) {
   newSpotMarker.setLatLng(event.latlng);
 }
 
@@ -116,7 +124,9 @@ function clearAddNewSpotUI() {
   newSpotLayer = null;
 }
 
-
+/**
+ * Reverse geocode (lat,lon => place name)
+ */
 function newSpotReverseGeocode(event) {
 
   var city = '', country = '', isBigCity = false;
