@@ -7,13 +7,13 @@ function setupNewSpot() {
   newSpotMarker = L.marker(hwmap.getCenter(), {
     icon: icons.new,
     draggable: true,
-    title: "Drag me!"
+    title: 'Drag me!'
   });
   newSpotLayer = new L.layerGroup([newSpotMarker]).addTo(hwmap);
 
   // Dragged location of the new spot
   // Preset some values at the form
-  newSpotMarker.on("dragend", function(event){
+  newSpotMarker.on('dragend', function(event){
     newSpotReverseGeocode(event);
   });
 
@@ -23,7 +23,7 @@ function setupNewSpot() {
   });
 
   // Move marker to where user clicked on the map
-  hwmap.on("click", setNewSpotMarkerLocation);
+  hwmap.on('click', setNewSpotMarkerLocation);
 
   newSpotReverseGeocode();
 
@@ -39,7 +39,7 @@ function setupNewSpot() {
   $newSpotWrap.find( 'form.popupforminput' ).submit(function(evt){
       var iframeTimer,
           needsRender,
-          $popup = $(".popupform-innerdocument");
+          $popup = $('.popupform-innerdocument');
 
       // store initial readystate
       var readystate = $popup.contents()[0].readyState;
@@ -79,12 +79,12 @@ function setupNewSpotFormContents(iframeTimer, $popup) {
       .contents()
 
       // No title at this form
-      .find("#firstHeading").hide().end()
+      .find('#firstHeading').hide().end()
 
       // For some odd reason, these had fixed min-style:600px
       // That sucks. Removing it (they're handled at HitchwikiVector/resources/styles/forms.less instead)
       // @TODO: doesn't function right now — occurs perhaps before select2() ?
-      .find(".select2-container").attr("style", "").end()
+      .find('.select2-container').attr('style', '').end()
 
       .contents();
 }
@@ -101,7 +101,7 @@ function tearApartNewSpot() {
   $newSpotWrap.fadeOut('fast');
   $newSpotInit.fadeIn('fast');
   hwmap.removeLayer(newSpotLayer);
-  hwmap.off("click", setNewSpotMarkerLocation);
+  hwmap.off('click', setNewSpotMarkerLocation);
   newSpotMarker = null;
   newSpotLayer = null;
 }
@@ -118,7 +118,7 @@ function newSpotReverseGeocode(event) {
     if (city != '') {
       placeName += city;
       if (isBigCity) {
-        $newSpotForm.find("input[name='Spot[Cities]']").val( city );
+        $newSpotForm.find('input[name="Spot[Cities]"]').val( city );
       }
     }
 
@@ -127,7 +127,7 @@ function newSpotReverseGeocode(event) {
       if (placeName != '')
         placeName += ', ';
       placeName += country;
-      $newSpotForm.find("input[name='Spot[Country]']").val( country );
+      $newSpotForm.find('input[name="Spot[Country]"]').val( country );
     }
 
     // Add coordinates to the spot title to ensure its uniqueness
@@ -136,18 +136,18 @@ function newSpotReverseGeocode(event) {
     placeName += '(' + Number((newSpotLocation.lat).toFixed(6)) + ', ' + Number((newSpotLocation.lng).toFixed(6)) + ')';
 
     // Prefill name input at the form
-    $newSpotForm.find("input[name='page_name']").val(placeName);
+    $newSpotForm.find('input[name="page_name"]').val(placeName);
 
     // Enable the form again
-    $newSpotForm.find("input[type='submit']").removeAttr('disabled');
+    $newSpotForm.find('input[type="submit"]').removeAttr('disabled');
   }
 
-  $newSpotForm.find("input[type='submit']").attr('disabled', 'disabled');
+  $newSpotForm.find('input[type="submit"]').attr('disabled', 'disabled');
 
   var newSpotLocation = (event) ? event.target.getLatLng() : hwmap.getCenter();
 
   // Spot coordinates
-  $newSpotForm.find("input[name='Spot[Location]']").val( newSpotLocation.lat + ',' + newSpotLocation.lng );
+  $newSpotForm.find('input[name="Spot[Location]"]').val( newSpotLocation.lat + ',' + newSpotLocation.lng );
 
   var point = new GeoPoint(newSpotLocation.lat, newSpotLocation.lng);
   var bbox = point.boundingCoordinates(20, null, true);

@@ -33,15 +33,15 @@ var hwmap,
     spotsData = {
       groupSpots: {},
     },
-    $newSpotWrap = $("#hwmap-add-wrap"),
-    $newSpotForm = $newSpotWrap.find("form"),
-    $newSpotInit = $("#hwmap-add"),
+    $newSpotWrap = $('#hwmap-add-wrap'),
+    $newSpotForm = $newSpotWrap.find('form'),
+    $newSpotInit = $('#hwmap-add'),
     spots,
     lastZoom = 0,
     lastBounds = { NElat:'0', NElng:'0', SWlat:'0', SWlng:'0' },
-    apiRoot = mw.config.get("wgServer") + mw.config.get("wgScriptPath"),
-    extensionRoot = mw.config.get("wgExtensionAssetsPath") + "/HWMap/",
-    userId = mw.config.get("wgUserId"),
+    apiRoot = mw.config.get('wgServer') + mw.config.get('wgScriptPath'),
+    extensionRoot = mw.config.get('wgExtensionAssetsPath') + '/HWMap/',
+    userId = mw.config.get('wgUserId'),
     token,
     ractive,
     animatedSpot = false;
@@ -55,7 +55,7 @@ function initHWMap() {
   mw.log('->HWMap->initHWMap');
 
   // Give up if no element on the page
-  if(!document.getElementById("hwmap") || ($.inArray(mw.config.get("wgAction"), ["view", "purge", "submit"]) == -1) ) return;
+  if(!document.getElementById('hwmap') || ($.inArray(mw.config.get('wgAction'), ['view', 'purge', 'submit']) == -1) ) return;
 
   // Define icons
   L.Icon.Default.imagePath = extensionRoot + 'modules/vendor/leaflet/dist/images';
@@ -138,7 +138,7 @@ function initHWMap() {
 
   // Layers for Layer controller
   var baseMaps = {
-    "OpenStreetMap": mapLayerOSM
+    'OpenStreetMap': mapLayerOSM
   };
 
   // Streets layer
@@ -152,7 +152,7 @@ function initHWMap() {
       map: mapboxStyleStreets
     });
     defaultLayer = mapLayerStreets;
-    baseMaps["Streets"] = mapLayerStreets;
+    baseMaps['Streets'] = mapLayerStreets;
   }
 
   // Satellite layer
@@ -164,7 +164,7 @@ function initHWMap() {
       user: mapboxUser,
       map: mapboxStyleSatellite
     });
-    baseMaps["Satellite"] = mapLayerSatellite;
+    baseMaps['Satellite'] = mapLayerSatellite;
   }
 
   // Map init
@@ -186,7 +186,7 @@ function initHWMap() {
   cityLayer = new PruneClusterForLeaflet(5, 0);
 
   //Check if map is called from the special page
-  if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
+  if (mw.config.get('wgCanonicalSpecialPageName') == 'HWMap') {
 
 
     var urlParamLat = mw.util.getParamValue('lat'),
@@ -228,7 +228,7 @@ function initHWMap() {
     };
   }
   //Check if map is called from a city page
-  else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
+  else if($.inArray('Cities', mw.config.get('wgCategories')) != -1 && mw.config.get('wgIsArticle')) {
 
     hwmap.on('click', stopAnimateSpot);
 
@@ -261,7 +261,7 @@ function initHWMap() {
     };
   }
   //Check if map is called from a country page
-  else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
+  else if($.inArray('Countries', mw.config.get('wgCategories')) != -1 && mw.config.get('wgIsArticle')) {
     cityLayer.PrepareLeafletMarker = function(leafletMarker, data) {
       leafletMarker.setIcon(data.icon, data.HWid, data.title);
       leafletMarker.on('click', function(){
@@ -288,15 +288,15 @@ function initHWMap() {
   L.control.scale().addTo(hwmap);
 
   //Check if map is called from the special page
-  if (mw.config.get("wgCanonicalSpecialPageName") == "HWMap") {
+  if (mw.config.get('wgCanonicalSpecialPageName') == 'HWMap') {
     setupSpecialPageMap(mw.util.getParamValue('spot'));
   }
   //Check if map is called from a city page
-  else if($.inArray("Cities", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
+  else if($.inArray('Cities', mw.config.get('wgCategories')) != -1 && mw.config.get('wgIsArticle')) {
     setupCityMap();
   }
   //Check if map is called from a country page
-  else if($.inArray("Countries", mw.config.get("wgCategories")) != -1 && mw.config.get("wgIsArticle")) {
+  else if($.inArray('Countries', mw.config.get('wgCategories')) != -1 && mw.config.get('wgIsArticle')) {
     setupCountryMap();
     initCountryRatingsTemplate();
   }
@@ -309,7 +309,7 @@ function initHWMap() {
 // Get markers in the current bbox
 var getBoxSpots = function (category, zoom) {
   if(!category) {
-    category = "";
+    category = '';
   }
 
   bounds = hwmap.getBounds();
@@ -323,7 +323,7 @@ var getBoxSpots = function (category, zoom) {
     lastBounds.SWlng = bounds._southWest.lng -1;
 
     // Query HWCoordinateAPI
-    $.get( apiRoot + "/api.php?action=hwmapapi&SWlat=" + lastBounds.SWlat + "&SWlon=" + lastBounds.SWlng + "&NElat=" + lastBounds.NElat + "&NElon=" + lastBounds.NElng + "&category=" + category + "&format=json", function( data ) {
+    $.get( apiRoot + '/api.php?action=hwmapapi&SWlat=' + lastBounds.SWlat + '&SWlon=' + lastBounds.SWlng + '&NElat=' + lastBounds.NElat + '&NElon=' + lastBounds.NElng + '&category=' + category + '&format=json', function( data ) {
 
       if(data.error) {
         mw.log.warn(data.error);
@@ -382,10 +382,10 @@ var getBoxSpots = function (category, zoom) {
       }
       spotsLayer.ProcessView();
       cityLayer.ProcessView();
-      $(".tipsy").remove();
-      $(".hw-city-icon").tipsy({title: function() {
+      $('.tipsy').remove();
+      $('.hw-city-icon').tipsy({title: function() {
         var orginalTitle = this.getAttribute('original-title');
-        return "Open " + orginalTitle.replace(/_/g," ");
+        return 'Open ' + orginalTitle.replace(/_/g,' ');
       }, gravity: $.fn.tipsy.autoNS});
     });
   }
@@ -413,7 +413,7 @@ jQuery(document).ready(function($){
     },
     _initIcon: function () {
       original_initIcon.call(this);
-      this._icon.id = "marker-" + this.options.id;
+      this._icon.id = 'marker-' + this.options.id;
     }
   });
 })();

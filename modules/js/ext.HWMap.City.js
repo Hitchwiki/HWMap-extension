@@ -8,7 +8,7 @@ var setupCityMap = function setupCityMap() {
   spotsLayer.Cluster.Size = parseInt(10);
 
   //Getting the current coordinate
-  $.get( apiRoot + "/api.php?action=query&prop=coordinates&titles=" + mw.config.get("wgTitle") + "&format=json", function( data ) {
+  $.get( apiRoot + '/api.php?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function( data ) {
     for (var i in data.query.pages) {
       page = data.query.pages[i];
       break;
@@ -40,7 +40,7 @@ var setupCityMap = function setupCityMap() {
 
 
   //Getting related spots
-  $.get( apiRoot + "/api.php?action=hwmapcityapi&format=json&user_id="+userId+"&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=" + mw.config.get("wgTitle"), function( data ) {
+  $.get( apiRoot + '/api.php?action=hwmapcityapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=' + mw.config.get('wgTitle'), function( data ) {
 
     // Proceed if we got spots
     if(!data.error && data.query && data.query.spots.length > 0) {
@@ -55,7 +55,7 @@ var setupCityMap = function setupCityMap() {
         if(data.query.spots[i].rating_user){
           data.query.spots[i].rating_user_label = getRatingLabel(data.query.spots[i].rating_user);
         }
-        console.log(data.query.spots[i].CardinalDirection);
+        // console.log(data.query.spots[i].CardinalDirection);
         if (data.query.spots[i].CardinalDirection[0]) {
           var CardinalDirection = data.query.spots[i].CardinalDirection.join(', ');
           if(!spotsData.groupSpots[CardinalDirection]) {
@@ -72,26 +72,27 @@ var setupCityMap = function setupCityMap() {
         spotsData.groupSpots['Other directions'] = otherDirections;
       }
 
-      console.log(spotsData);
-      //Init template
+      // console.log(spotsData);
+
+      // Init template
       initTemplate();
 
       var citySpots = data.query.spots;
 
       for (var i in citySpots) {
-        //Build spot marker
+        // Build spot marker
         var marker = new PruneCluster.Marker(
           citySpots[i].Location[0].lat,
           citySpots[i].Location[0].lon
         );
-        //Add icon
+        // Add icon
         marker.data.icon = iconSpot(citySpots[i].rating_average);
-        //Add id
-        console.log(citySpots[i].id);
+        // Add id
+        // console.log(citySpots[i].id);
         marker.data.HWid = citySpots[i].id;
         marker.data.HWtype = 'spot';
         marker.data.average = citySpots[i].rating_average;
-        //Register marker
+        // Register marker
         spotsLayer.RegisterMarker(marker);
       }
       spotsLayer.ProcessView();
@@ -113,33 +114,33 @@ var initTemplate = function () {
         }
       });
 
-      $(".hw-spot-edit-button").click(function(evt) {
+      $('.hw-spot-edit-button').click(function(evt) {
         evt.preventDefault();
         var $form = $('#spot-edit-form-wrap form');
-        $form.find("input[name='page_name']").val($(this).data('title'));
+        $form.find('input[name="page_name"]').val($(this).data('title'));
         $form.submit();
       });
 
-      $(".your-rate").hide();
+      $('.your-rate').hide();
 
-      $(".rating-widget .rate").click(function(evt) {
-        $(".your-rate").hide();
-        $(".rate").show();
+      $('.rating-widget .rate').click(function(evt) {
+        $('.your-rate').hide();
+        $('.rate').show();
         evt.preventDefault();
         $(this).hide();
         var id = $(this).attr('id').replace(/rate_/, '');
 
-        $("#your_rate_" + id).show();
+        $('#your_rate_' + id).show();
       });
 
       $(document).mouseup(function (e) {
-        var container = $(".rating-widget .rate");
+        var container = $('.rating-widget .rate');
 
         if (!container.is(e.target) // if the target of the click isn't the container...
             && container.has(e.target).length === 0) // ... nor a descendant of the container
         {
-          $(".your-rate").hide();
-          $(".rate").show();
+          $('.your-rate').hide();
+          $('.rate').show();
         }
       });
 
