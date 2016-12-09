@@ -125,6 +125,8 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
+      'mediawiki.page.startup',
+      'mediawiki.util',
       'jquery.tipsy',
       'leaflet',
       'bootstrap-grid',
