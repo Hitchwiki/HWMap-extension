@@ -127,7 +127,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     'dependencies' => array(
       'mediawiki.page.startup',
       'mediawiki.util',
-      'jquery.tipsy',
+      'jquery.tipsy', // deprecated in MW 1.28
       'leaflet',
       'bootstrap-grid',
       'PruneCluster',

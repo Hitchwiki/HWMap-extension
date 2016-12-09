@@ -24,7 +24,8 @@
     "source": "https://github.com/Hitchwiki/HWMap-extension"
   },
   "require": {
-		"mediawiki/semantic-media-wiki": "~2.0"
+    "mediawiki/semantic-media-wiki": ">=2.0",
+    "mediawiki/page-forms": ">=4.0"
   },
   "scripts": {
     "post-update-cmd": "bower install --config.interactive=false --allow-root",
