@@ -8,7 +8,7 @@ var setupCityMap = function setupCityMap() {
   spotsLayer.Cluster.Size = parseInt(10);
 
   //Getting the current coordinate
-  $.get( apiRoot + '/api.php?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function( data ) {
+  $.get( mw.util.wikiScript('api') + '?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function( data ) {
     for (var i in data.query.pages) {
       page = data.query.pages[i];
       break;
@@ -17,35 +17,35 @@ var setupCityMap = function setupCityMap() {
     // If this city has coordinates set via SMW, add marker to the map
     if(page.coordinates) {
 
-      //Build city marker
+      // Build city marker
       var marker = new PruneCluster.Marker(
         page.coordinates[0].lat,
         page.coordinates[0].lon
       );
 
-      //Add icon
+      // Add icon
       marker.data.icon = icons.city;
       marker.data.HWtype = 'city';
 
-      //Register marker
+      // Register marker
       spotsLayer.RegisterMarker(marker);
 
       // Center map to city coordinates
       hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 12);
     }
 
-    //Set Map View
+    // Set Map View
     spotsLayer.ProcessView();
   });
 
 
-  //Getting related spots
-  $.get( apiRoot + '/api.php?action=hwmapcityapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=' + mw.config.get('wgTitle'), function( data ) {
+  // Getting related spots
+  $.get( mw.util.wikiScript('api') + '?action=hwmapcityapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=' + mw.config.get('wgTitle'), function( data ) {
 
     // Proceed if we got spots
     if(!data.error && data.query && data.query.spots.length > 0) {
 
-      //Let's group the different spots by cardinal direction
+      // Let's group the different spots by cardinal direction
       var otherDirections = [];
       for(var i = 0; i < data.query.spots.length; i++) {
         data.query.spots[i].average_label = getRatingLabel(data.query.spots[i].rating_average);
