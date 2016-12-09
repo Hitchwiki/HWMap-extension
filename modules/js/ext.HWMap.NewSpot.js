@@ -118,7 +118,9 @@ function clearAddNewSpotUI() {
   mw.log('->HWMaps->clearAddNewSpotUI');
   $newSpotWrap.fadeOut('fast');
   $newSpotInit.fadeIn('fast');
-  hwmap.removeLayer(newSpotLayer);
+  if (hwmap.hasLayer(newSpotLayer)) {
+    hwmap.removeLayer(newSpotLayer);
+  }
   hwmap.off('click', setNewSpotMarkerLocation);
   newSpotMarker = null;
   newSpotLayer = null;
