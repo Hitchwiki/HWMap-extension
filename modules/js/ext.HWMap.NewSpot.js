@@ -131,7 +131,9 @@ function clearAddNewSpotUI() {
  */
 function newSpotReverseGeocode(event) {
 
-  var city = '', country = '', isBigCity = false;
+  var city = '',
+      country = '',
+      isBigCity = false;
 
   function fillSpotForm() {
     var placeName = '';
