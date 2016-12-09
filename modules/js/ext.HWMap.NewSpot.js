@@ -27,19 +27,26 @@ function setupNewSpot() {
 
   newSpotReverseGeocode();
 
-  $newSpotWrap.find('#hwmap-cancel-adding').click(function(e){
-    tearApartNewSpot();
+  $newSpotWrap.find('#hwmap-cancel-adding').click(function(e) {
+    clearAddNewSpotUI();
   });
 
   $newSpotWrap.fadeIn('fast');
 
+
   /**
    * Modifying Mediawiki SemanticForms popup to please our needs
    */
-  $newSpotWrap.find( 'form.popupforminput' ).submit(function(evt){
+  $newSpotWrap.find( 'form.popupforminput' ).submit(function(evt) {
     var iframeTimer,
         needsRender,
-        $popup = $('.popupform-innerdocument');
+        $popup = $('.popupform-innerdocument'); // There's also `.popupform-wrapper`
+
+    // `.popupform-innerdocument` was removed from DOM because successfully
+    // adding new spot, cancelling or any other reason.
+    $popup.on('remove', function() {
+      clearAddNewSpotUI();
+    });
 
     // store initial readystate
     var readystate = $popup.contents()[0].readyState;
@@ -96,10 +103,11 @@ function setNewSpotMarkerLocation(event){
   newSpotMarker.setLatLng(event.latlng);
 }
 
-/*
- * Clean out adding new spot form/buttons etc
+/**
+ * Clean out adding new spot UI elements and event listeners
  */
-function tearApartNewSpot() {
+function clearAddNewSpotUI() {
+  mw.log('->HWMaps->clearAddNewSpotUI');
   $newSpotWrap.fadeOut('fast');
   $newSpotInit.fadeIn('fast');
   hwmap.removeLayer(newSpotLayer);
