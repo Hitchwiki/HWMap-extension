@@ -25,7 +25,7 @@ var setupMapToolbar = function () {
 var setupNewSpotButton = function () {
   var newSpotButton = new OO.ui.ButtonWidget({
     label: 'Add new spot',
-    icon: 'MapPinAdd',
+    // icon: 'MapPinAdd',
     // `#add` in the URL initializes adding a new spot at `HWMap` page
     href: mw.config.get('wgArticlePath').replace('$1', 'Special:HWMap#add')
   });
@@ -38,7 +38,7 @@ var setupNewSpotButton = function () {
 var setupWorldMapButton = function () {
   var worldMapButton = new OO.ui.ButtonWidget({
     label: 'World map',
-    icon: 'Map',
+    // icon: 'Map',
     href: mw.config.get('wgArticlePath').replace('$1', 'Special:HWMap')
   });
   $hwmapToolbar.append(worldMapButton.$element);
