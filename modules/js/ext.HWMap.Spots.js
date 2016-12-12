@@ -108,8 +108,8 @@ var slideShow = function (id, state) {
 var commentLoaded = [];
 window.loadComments = function (id, reload, spotObjectPath, specialPageLoad) {
   if(typeof commentLoaded[id] === 'undefined' || reload || specialPageLoad) {
-    $('#comment-spinner-'+id).css({'visibility': 'visible'});
-    $.get( mw.util.wikiScript('api') + '?action=hwgetcomments&format=json&pageid='+id, function(data) {
+    $('#comment-spinner-' + id).css({'visibility': 'visible'});
+    $.get( mw.util.wikiScript('api') + '?action=hwgetcomments&format=json&pageid=' + id, function(data) {
       if(data.query) {
         //Update spot with new average
         for(var j = 0; j < data.query.comments.length ; j++) {
@@ -119,30 +119,30 @@ window.loadComments = function (id, reload, spotObjectPath, specialPageLoad) {
         ractive.set(spotObjectPath+'.new_comment', '');
         commentLoaded[id] = true;
         if(!reload) {
-          slideShow('#spot-comments-'+id, 'down');
+          slideShow('#spot-comments-' + id, 'down');
         }
       }
       mw.log('show comments')
-      $('#comment-spinner-'+id).css({'visibility': 'hidden'});
+      $('#comment-spinner-' + id).css({'visibility': 'hidden'});
     });
   }
   else if (commentLoaded[id] == true){
-    slideShow('#spot-comments-'+id, 'up');
+    slideShow('#spot-comments-' + id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    slideShow('#spot-comments-'+id, 'down');
+    slideShow('#spot-comments-' + id, 'down');
     commentLoaded[id] = true;
   }
 };
 
 window.toggleComments = function (id) {
   if (commentLoaded[id] == true){
-    slideShow('#spot-comments-'+id, 'up');
+    slideShow('#spot-comments-' + id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    slideShow('#spot-comments-'+id, 'down');
+    slideShow('#spot-comments-' + id, 'down');
     commentLoaded[id] = true;
   }
 };
@@ -193,7 +193,7 @@ window.deleteComment = function (commentId, id, spotObjectPath) {
 var ratingsLoaded = [];
 window.loadRatings = function (id, reload, spotObjectPath) {
   if(typeof ratingsLoaded[id] === 'undefined' || reload) {
-    $.get( mw.util.wikiScript('api') + '?action=hwgetratings&format=json&pageid='+id, function(data) {
+    $.get( mw.util.wikiScript('api') + '?action=hwgetratings&format=json&pageid=' + id, function(data) {
       if(data.query.ratings.length) {
         //Update spot with new average
         for(var j = 0; j < data.query.ratings.length ; j++) {
@@ -203,10 +203,10 @@ window.loadRatings = function (id, reload, spotObjectPath) {
         ractive.set(spotObjectPath+'.ratings', data.query.ratings)
         ractive.set(spotObjectPath+'.ratings_distribution', data.query.distribution);
         for (var key in data.query.distribution) {
-          $('#spot-ratings-'+id+' .bar-'+key).css({'width': data.query.distribution[key].percentage+'%'});
+          $('#spot-ratings-' + id+' .bar-'+key).css({'width': data.query.distribution[key].percentage+'%'});
         }
         if(!reload) {
-          slideShow('#spot-ratings-'+id, 'down');
+          slideShow('#spot-ratings-' + id, 'down');
         }
         ratingsLoaded[id] = true;
       }
@@ -216,11 +216,11 @@ window.loadRatings = function (id, reload, spotObjectPath) {
     });
   }
   else if (ratingsLoaded[id] == true){
-    slideShow('#spot-ratings-'+id, 'up');
+    slideShow('#spot-ratings-' + id, 'up');
     ratingsLoaded[id] = false;
   }
   else {
-    slideShow('#spot-ratings-'+id, 'down');
+    slideShow('#spot-ratings-' + id, 'down');
     ratingsLoaded[id] = true;
   }
 };
@@ -284,21 +284,21 @@ window.deleteRating = function(id, spotObjectPath) {
 };
 
 window.showAddWaitingTime = function(id) {
-  $('#add_waiting_time_'+id).show();
-  $('#waiting_time_button_'+id).hide();
+  $('#add_waiting_time_' + id).show();
+  $('#waiting_time_button_' + id).hide();
 }
 window.hideAddWaitingTime = function(id) {
-  $('#add_waiting_time_'+id).hide();
-  $('#waiting_time_button_'+id).show();
+  $('#add_waiting_time_' + id).hide();
+  $('#waiting_time_button_' + id).show();
 }
 
 var waitingTimesLoaded = [];
 window.loadWaintingTimes = function (id, reload, spotObjectPath) {
   if(typeof waitingTimesLoaded[id] === 'undefined' || reload) {
-    $.get( mw.util.wikiScript('api') + '?action=hwgetwaitingtimes&format=json&pageid='+id, function(data) {
+    $.get( mw.util.wikiScript('api') + '?action=hwgetwaitingtimes&format=json&pageid=' + id, function(data) {
       if(data.query.waiting_times.length) {
         if(!reload) {
-          slideShow('#spot-waitingtimes-'+id, 'down');
+          slideShow('#spot-waitingtimes-' + id, 'down');
         }
         //Update spot with new average
         for(var j = 0; j < data.query.waiting_times.length ; j++) {
@@ -308,18 +308,18 @@ window.loadWaintingTimes = function (id, reload, spotObjectPath) {
         ractive.set(spotObjectPath+'.waiting_times_distribution', data.query.distribution);
         for (var i = 0; i < data.query.distribution.length; i++) {
           var barkey = i + 1;
-          $('#spot-waitingtimes-'+id+' .bar-'+barkey).css({'width': data.query.distribution[i].percentage+'%'});
+          $('#spot-waitingtimes-' + id+' .bar-'+barkey).css({'width': data.query.distribution[i].percentage+'%'});
         }
         waitingTimesLoaded[id] = true;
       }
     });
   }
   else if (waitingTimesLoaded[id] == true){
-    slideShow('#spot-waitingtimes-'+id, 'up');
+    slideShow('#spot-waitingtimes-' + id, 'up');
     waitingTimesLoaded[id] = false;
   }
   else {
-    slideShow('#spot-waitingtimes-'+id, 'down');
+    slideShow('#spot-waitingtimes-' + id, 'down');
     waitingTimesLoaded[id] = true;
   }
 };
@@ -400,7 +400,7 @@ window.moveToSpot = function (spotObjectPath, id) {
 var animateSpot = function (id) {
   animatedSpot = false;
   $('.hw-highlight-spot').removeClass('hw-highlight-spot');
-  $('#marker-'+id).addClass('hw-highlight-spot');
+  $('#marker-' + id).addClass('hw-highlight-spot');
   animatedSpot = id;
 }
 

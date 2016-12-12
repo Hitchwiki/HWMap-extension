@@ -45,8 +45,6 @@ var hwmap,
     ractive,
     animatedSpot = false;
 
-
-
 /*
  * Initialize map
  */
@@ -316,10 +314,10 @@ var getBoxSpots = function (category, zoom) {
   if(bounds._northEast.lat > lastBounds.NElat || bounds._northEast.lng > lastBounds.NElng || bounds._southWest.lat < lastBounds.SWlat || bounds._southWest.lng < lastBounds.SWlng || zoom != lastZoom) {
 
     //Make the bounds a bit bigger
-    lastBounds.NElat = bounds._northEast.lat +1;
-    lastBounds.NElng = bounds._northEast.lng +1;
-    lastBounds.SWlat = bounds._southWest.lat -1;
-    lastBounds.SWlng = bounds._southWest.lng -1;
+    lastBounds.NElat = bounds._northEast.lat + 1;
+    lastBounds.NElng = bounds._northEast.lng + 1;
+    lastBounds.SWlat = bounds._southWest.lat - 1;
+    lastBounds.SWlng = bounds._southWest.lng - 1;
 
     // Query HWCoordinateAPI
     $.get( mw.util.wikiScript('api') + '?action=hwmapapi&SWlat=' + lastBounds.SWlat + '&SWlon=' + lastBounds.SWlng + '&NElat=' + lastBounds.NElat + '&NElon=' + lastBounds.NElng + '&category=' + category + '&format=json', function( data ) {
@@ -390,7 +388,7 @@ var getBoxSpots = function (category, zoom) {
   }
 }
 
-jQuery(document).ready(function($){
+jQuery(document).ready(function($) {
 //jQuery( function( $ ) {
 
   // Let's roll!
