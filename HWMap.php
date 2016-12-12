@@ -133,6 +133,8 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     'dependencies' => array(
       'mediawiki.page.startup',
       'mediawiki.util',
+      'oojs-ui-core',
+      'oojs-ui-widgets',
       'jquery.tipsy', // deprecated in MW 1.28
       'leaflet',
       'bootstrap-grid',
@@ -148,6 +150,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'modules/js/ext.HWMap.Country.js',
       'modules/js/ext.HWMap.City.js',
       'modules/js/ext.HWMap.Country.Rating.js',
+      'modules/js/ext.HWMap.Toolbar.js',
       'modules/js/ext.HWMap.js'
     ),
     'styles' => array(

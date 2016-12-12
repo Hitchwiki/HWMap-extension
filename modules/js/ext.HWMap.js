@@ -291,11 +291,13 @@ function initHWMap() {
   //Check if map is called from a city page
   else if($.inArray('Cities', mw.config.get('wgCategories')) != -1 && mw.config.get('wgIsArticle')) {
     setupCityMap();
+    setupMapToolbar();
   }
   //Check if map is called from a country page
   else if($.inArray('Countries', mw.config.get('wgCategories')) != -1 && mw.config.get('wgIsArticle')) {
     setupCountryMap();
     initCountryRatingsTemplate();
+    setupMapToolbar();
   }
 
   // Make sure map sits properly in its surrounding div
