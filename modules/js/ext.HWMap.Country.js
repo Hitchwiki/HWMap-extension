@@ -30,10 +30,10 @@ var setupCountryMap = function setupCountryMap() {
         // Clear the markers and last boundings
         spotsLayer.RemoveMarkers();
         lastBounds = {
-          NElat: '0',
-          NElng: '0',
-          SWlat: '0',
-          SWlng: '0'
+          NElat: 0,
+          NElng: 0,
+          SWlat: 0,
+          SWlng: 0
         };
       }
 

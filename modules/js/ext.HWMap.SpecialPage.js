@@ -48,10 +48,10 @@ var setupSpecialPageMap = function (urlParamSpot) {
       spotsLayer.ProcessView();
       cityLayer.ProcessView();
       lastBounds = {
-        NElat:'0',
-        NElng:'0',
-        SWlat:'0',
-        SWlng:'0'
+        NElat: 0,
+        NElng: 0,
+        SWlat: 0,
+        SWlng: 0
       };
     }
 
