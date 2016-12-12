@@ -123,7 +123,7 @@ window.openSpecialPageSpot = function (id, moveTo) {
     }
     ractive.set({spot: data.query.spot});
     if(moveTo) {
-      moveToSpot('spot', id);
+      hwMoveToSpot('spot', id);
     }
     loadComments(id, false, 'spot', true);
     $('#hw-special-page-spinner').hide();

@@ -9,7 +9,7 @@
 <div class="spot row">
   <div class="col-md-12 spot-main-col" id="spot_{{id}}">
     <div class="spot-main row">
-      <div class="spot-head">
+      <div class="spot-head" onclick="hwMoveToSpot('spots.groupSpots.{{direction}}.{{index}}', '{{id}}')">
         <div class="spot-towards">
         {{#if CitiesDirection}}
           Towards
@@ -135,12 +135,31 @@
       <!-- Buttons -->
       <div class="col-sm-12 col-md-3 col-spot-footer">
         {{#if rating_count || waiting_time_count}}
-        <button onclick="loadSpotDetails({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')" type="button" class="hw-button hw-button-big"><i class="fa fa-bar-chart"></i></button>
+        <button onclick="loadSpotDetails({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')"
+                type="button"
+                class="hw-button hw-button-big">
+          <i class="fa fa-bar-chart"></i>
+          Stats
+        </button>
         {{/if}}
-        <button type="button" class="hw-button hw-button-big" onclick="loadComments({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')"><i class="fa fa-comment-o"></i></button>
-        <button type="button" class="hw-button hw-button-big" onclick="moveToSpot('spots.groupSpots.{{direction}}.{{index}}', '{{id}}')"><i class="fa fa-map-marker"></i></button>
+        <button type="button"
+                class="hw-button hw-button-big"
+                onclick="loadComments({{id}}, false, 'spots.groupSpots.{{direction}}.{{index}}')">
+          <i class="fa fa-comment-o"></i>
+          Comments
+        </button>
+        <button type="button"
+                class="hw-button hw-button-big"
+                onclick="hwMoveToSpot('spots.groupSpots.{{direction}}.{{index}}', '{{id}}')">
+          <i class="fa fa-map-marker"></i>
+        </button>
         {{#if userId}}
-        <button type="button" class="hw-button hw-button-big hw-spot-edit-button" data-title="{{title}}"><i class="fa fa-edit"></i></button>
+        <button type="button"
+                class="hw-button hw-button-big hw-spot-edit-button"
+                data-title="{{title}}">
+          <i class="fa fa-edit"></i>
+          Edit
+        </button>
         {{/if}}
       </div>
       <!-- /Buttons -->

@@ -389,7 +389,7 @@ window.loadSpotDetails = function (id, reload, spotObjectPath) {
   loadRatings(id, reload, spotObjectPath);
 };
 
-window.moveToSpot = function (spotObjectPath, id) {
+window.hwMoveToSpot = function (spotObjectPath, id) {
   hwmap.setView([
     ractive.get(spotObjectPath+'.Location.0.lat'),
     ractive.get(spotObjectPath+'.Location.0.lon')
