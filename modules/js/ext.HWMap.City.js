@@ -1,13 +1,13 @@
-/*
- * Setup big map at city article
+/**
+ * Setup sidebar map at city article
  */
 var setupCityMap = function setupCityMap() {
   mw.log('->HWMap->setupCityMap');
 
-  //Cluster size
-  spotsLayer.Cluster.Size = parseInt(10);
+  // PruneCluster size
+  spotsLayer.Cluster.Size = 10;
 
-  //Getting the current coordinate
+  // Getting the current coordinates for current city article
   $.get( mw.util.wikiScript('api') + '?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function( data ) {
     for (var i in data.query.pages) {
       page = data.query.pages[i];
@@ -15,7 +15,7 @@ var setupCityMap = function setupCityMap() {
     }
 
     // If this city has coordinates set via SMW, add marker to the map
-    if(page.coordinates) {
+    if(page.coordinates && page.coordinates[0] && page.coordinates[0].lat && page.coordinates[0].lon) {
 
       // Build city marker
       var marker = new PruneCluster.Marker(
@@ -30,7 +30,7 @@ var setupCityMap = function setupCityMap() {
       // Register marker
       spotsLayer.RegisterMarker(marker);
 
-      // Center map to city coordinates
+      // Center map to city coordinates stored to article, on zoomlevel `5`
       hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 12);
     }
 
@@ -40,7 +40,7 @@ var setupCityMap = function setupCityMap() {
 
 
   // Getting related spots
-  $.get( mw.util.wikiScript('api') + '?action=hwmapcityapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=' + mw.config.get('wgTitle'), function( data ) {
+  $.get(mw.util.wikiScript('api') + '?action=hwmapcityapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_title=' + mw.config.get('wgTitle'), function(data) {
 
     // Proceed if we got spots
     if(!data.error && data.query && data.query.spots.length > 0) {
@@ -104,7 +104,7 @@ var setupCityMap = function setupCityMap() {
 
 var initTemplate = function () {
 
-    $.get( extensionRoot +'modules/templates/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
+    $.get( extensionRoot + 'modules/templates/ext.HWMAP.CitySpots.template.html' ).then( function ( template ) {
       ractive = new Ractive({
         el: 'incity-spots',
         template: template,
@@ -114,8 +114,8 @@ var initTemplate = function () {
         }
       });
 
-      $('.hw-spot-edit-button').click(function(evt) {
-        evt.preventDefault();
+      $('.hw-spot-edit-button').click(function(e) {
+        e.preventDefault();
         var $form = $('#spot-edit-form-wrap form');
         $form.find('input[name="page_name"]').val($(this).data('title'));
         $form.submit();
@@ -123,10 +123,10 @@ var initTemplate = function () {
 
       $('.your-rate').hide();
 
-      $('.rating-widget .rate').click(function(evt) {
+      $('.rating-widget .rate').click(function(e) {
+        e.preventDefault();
         $('.your-rate').hide();
         $('.rate').show();
-        evt.preventDefault();
         $(this).hide();
         var id = $(this).attr('id').replace(/rate_/, '');
 

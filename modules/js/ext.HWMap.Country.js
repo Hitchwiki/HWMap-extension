@@ -1,19 +1,19 @@
-/*
- * Setup big map at country article
+/**
+ * Setup sidebar map at the country article
  */
 var setupCountryMap = function setupCountryMap() {
   mw.log('->HWMap->setupCountryMap');
   $('body').addClass('hwmap-page');
 
-  // Getting the current coordinate
-  $.get( mw.util.wikiScript('api') + '?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function( data ) {
+  // Getting the current coordinates for current country article
+  $.get( mw.util.wikiScript('api') + '?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function(data) {
     for (var i in data.query.pages) {
       page = data.query.pages[i];
       break;
     }
 
-    if(page.coordinates) {
-      // Center map to city coordinates
+    if(page.coordinates && page.coordinates[0] && page.coordinates[0].lat && page.coordinates[0].lon) {
+      // Center map to country coordinates stored to article, on zoomlevel `5`
       hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 5);
     }
 
@@ -36,13 +36,11 @@ var setupCountryMap = function setupCountryMap() {
           SWlng: 0
         };
       }
-
     });
 
-
-    //Getting spots in bounding box
+    // Firing this event to initialize
+    // getting spots in bounding box
     hwmap.fireEvent('moveend');
-
 
   });
 }
