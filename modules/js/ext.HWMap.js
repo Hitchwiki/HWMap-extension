@@ -117,14 +117,14 @@ function initHWMap() {
 
   // Using Mapbox tiles developed for Trustroots+Hitchwiki
   var mapBoxUrl = '//{s}.tiles.mapbox.com/v4/{user}.{map}/{z}/{x}/{y}.png' + L.Util.getParamString({
-    //secure: 1, // Uncomment if we ever start using https
+    secure: 1,
     access_token: mapboxAccessToken
   });
   var mapBoxAttribution = '<strong><a href="https://www.mapbox.com/map-feedback/#' + mapboxUser + '.' + mapboxStyleStreets + '/' + defaultCenter[1] + '/' + defaultCenter[0] + '/' + defaultZoom + '">Improve this map</a></strong>';
   var OSMAttribution = '<strong><a href="https://www.openstreetmap.org/login#map=' + defaultZoom + '/' + defaultCenter[0] + '/' + defaultCenter[1] + '">Improve this map</a></strong>';
 
   // OSM layer
-  var mapLayerOSM = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+  var mapLayerOSM = L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: OSMAttribution,
     maxZoom: 18,
     continuousWorld: true
