@@ -28,7 +28,7 @@
     "mediawiki/page-forms": ">=4.0"
   },
   "scripts": {
-    "post-update-cmd": "bower install --config.interactive=false --allow-root",
+    "post-update-cmd": "bower update --config.interactive=false --allow-root",
     "post-install-cmd": "bower install --config.interactive=false --allow-root"
   },
   "config": {
