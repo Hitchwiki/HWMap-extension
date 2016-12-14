@@ -146,7 +146,7 @@ class HWFindNearbyCityApi extends ApiBase {
                 new LatLng($lat, $lng) // (lat; lng) from $params
             ))
         );
-        $this->getResult()->addValue( 'cities', array(), $closest_cities[0] );
+        $this->getResult()->addValue( array(), 'cities', $closest_cities );
 
         if (count($response->geonames) == 1) {
              return true;
