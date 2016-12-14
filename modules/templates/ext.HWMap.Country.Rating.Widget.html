@@ -4,11 +4,11 @@
   <span class="average {{#if rating_average > 0}}average-{{Math.round(rating_average)}}{{else}}average-null{{/if}} {{#if !userId}}average-no-user{{/if}}">{{average_label}} {{#if rating_count > 0}}<small>({{rating_count}})</small>{{/if}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate {{#if rating_user > 0}}rate-{{Math.round(rating_user)}}{{else}}rate-null{{/if}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
   <span id="your_rate_{{id}}" class="your-rate">
     <span class="rating-choice-head">{{#if rating_user}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
-    <span onclick="addRatings(5, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>
-    <span onclick="addRatings(4, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-good"></span> Good</span>
-    <span onclick="addRatings(3, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-average"></span> Average</span>
-    <span onclick="addRatings(2, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-bad"></span> Bad</span>
-    <span onclick="addRatings(1, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-senseless"></span> Senseless</span>
+    <span onclick="hwAddRatings(5, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-verygood"></span> Very Good</span>
+    <span onclick="hwAddRatings(4, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-good"></span> Good</span>
+    <span onclick="hwAddRatings(3, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-average"></span> Average</span>
+    <span onclick="hwAddRatings(2, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-bad"></span> Bad</span>
+    <span onclick="hwAddRatings(1, {{id}}, 'countryRating')" class="rating-choice"><span class="bubble bubble-senseless"></span> Senseless</span>
     {{#timestamp_user}}<span class="rating-choice-timestamp">You rated {{timestamp_user}}</span>
     <span onclick="deleteRating({{id}}, 'countryRating')" class="rating-choice-remove">Remove my rating</span>{{/timestamp_user}}
   </span>{{/if}}

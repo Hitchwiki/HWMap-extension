@@ -176,11 +176,13 @@ function onParserInit( Parser $parser ) {
 
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
   $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.City.template.html');
+
   return $result;
 }
 
 function HWRatingRender( $input, array $args, Parser $parser, PPFrame $frame ) {
   $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.Country.Rating.html');
+
   return $result;
 }
 

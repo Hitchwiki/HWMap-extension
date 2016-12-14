@@ -8,11 +8,11 @@ class SpecialHWMap extends SpecialPage {
     parent::__construct( 'HWMap' );
   }
 
-  function execute( $par ) {
+  function execute( $parser ) {
     $output = $this->getOutput();
     $output->setPageTitle( 'Hitchwiki Map' );
     $output->isPrintable(false);
-    $output->addModules( 'ext.HWMap' );
+    $output->addModules('ext.HWMap');
 
     // The Map
     $output->addHTML('<div class="hwmap-container"><div id="hwmap">');
