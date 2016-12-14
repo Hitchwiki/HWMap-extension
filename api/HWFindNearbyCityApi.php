@@ -33,7 +33,28 @@ class HWFindNearbyCityApi extends ApiBase {
         $south = $sw_bound->getLat();
         $west = $sw_bound->getLng();
 
-        // Empty result result by default
+        // Geonames spot country lookup
+        // Has to be done separately from city lookup, as the closest big city
+        // can lie in a different country than the spot itself
+        $response = Http::get('http://api.geonames.org/findNearbyPlaceNameJSON?' . http_build_query(array(
+            'lat' => $lat,
+            'lng' => $lng,
+            'username' => $hwConfig['vendor']['geonames_username']
+        ) ) );
+
+        $country = '';
+        if ($response !== false) {
+            $response = json_decode($response);
+            if ($response && !empty($response->geonames)) {
+                $place = $response->geonames[0];
+                if ($place->countryName) {
+                    $country = $place->countryName;
+                }
+            }
+        }
+        $this->getResult()->addValue( array(), 'country', $country );
+
+        // Empty result set by default
         $this->getResult()->addValue( array(), 'cities', array() );
 
         // Query for cities within the bounding box
