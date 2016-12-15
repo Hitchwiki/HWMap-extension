@@ -1,19 +1,12 @@
 {
   "name": "HWMap",
-  "homepage": "https://github.com/Hitchwiki/hitchwiki",
+  "homepage": "https://github.com/Hitchwiki/HWMap-extension",
   "authors": [
     "Remigr <remiclaude@free.fr>",
     "Mikael Korpela <mikael@ihminen.org>",
     "Olexandr Melnyk"
   ],
   "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
   "dependencies": {
     "leaflet": "~0.7.7",
     "PruneCluster": "~1.1.0",
