@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * The main map special page
  * Can be accessed on [[Special:HWMap]]
  */
@@ -10,7 +10,7 @@ class SpecialHWMap extends SpecialPage {
 
   function execute( $parser ) {
     $output = $this->getOutput();
-    $output->setPageTitle( 'Hitchwiki Map' );
+    $output->setPageTitle('Hitchwiki Map');
     $output->isPrintable(false);
     $output->addModules('ext.HWMap');
 

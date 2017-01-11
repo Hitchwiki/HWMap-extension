@@ -198,7 +198,8 @@ function onResourceLoaderGetConfigVars( array &$vars ) {
   );
 
   foreach ($varNames as $varName) {
-    if (!isset($hwConfig['vendor'][$varName])) { // doesn't look like there's a better way to handle this case
+    // doesn't look like there's a better way to handle this case
+    if (!isset($hwConfig['vendor'][$varName])) {
       throw new Exception('vendor.' . $hwConfig['vendor'][$varName] . ' config option missing');
     }
     $vars[$varName] = $hwConfig['vendor'][$varName];
