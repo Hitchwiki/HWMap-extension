@@ -2,10 +2,10 @@
 class HWFindNearbyCityApi extends ApiBase {
 
   public function execute() {
-    global $wgHwMapCityRelevanceRadius;
-    global $wgHwMapCityCloseDistance;
-    global $wgHwMapBigCityMinPopulation;
-    global $hwConfig;
+    global $wgHwMapCityRelevanceRadius,
+           $wgHwMapCityCloseDistance,
+           $wgHwMapBigCityMinPopulation,
+           $hwConfig;
 
     // Get parameters
     $params = $this->extractRequestParams();
@@ -13,6 +13,8 @@ class HWFindNearbyCityApi extends ApiBase {
     $lng = (double) $params['lng'];
 
     // @TODO: validate lat and lng ranges to avoid unnecessary queries
+
+    // @TODO: yeld error when missing `$hwConfig['vendor']['geonames_username']`
 
     /*
      * Compute a bounding rectangle (LatLngBounds instance) from a point and a given radius.
@@ -67,7 +69,7 @@ class HWFindNearbyCityApi extends ApiBase {
     $this->getResult()->addValue( array(), 'cities', array() );
 
     // Query for cities within the bounding box
-    $dbr = wfGetDB( DB_SLAVE );
+    $dbr = wfGetDB(DB_SLAVE);
     $res = $dbr->select(
       array(
         'geo_tags',
@@ -235,12 +237,12 @@ class HWFindNearbyCityApi extends ApiBase {
     }
 
     // Add second city to the result set
-    $this->getResult()->addValue( 'cities', array(), $city );
+    $this->getResult()->addValue('cities', array(), $city);
 
     return true;
   }
 
-  // Description
+	// API endpoint description
   public function getDescription() {
     return 'Get the most relevant nearby cities.';
   }
@@ -248,11 +250,11 @@ class HWFindNearbyCityApi extends ApiBase {
   // Parameters
   public function getAllowedParams() {
     return array(
-      'lat' => array (
+      'lat' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
       ),
-      'lng' => array (
+      'lng' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
       )

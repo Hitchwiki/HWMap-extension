@@ -1,47 +1,58 @@
 <?php
-/*
+/**
  * This Api is made to query the informations (average ratings and location) to show spots that are related to a city on a map.
- * To do this we need the get the linked spots by calling the semanytc wiki ask api.
- * It only returns the name of the spots, so we have to make a second api call to get the id.
- * And we can finally get the average ratings with the HWRatingAPi.
- * If you have a better idea on how to do this, go for it !
+ * To do this we need the get the linked spots by calling the Semantic-wiki Ask API.
+ * It only returns names of spots, so we have to make a second api call to get article ids.
+ * Then we can finally get the average ratings using `HWRatingAPi`.
+ * If you have a better idea on how to do this, go for it!
  */
 class HWMapCityApi extends ApiBase {
 
   public function execute() {
+    // MWDebug::log('HWMapCityApi::execute');
+    global $wgUser;
+
     // Get parameters
     $params = $this->extractRequestParams();
+
+    // Die if empty `properties` param
+    if (empty($params['properties'])) {
+      $this->dieUsage('HWMapCityApi: no properties defined. #09981f');
+    }
+
+    // Die if empty `page_title`
+    if (empty($params['page_title'])) {
+      $this->dieUsage('HWMapCityApi: no page_title defined. #2t9hhf');
+    }
+
+    // Make an array from the properties param
+    $properties = explode(',', $params['properties']);
+
     $page_title = $params['page_title'];
-    $properties = $params['properties'];
-    $user_id = $params['user_id'];
     $spots = array();
 
-    // Make an array from the properties
-    $properties_array = explode(',', $properties);
-
-    // Prepare propeties for the query
-    $properties_query = '|?'.str_replace(',', '|?', $properties);
-
     // Get Spots that are linked to the city
-    //
+    // Uses Semantic-Wiki Ask API
     $linked_spots = new DerivativeRequest(
       $this->getRequest(),
       array(
         'action' => 'ask',
-        'query' => '[[Category:Spots]][[Cities::' . $page_title . ']]' . $properties_query
+        'query' => '[[Category:Spots]]' .
+                   '[[Cities::' . Title::makeTitleSafe(NS_MAIN, $page_title) . ']]' .
+                   '|?' . join('|?', $properties)
       ),
       true
     );
-    $linked_spots_api = new ApiMain( $linked_spots );
+    $linked_spots_api = new ApiMain($linked_spots);
     $linked_spots_api->execute();
     $linked_spots_data = $linked_spots_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
 
-    // Go through the result
+    // Go through results
     $titles = '';
     $index = 0;
-    foreach ($linked_spots_data['query']['results'] as  $key => $result) {
+    foreach ($linked_spots_data['query']['results'] as $key => $result) {
       // Add the titles together to get Ids later
-      if ($titles != '') {
+      if ($titles !== '') {
         $titles = $titles.'|';
       }
 
@@ -51,9 +62,9 @@ class HWMapCityApi extends ApiBase {
       $spots[$index]->title = $key;
 
       // Get the properties
-      foreach ($properties_array as $property) {
+      foreach ($properties as $property) {
         // Check if the property has multiple values
-        if ($result['printouts'][$property][0]['fulltext']) {
+        if (isset($result['printouts'][$property][0]['fulltext'])) {
           $spots[$index]->$property = [];
           for ($i = 0; $i < count($result['printouts'][$property]); ++$i) {
             array_push($spots[$index]->$property, $result['printouts'][$property][$i]['fulltext']);
@@ -82,7 +93,7 @@ class HWMapCityApi extends ApiBase {
       $index++;
     }
 
-    // Get Ids of the spots
+    // Get Ids of the spots using their titles
     $title_id = new DerivativeRequest(
       $this->getRequest(),
       array(
@@ -113,12 +124,16 @@ class HWMapCityApi extends ApiBase {
 
     // If the rating extension is set, get the rating average
     if (class_exists( 'HWAvgRatingApi' )) {
+
+      // MWDebug::log('HWMapCityApi::execute: HWAvgRatingApi is enabled. Querying it...');
+
       $spot_average_rating = new DerivativeRequest(
         $this->getRequest(),
         array(
           'action' => 'hwavgrating',
           'pageid' => $ids,
-          'user_id' => $user_id
+          // https://www.mediawiki.org/wiki/Manual:$wgUser
+          'user_id' => $wgUser->getId()
         ),
         true
       );
@@ -133,6 +148,16 @@ class HWMapCityApi extends ApiBase {
           $spots[$index]->rating_count = $rating_res['rating_count'];
           $spots[$index]->rating_user = $rating_res['rating_user'];
           $spots[$index]->timestamp_user = $rating_res['timestamp_user'];
+
+          /*
+          MWDebug::log(
+            "HWMapCityApi::execute: HWAvgRatingApi data: \n" .
+            "[" . $index . "] rating_average:  " . $rating_res['rating_average'] . " \n" .
+            "[" . $index . "] rating_count:    " . $rating_res['rating_count'] . " \n" .
+            "[" . $index . "] rating_user:     " . $rating_res['rating_user'] . " \n" .
+            "[" . $index . "] timestamp_user:  " . $rating_res['timestamp_user']
+          );
+          */
         }
       }
     }
@@ -162,6 +187,8 @@ class HWMapCityApi extends ApiBase {
 
     // If the comment extension is set, get the comments count
     if (class_exists( 'HWGetCommentsCountApi' )) {
+
+      // MWDebug::log('HWMapCityApi::execute: HWGetCommentsCountApi is enabled. Querying it...');
 
       $spot_comment_count = new DerivativeRequest(
         $this->getRequest(),
@@ -196,7 +223,7 @@ class HWMapCityApi extends ApiBase {
     return true;
   }
 
-  // Description
+	// API endpoint description
   public function getDescription() {
     return 'Get the linked spots of a page.';
   }
@@ -204,18 +231,19 @@ class HWMapCityApi extends ApiBase {
   // Parameters.
   public function getAllowedParams() {
     return array(
-      'page_title' => array (
+      'page_title' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
       ),
-      'properties' => array (
+      'properties' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
-      ),
-      'user_id' => array (
+      )/*
+      'user_id' => array(
         ApiBase::PARAM_TYPE => 'integer',
         ApiBase::PARAM_REQUIRED => true
       )
+      */
     );
   }
 
@@ -223,8 +251,8 @@ class HWMapCityApi extends ApiBase {
   public function getParamDescription() {
     return array_merge( parent::getParamDescription(), array(
       'page_title' => 'Page title',
-      'properties' => 'Page propeties to query',
-      'user_id' => 'Current user id'
+      'properties' => 'Page propeties to query'
+      // 'user_id' => 'Current user id'
     ) );
   }
 }

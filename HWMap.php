@@ -165,7 +165,6 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 /**
  * The hook registration function.
  */
-
 function onParserInit( Parser $parser ) {
   global $wgOut;
   $parser->setHook('hw-map', 'HWMapRender');
@@ -189,12 +188,13 @@ function HWRatingRender( $input, array $args, Parser $parser, PPFrame $frame ) {
 function onResourceLoaderGetConfigVars( array &$vars ) {
   global $hwConfig;
 
-  $varNames = array( // explicit list to avoid private tokens ending up in JS vars
-      'geonames_username',
-      'mapbox_username',
-      'mapbox_access_token',
-      'mapbox_mapkey_streets',
-      'mapbox_mapkey_satellite'
+  // Explicit list to avoid private tokens ending up in JS vars
+  $varNames = array(
+    'geonames_username',
+    'mapbox_username',
+    'mapbox_access_token',
+    'mapbox_mapkey_streets',
+    'mapbox_mapkey_satellite'
   );
 
   foreach ($varNames as $varName) {

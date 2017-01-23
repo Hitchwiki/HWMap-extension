@@ -112,31 +112,31 @@ class HWMapApi extends ApiBase {
     return true;
   }
 
-  // Description
+	// API endpoint description
   public function getDescription() {
     return 'Get pages located in a specified bounding box.';
   }
 
-  // Parameters.
+  // Parameters
   public function getAllowedParams() {
     return array(
-      'NElat' => array (
+      'NElat' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
       ),
-      'NElon' => array (
+      'NElon' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
       ),
-      'SWlat' => array (
+      'SWlat' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
       ),
-      'SWlon' => array (
+      'SWlon' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
       ),
-      'category' => array (
+      'category' => array(
         ApiBase::PARAM_TYPE => 'string'
       ),
     );
