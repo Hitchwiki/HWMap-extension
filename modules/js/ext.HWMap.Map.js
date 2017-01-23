@@ -223,8 +223,10 @@
                    $.inArray('Countries', mw.config.get('wgCategories')) != -1) {
             mw.log('mw.HWMaps.Map::initialize -> Script initialized from a country article');
             mw.loader.using(['ext.HWMap.Country', 'ext.HWMap.CountryRating', 'ext.HWMap.Toolbar']).then(function() {
-              // Initializes functionality required for the country page
+              // Initializes basic functionality required for the country page
               mw.HWMaps.Country.initialize();
+              // Initializes country rating widget
+              mw.HWMaps.CountryRating.initialize();
               // Adds button toolbar on top of the sidebar map:
               mw.HWMaps.Toolbar.initialize();
             });

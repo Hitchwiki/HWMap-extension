@@ -1,7 +1,7 @@
 {{#countryRating}}
 
-<span class="hw-rating-widget average-{{rating_average}}">
-  <span class="average {{#if rating_average > 0}}average-{{Math.round(rating_average)}}{{else}}average-null{{/if}} {{#if !userId}}average-no-user{{/if}}">{{average_label}} {{#if rating_count > 0}}<small>({{rating_count}})</small>{{/if}}</span>{{#if userId}}<span id="rate_{{id}}" class="rate {{#if rating_user > 0}}rate-{{Math.round(rating_user)}}{{else}}rate-null{{/if}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
+<span class="hw-rating-widget hw-average-{{rating_average || 0}}">
+  <span class="hw-average {{#if rating_average > 0}}hw-average-{{Math.round(rating_average)}}{{else}}hw-average-null{{/if}} {{#if !userId}}hw-average-no-user{{/if}}">{{average_label}} {{#if rating_count > 0}}<small>({{rating_count}})</small>{{/if}}</span>{{#if userId}}<span id="hw-rate_{{id}}" class="hw-rate {{#if rating_user > 0}}hw-hw-rate-{{Math.round(rating_user)}}{{else}}hw-rate-null{{/if}}">{{#if rating_user > 0}}<small>You rated: </small>{{rating_user_label}}{{else}}Rate{{/if}} <i class="fa fa-caret-down"></i></span>
   <span id="hw-your_rate_{{id}}" class="hw-your-rate">
     <span class="hw-rating-choice-head">{{#if rating_user}}Your rated: {{rating_user_label}}{{else}}Your rating{{/if}}</span>
     <span onclick="hwAddRatings(5, {{id}}, 'countryRating')" class="hw-rating-choice"><span class="hw-bubble hw-bubble-verygood"></span> Very Good</span>
@@ -15,18 +15,18 @@
 </span>
 {{#if rating_count > 0}}
 <div>
-  <span class="hw-spot-ratings-votes" onclick="loadRatings({{id}}, false, 'countryRating');">> See {{rating_count}} votes</span>
+  <span class="hw-spot-ratings-votes" onclick="loadRatings({{id}}, false, 'countryRating');">See {{rating_count}} votes</span>
 </div>
 {{/if}}
 {{#if ratings}}
 <div id="hw-spot-ratings-{{id}}" class="hw-spot-ratings">
   <div class="hw-bar-graph-details">
-    <span class="bar-5 graph-bar"></span>
-    <span class="bar-4 graph-bar"></span>
-    <span class="bar-3 graph-bar"></span>
-    <span class="bar-2 graph-bar"></span>
-    <span class="bar-1 graph-bar"></span>
-    <div class="distribution-details">
+    <span class="hw-bar-5 hw-graph-bar"></span>
+    <span class="hw-bar-4 hw-graph-bar"></span>
+    <span class="hw-bar-3 hw-graph-bar"></span>
+    <span class="hw-bar-2 hw-graph-bar"></span>
+    <span class="hw-bar-1 hw-graph-bar"></span>
+    <div class="hw-distribution-details">
       <div class="row">
         <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-verygood"></span> Very good</p></div>
         <div class="col-xs-6"><p>{{Math.round(ratings_distribution.5.percentage)}}% ({{ratings_distribution.5.count}})</p></div>
