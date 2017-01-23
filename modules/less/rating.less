@@ -24,6 +24,7 @@
   .hw-average-no-user {
     border-radius: 2px;
   }
+  &, // Also works as a default background color for `.hw-rating-widget`
   .hw-average-0 {
     background-color: @hw-color-unknown;
     color: white;
@@ -60,7 +61,7 @@
     border-radius: 0 2px 2px 0;
   }
   .hw-your-rate {
-    display: none; // Bring it visible using .is-active
+    display: none; // Bring it visible using `.is-active`
     position: absolute;
     // float: right;
     right: 0;
