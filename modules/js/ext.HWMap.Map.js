@@ -318,7 +318,7 @@
       },
       _initIcon: function() {
         leafletOriginalInitIcon.call(this);
-        this._icon.id = 'marker-' + this.options.id;
+        this._icon.id = 'hw-marker-' + this.options.id;
       }
     });
 

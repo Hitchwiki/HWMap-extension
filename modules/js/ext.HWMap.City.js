@@ -313,7 +313,7 @@
    */
   function stopScrollPageToSpot() {
     animatedSpot = false;
-    $('.hw-highlight-spot').removeClass('hw-highlight-spot');
+    City.unHighlightMarker();
   }
 
   /**
@@ -361,18 +361,34 @@
    *
    */
   City.scrollPageToSpot = function(id) {
-    var $marker = $('#marker-' + id);
+    if (!id ) {
+      return;
+    }
+    animatedSpot = false;
+    City.highlightMarker(id);
+    animatedSpot = id;
+  };
+
+  /**
+   * Add "highlight" graphic to marker on map
+   */
+  City.highlightMarker = function(id) {
+    var $marker = $('#hw-marker-' + id);
 
     if (!id || !$marker.length) {
       return;
     }
 
-    animatedSpot = false;
     // Remove highlighting from any previously highlited spot
-    // @TODO: use Ractive for this
     $('.hw-highlight-spot').removeClass('hw-highlight-spot');
     $marker.addClass('hw-highlight-spot');
-    animatedSpot = id;
+  };
+
+  /**
+   * Remove "highlight" graphic from a marker on map
+   */
+  City.unHighlightMarker = function() {
+    $('.hw-highlight-spot').removeClass('hw-highlight-spot');
   };
 
   /**
@@ -425,6 +441,8 @@
     if (lat && lon) {
       mw.HWMaps.leafletMap.setView([lat, lon], 15);
     }
+
+    City.highlightMarker(id);
   };
 
   /**
