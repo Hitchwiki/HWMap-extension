@@ -4,5 +4,11 @@
   },
   "hwmap": "Hitchwiki Maps",
   "hwmap-desc": "{{desc}}",
-  "hwmap-summary": "Hitchwiki Maps"
+  "hwmap-summary": "Hitchwiki Maps",
+  "hwmap-please-reload": "Please reload the page to try again.",
+  "hwmap-please-try-again": "Please try again.",
+  "hwmap-error-loading-markers": "Failed to load markers to the map.",
+  "hwmap-error-geocoder": "Failed to load location information for the point.",
+  "hwmap-error-getting-spots": "Failed to load spots.",
+  "hwmap-error-rating-add": "Failed to add your rating."
 }

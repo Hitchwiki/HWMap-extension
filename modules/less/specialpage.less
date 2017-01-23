@@ -36,21 +36,21 @@
   }
   .hwmap-container {
     position: fixed;
-    top: 48px;
+    top: @hw-header-height;
     bottom: 0;
     bottom: 0;
     right: 0;
   }
   #hwmap {
     position: relative;
-    width: 100%;
-    transition: width 0.1s;
+    border-left: 1px solid @hw-orange-border;
+    transition: width 100ms;
     height: 100%;
     min-height: 300px;
-    border-left: 1px solid @hw-orange-border;
-  }
-  #hwmap.hw-open-spot-map{
-    width: 75%;
+    width: 100%;
+    &.hw-spot-open-map {
+      width: 75%;
+    }
   }
 
   // Hide certain contents
@@ -69,9 +69,10 @@
   #hwmap-add-wrap {
     position: absolute;
     bottom: 10px;
-    right: 10px;
+    right: 50%;
+    margin-right: -150px; // Has to be half of the width to center the block
     width: 300px;
-    z-index: 1000;
+    z-index: 2000;
     background: rgba(0,0,0,0.5);
     text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
     padding: 15px;
@@ -91,21 +92,23 @@
     .hwbutton();
   }
 
-  #hwmap-cancel-adding {
-    text-decoration: none;
-    color: #fff;
-    font-size: 12px;
-    line-height: 12px;
-  }
-
   // Button to init the adding a new spot
   #hwmap-add {
     display: inline-block;
     position: absolute;
     bottom: 10px;
-    right: 10px;
+    right: 70px;
     padding: 15px 25px;
     z-index: 900;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+  }
+
+  // Button to cancel the adding a new spot
+  #hwmap-cancel-adding {
+    text-decoration: none;
+    color: #fff;
+    font-size: 12px;
+    line-height: 12px;
   }
 
   // Adding the spot -modal
@@ -115,38 +118,61 @@
     border-radius: 5px;
   }
 
-
-  #hwspot {
+  // Sidebar spot container
+  #hw-specialpage-spot {
     position: relative;
-    width: 0%;
+    width: 0;
     transition: width 0.1s;
     min-height: 100%;
     height: auto;
-    float:right;
-    background-color:white;
-    .close-special-spot {
-      position: absolute;
-      float: right;
-      cursor: pointer;
-      top: 15px;
-      right: 15px;
-      font-size: 14px;
+    float: right;
+    background-color: white;
+    &.hw-spot-open {
+      width: 25%;
+      /*
+      @media screen and (max-width: 768px) {
+        width: 45%;
+      }
+      */
     }
-    .row-special-spot {
-      margin: 0;
+
+    // The main title saying "Hitchhiking spot"
+    h2 {
+      margin-left: 10px;
+      margin-right: 10px;
+      font-size: 1.4em;
     }
-    .hw-special-page-spinner {
-      display: none;
+
+    // Towards / Directions
+    .hw-spot-towards {
+      font-size: 13px;
+    }
+
+    // Loading animation
+    .hw-spot-spinner {
+      display: none; // By default hidden
       margin-top: 100px;
       text-align: center;
       font-size: 40px;
       color: @hw-grey-medium;
+      // This element has a Font-Awesome spinner inside it
       * {
         // Faster loading animation (2s by default)
         animation-duration: 1s;
       }
     }
-    .close-special-spot {
+    &.hw-spot-loading .hw-spot-spinner {
+      display: block;
+    }
+
+    // Close sidebar "X"
+    .hw-close-special-spot {
+      display: none;
+      position: absolute;
+      float: right;
+      cursor: pointer;
+      top: 15px;
+      right: 15px;
       font-size: 16px;
       line-height: 24px;
       margin-right: 5px;
@@ -156,9 +182,31 @@
         color: lighten(@hw-grey-dark, 10%);
       }
     }
+    &.hw-spot-open .hw-close-special-spot {
+      display: block;
+    }
   }
-  #hwspot.hw-open-spot {
-    width: 25%;
+  // SpecialPage HWMap sidebar when clicking a spot open
+
+  /*
+  .hw-specialpage-spot {
+    h2 {
+
+    }
+  }
+
+  .hw-specialpage-spot-actions {
+
+  }
+  */
+
+
+  /**
+   * @TODO: Why this is visible on SpecialPage and
+   * why it causes empty border over top-right-corner?
+   */
+  div.vectorTabs {
+    display: none;
   }
 
 }

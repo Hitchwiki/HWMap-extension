@@ -1,46 +1,83 @@
 /**
- * Setup sidebar map at the country article
+ * Country articles
  */
-var setupCountryMap = function setupCountryMap() {
-  mw.log('->HWMap->setupCountryMap');
-  $('body').addClass('hwmap-page');
 
-  // Getting the current coordinates for current country article
-  $.get( mw.util.wikiScript('api') + '?action=query&prop=coordinates&titles=' + mw.config.get('wgTitle') + '&format=json', function(data) {
-    for (var i in data.query.pages) {
-      page = data.query.pages[i];
-      break;
-    }
+(function(mw, $, L) {
+  mw.log('mw.HWMaps::Country');
 
-    if(page.coordinates && page.coordinates[0] && page.coordinates[0].lat && page.coordinates[0].lon) {
-      // Center map to country coordinates stored to article, on zoomlevel `5`
-      hwmap.setView([page.coordinates[0].lat, page.coordinates[0].lon], 5);
-    }
+  /**
+   * @class mw.HWMaps.Country
+   *
+   * @constructor
+   */
+  function Country() {
+    mw.log('mw.HWMaps::Country::constructor');
+  }
 
-    // Fire event to check when map move
-    hwmap.on('moveend', function() {
-      // mw.log(spotsLayer._topClusterLevel._childcount);
-      // Get spots when zoom is bigger than 6
-      var zoom = hwmap.getZoom();
-      if(zoom > 4) {
-        getBoxSpots('Cities', zoom);
+  Country.initialize = function() {
+    mw.log('HWMaps::Country::initialize');
+
+    $('body').addClass('hwmap-page');
+
+    // Getting the coordinates for current article
+    mw.HWMaps.Map.getArticleCoordinates().then(function(articleCoordinates) {
+      if (articleCoordinates) {
+        // Center map to coordinates stored to article
+        // (coordinates, zoomlevel)
+        mw.HWMaps.leafletMap.setView(articleCoordinates, 5);
+      } else {
+        // Couldn't get coordinates, just zoom out to the whole world
+        mw.HWMaps.leafletMap.fitWorld();
+        mw.log.warn('HWMaps::Country::initialize: could not find article coordinates. #j3jkkf');
       }
-      // When zoom is smaller than 6 we clear the markers if not already cleared
-      else if(spotsLayer._objectsOnMap.length > 0){
-        // Clear the markers and last boundings
-        spotsLayer.RemoveMarkers();
-        lastBounds = {
-          NElat: 0,
-          NElng: 0,
-          SWlat: 0,
-          SWlng: 0
-        };
-      }
+
+      mw.HWMaps.leafletLayers.cities.PrepareLeafletMarker = prepareViewMarkers;
+      mw.HWMaps.leafletMap.on('moveend', onCountryMapMoveEnd);
+
+      // Firing this event to initialize getting spots in bounding box
+      // See the event hook above and `onCountryMapMoveEnd()` for more.
+      mw.HWMaps.leafletMap.fireEvent('moveend');
+
     });
 
-    // Firing this event to initialize
-    // getting spots in bounding box
-    hwmap.fireEvent('moveend');
+  }
 
-  });
-}
+
+  /**
+   * Fire event when Leaflet map moves
+   */
+  function onCountryMapMoveEnd() {
+    mw.log('HWMaps::Country::onCountryMapMoveEnd');
+
+    // mw.log(mw.HWMaps.leafletLayers.spots._topClusterLevel._childcount);
+    // Get spots when zoom is bigger than 4
+    var zoom = mw.HWMaps.leafletMap.getZoom();
+
+    mw.log('HWMaps::Country::onCountryMapMoveEnd - map moveend (zoom ' + zoom + ')');
+    mw.log('HWMaps::Country::onCountryMapMoveEnd - _objectsOnMap ' + mw.HWMaps.leafletLayers.spots._objectsOnMap);
+
+    if (zoom > 4) {
+      mw.HWMaps.Spots.getMarkers('Cities', zoom);
+    }
+    // When zoom is smaller than 4 we clear the markers if not already cleared
+    else if (mw.HWMaps.leafletLayers.spots._objectsOnMap.length > 0) {
+      mw.HWMaps.Spots.clearMarkers();
+      mw.HWMaps.Map.resetMapState();
+    }
+  }
+
+  /**
+   * This constructs city icons for the countrymap
+   * Attaches an event which brings user to city article when clicking a marker
+   */
+  function prepareViewMarkers(leafletMarker, data) {
+    leafletMarker.setIcon(data.icon, data.HWid, data.title);
+    leafletMarker.on('click', function() {
+      window.location = wgArticlePath.replace('$1', data.title);
+    });
+  }
+
+  // Export
+  mw.HWMaps.Country = Country;
+
+}(mediaWiki, jQuery, L));

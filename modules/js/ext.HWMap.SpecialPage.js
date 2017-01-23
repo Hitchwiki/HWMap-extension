@@ -1,164 +1,425 @@
-/*
- * Return fragment identifier of the current URL
+/**
+ * Special page `/Special:HWMap`
  */
-$.fn.urlHash = function() {
-  // unlike window.location.hash, this one's IE-friendly
-  return document.URL.substr(document.URL.indexOf('#') + 1);
-};
 
+(function(mw, $, L, Ractive) {
+  mw.log('HWMaps::SpecialPage');
 
+  // Variables with `$` are jQuery objects
+  var animatedSpot,
+      ractiveTemplate,
+      $zoomInfoOverlay,
+      $hwspot,
+      $hwmap,
+      // When in debug mode, cache bust templates
+      cacheBust = mw.config.get('debug') ? new Date().getTime() : mw.config.get('wgVersion');
 
+  /**
+   * @class mw.HWMaps.SpecialPage
+   *
+   * @constructor
+   */
+  function SpecialPage() {
+    mw.log('HWMaps::SpecialPage::constructor');
+  }
 
-/*
- * Setup big map at Special:HWMap
- */
-var setupSpecialPageMap = function (urlParamSpot) {
-  mw.log('->HWMap->setupSpecialPageMap');
+  /**
+   *
+   */
+  SpecialPage.initialize = function() {
+    mw.log('HWMaps::SpecialPage::initialize');
 
-  //Set map view
-  hwmap.setView(defaultCenter, defaultZoom);
+    // Set DOM elements to variables for faster access
+    $zoomInfoOverlay = $('#hw-zoom-info-overlay');
+    $hwmap = $('#hwmap');
+    $hwspot = $('#hw-specialpage-spot');
 
-  var updateURL = function() {
-    var center = hwmap.getCenter(), zoom = hwmap.getZoom();
-    var state = {
-      'lat': center.lat,
-      'lng': center.lng,
-      'zoom': zoom
-    };
-    history.pushState(state, null, pageLocationUrl + '?' + $.param( state ));
+    var urlParamLat = parseFloat(mw.util.getParamValue('lat')),
+        urlParamLng = parseFloat(mw.util.getParamValue('lng')),
+        urlParamZoom = parseInt(mw.util.getParamValue('zoom'), 10); // 10=radix
+
+    // If map location was defined at the URL, move to there
+    // Otherwise map is kept at default location
+    if (!isNaN(urlParamLat) && !isNaN(urlParamLng)) {
+
+      // Because `0` is falsy, we have to check with `isNaN`
+      var zoom = !isNaN(urlParamZoom) ? urlParamZoom : mw.HWMaps.config.defaultZoom;
+
+      // http://leafletjs.com/reference-1.0.0.html#map-setview
+      mw.HWMaps.leafletMap.setView(
+        {
+          lat: urlParamLat,
+          lng: urlParamLng
+        },
+        zoom
+      );
+    }
+
+    // If URL had '#hwmap-add' in it, it means we should initiate adding new spot
+    // unlike `window.location.hash`, this one's IE-friendly
+    if (document.URL.substr(document.URL.indexOf('#') + 1) === 'hwmap-add') {
+      mw.HWMaps.NewSpot.setupNewSpot();
+    }
+
+    // Setup event listeners
+    mw.HWMaps.leafletMap.on('click', SpecialPage.closeSpecialPageSpot);
+    mw.HWMaps.leafletMap.on('moveend', loadMarkers);
+    mw.HWMaps.leafletMap.on('zoomend', updateSpecialPageURL);
+    mw.HWMaps.leafletLayers.spots.PrepareLeafletMarker = prepareSpotMarker;
+    mw.HWMaps.leafletLayers.cities.PrepareLeafletMarker = prepareCityMarker;
+
+    // Initialize loading markers in bounding box
+    mw.HWMaps.leafletMap.fireEvent('moveend');
+
+    initSpecialPageTemplate();
+    initNewPlaceButton();
   };
 
-  //Fire event to check when map move
-  hwmap.on('moveend', function() {
-    $('.tipsy').remove();
-    //mw.log(spotsLayer._topClusterLevel._childcount);
-    //Get spots when zoom is bigger than 6
-    var zoom = hwmap.getZoom();
-    if(zoom > 6 && zoom < 8) {
-      getBoxSpots('Cities', zoom);
-    }
-    else if(zoom > 7) {
-      getBoxSpots('', zoom);
-    }
-    //When zoom is smaller than 6 we clear the markers if not already cleared
-    else if(spotsLayer._objectsOnMap.length > 0 || cityLayer._objectsOnMap.length > 0){
-      //Clear the markers and last boundings
-      spotsLayer.RemoveMarkers();
-      cityLayer.RemoveMarkers();
-      spotsLayer.ProcessView();
-      cityLayer.ProcessView();
-      lastBounds = {
-        NElat: 0,
-        NElng: 0,
-        SWlat: 0,
-        SWlng: 0
-      };
+  /**
+   * Initializes "add new spot" button
+   */
+  function initNewPlaceButton() {
+    mw.log('HWMaps::SpecialPage::initNewPlaceButton');
+
+    // Proceed only for authenticated users
+    // `wgUserId` returns `null` when not logged in
+    if (!mw.config.get('wgUserId')) {
+      return;
     }
 
-    updateURL();
-  });
-
-  hwmap.on('zoomend', function() {
-    updateURL();
-  });
-
-  initSpecialPageTemplate(urlParamSpot);
-
-  // Button for adding new spot (show only for logged in users)
-  // wgUserId returns null when not logged in
-  if(mw.config.get('wgUserId')) {
-    $newSpotInit.show().click(function(e){
+    // Button for adding new spot
+    $('#hwmap-add').show().click(function(e) {
       e.preventDefault();
-      e.stopPropagation();//Prevent clicks ending up to map layer
-      setupNewSpot();
+      e.stopPropagation(); // Prevents clicks ending up to map layer
+      mw.HWMaps.NewSpot.setupNewSpot();
     });
 
-    // Link at the sidebar, so that we wouldn't have unessessary page-refresh
-    $('#n-New-spot a').click(function(e){
+    // Attach event to the link at the sidebar,
+    // so that we wouldn't have unessessary page-refresh
+    $('#n-New-spot a').click(function(e) {
       e.preventDefault();
-      setupNewSpot();
+      mw.HWMaps.NewSpot.setupNewSpot();
+    });
+  }
+
+  /**
+   *
+   */
+  SpecialPage.animateSpot = function(HWid) {
+    mw.log('HWMaps::SpecialPage::animateSpot');
+  };
+
+  /**
+   *
+   */
+  SpecialPage.stopAnimateSpot = function() {
+    mw.log('HWMaps::SpecialPage::stopAnimateSpot');
+  };
+
+  /**
+   *
+   */
+  SpecialPage.setMapView = function(lat, lon, zoom, HWid) {
+    mw.log('HWMaps::SpecialPage::setMapView');
+
+    // Validate vars
+    lat = parseFloat(lat);
+    lon = parseFloat(lon);
+    zoom = zoom ? parseInt(zoom, 10) : mw.HWMaps.leafletMap.getZoom(); // 10=radix
+
+    // Set the view
+    mw.HWMaps.leafletMap.setView([lat, lon], zoom);
+
+    // If marker ID was passed, animate it
+    if (HWid) {
+      SpecialPage.animateSpot(HWid);
+    }
+  };
+
+  /**
+   *
+   */
+  SpecialPage.openSpecialPageSpot = function(id, moveTo) {
+    mw.log('HWMaps::SpecialPage::openSpecialPageSpot');
+
+    if (!id) {
+      mw.log.error('HWMaps::SpecialPage::openSpecialPageSpot: No ID defined for loading a spot. #fj902j');
+      return;
+    }
+
+    SpecialPage.animateSpot(id);
+
+    // Wipe out any previously opened spot
+    ractiveTemplate.set({ spot: null });
+
+    // Loader animation
+    $hwspot.addClass('hw-spot-loading');
+
+    // Load data from the API
+    var apiUri = new mw.Uri(mw.util.wikiScript('api'));
+
+    // Add URL parameters, automatically handling ? and & as needed
+    apiUri.extend({
+      'action': 'hwspotidapi',
+      'format': 'json',
+      //'user_id': mw.config.get('wgUserId'),
+      'properties': [
+        'Location',
+        'Country',
+        'CardinalDirection',
+        'CitiesDirection',
+        'RoadsDirection'
+      ].join(','),
+      'page_id': id
     });
 
-    if ($(this).urlHash() == 'add') {
-      setupNewSpot();
+    mw.log('apiUri: ' + apiUri);
+
+    $.get(apiUri, function(data) {
+      mw.log('Response from the API:');
+      mw.log(data);
+
+      // Handle API errors
+      if (!data.query || !data.query.spot) {
+        mw.log.error('HWMaps::SpecialPage::openSpecialPageSpot: Could not load spot details from the API. #iivbh2');
+        return;
+      }
+
+      data.query.spot.id = id;
+
+      if (data.query.spot.rating_average) {
+        data.query.spot.average_label = mw.HWMaps.Spots.getRatingLabel(data.query.spot.rating_average);
+      }
+
+      if (data.query.spot.timestamp_user) {
+        data.query.spot.timestamp_user = mw.HWMaps.Spots.parseTimestamp(data.query.spot.timestamp_user);
+      }
+
+      if (data.query.spot.rating_user) {
+        data.query.spot.rating_user_label = mw.HWMaps.Spots.getRatingLabel(data.query.spot.rating_user);
+      }
+
+      ractiveTemplate.set({ spot: data.query.spot });
+
+      if (moveTo) {
+        SpecialPage.setMapView(data.query.spot.Location.lat, data.query.spot.Location.lon, 15, id);
+      }
+
+      // @TODO
+      // loadComments(id, false, 'spot', true);
+
+      // Hides loading animation
+      $hwspot.removeClass('hw-spot-loading');
+
+      /*
+      $('.hw-spot-edit-button').click(function(e) {
+        e.preventDefault();
+        var $form = $('#hw-spot-edit-form-wrap form');
+        $form.find('input[name="page_name"]').val($(this).data('title'));
+        $form.submit();
+      });
+      */
+
+      /*
+      $('.hw-your-rate').hide();
+
+      $('.hw-rating-widget .hw-rate').click(function(e) {
+        $('.hw-your-rate').hide();
+        $('.hw-rate').show();
+        e.preventDefault();
+        $(this).hide();
+        var id = $(this).attr('id').replace(/rate_/, '');
+        $('#hw-your_rate_' + id).show();
+      });
+
+      $(document).mouseup(function(e) {
+        var container = $('.hw-rating-widget .hw-rate');
+
+        if (!container.is(e.target) // if the target of the click isn't the container...
+            && container.has(e.target).length === 0) // ... nor a descendant of the container
+        {
+          $('.hw-your-rate').hide();
+          $('.hw-rate').show();
+        }
+      });
+      */
+
+    });
+
+    $hwspot.addClass('hw-spot-open');
+    $hwmap.addClass('hw-spot-open-map');
+  };
+
+  /**
+   * Edit spot article by title
+   * @param title
+   */
+  SpecialPage.editSpecialPageSpot = function(title) {
+    mw.log('HWMaps::SpecialPage::editSpecialPageSpot: ' + title);
+    var $form = $('#hw-spot-edit-form-wrap form');
+    $form.find('input[name="page_name"]').val(title);
+    $form.submit();
+
+    // `.popupform-innerdocument` was removed from DOM because successfully
+    // editing a spot, cancelling editing or any other reason.
+    // There's also `.popupform-wrapper`
+    $('.popupform-innerdocument').on('remove', function() {
+      mw.log('HWMaps::SpecialPage::editSpecialPageSpot -> DONE: ' + title);
+      // Reset zoom,bound cache so any map movement will Always load new spots
+      // This is so that if user moved the spot to a new location, we'll get it
+      // again to the map doing this.
+      mw.HWMaps.Map.resetMapState();
+      loadMarkers();
+    });
+  };
+
+  /**
+   *
+   */
+  SpecialPage.closeSpecialPageSpot = function() {
+    mw.log('HWMaps::SpecialPage::closeSpecialPageSpot');
+    $hwspot.removeClass('hw-spot-open');
+    $hwmap.removeClass('hw-spot-open-map');
+    SpecialPage.stopAnimateSpot();
+  };
+
+  /**
+   * Hides zoom info overlay
+   */
+  function hideZoomInfoOverlay() {
+    mw.log('HWMaps::SpecialPage::hideZoomInfoOverlay');
+    $zoomInfoOverlay.hide();
+  }
+
+  /**
+   * Shows zoom info overlay
+   */
+  function showZoomInfoOverlay() {
+    mw.log('HWMaps::SpecialPage::showZoomInfoOverlay');
+    $zoomInfoOverlay.show();
+  }
+
+  /**
+   *
+   */
+  function prepareSpotMarker(leafletMarker, data) {
+    mw.log('HWMaps::SpecialPage::prepareSpotMarker');
+    leafletMarker.setIcon(data.icon, data.HWid);
+
+    if (animatedSpot === data.HWid) {
+      SpecialPage.animateSpot(data.HWid);
+    }
+
+    leafletMarker.on('click', function() {
+      SpecialPage.openSpecialPageSpot(data.HWid);
+    });
+  }
+
+  /**
+   *
+   */
+  function prepareCityMarker(leafletMarker, data) {
+    mw.log('HWMaps::SpecialPage::prepareCityMarker');
+    leafletMarker.setIcon(data.icon, data.HWid, data.title || '');
+    if (data.title) {
+      leafletMarker.on('click', function() {
+        window.location = mw.config.get('wgArticlePath').replace('$1', data.title);
+      });
     }
   }
 
-  //Getting spots in bounding box
-  hwmap.fireEvent('moveend');
-}
-
-var initSpecialPageTemplate = function (urlParamSpot) {
-  var spot = {};
-  $.get( extensionRoot +'modules/templates/ext.HWMap.SpecialPageSpot.template.html' ).then( function ( template ) {
-    ractive = new Ractive({
-      el: 'hwspot',
-      template: template,
-      data: {userId: userId}
-    });
-    if(urlParamSpot) {
-      openSpecialPageSpot(urlParamSpot, true);
+  /**
+   *
+   */
+  function loadMarkers() {
+    mw.log('HWMaps::SpecialPage::loadMarkers');
+    // `jQuery.tipsy` got deprecated in MW 1.28 and should
+    // thus be replaced with something else, e.g. OOjs UI:
+    // https://www.mediawiki.org/wiki/OOjs_UI
+    if ($.fn.tipsy) {
+      $('.tipsy').remove();
     }
-  });
-};
 
-window.closeSpecialPageSpot = function () {
-  $('#hwspot').removeClass('hw-open-spot');
-  $('#hwmap').removeClass('hw-open-spot-map');
-  stopAnimateSpot();
-};
+    var zoom = mw.HWMaps.leafletMap.getZoom();
 
-window.openSpecialPageSpot = function (id, moveTo) {
-  animateSpot(id);
-  ractive.set({spot: null});
-  $('#hw-special-page-spinner').show();
-  $.get( mw.util.wikiScript('api') + '?action=hwspotidapi&format=json&user_id=' + userId + '&properties=Location,Country,CardinalDirection,CitiesDirection,RoadsDirection&page_id=' + id, function( data ) {
-    data.query.spot.id = id;
-    data.query.spot.average_label = getRatingLabel(data.query.spot.rating_average);
-    if(data.query.spot.timestamp_user){
-      data.query.spot.timestamp_user = parseTimestamp(data.query.spot.timestamp_user);
+    // When zoom is between 6-8, get only cities (no spots)
+    if (zoom > 6 && zoom < 8) {
+      mw.HWMaps.Map.clearMarkers('Spots');
+      mw.HWMaps.Spots.getMarkers('Cities', zoom);
+      showZoomInfoOverlay();
     }
-    if(data.query.spot.rating_user){
-      data.query.spot.rating_user_label = getRatingLabel(data.query.spot.rating_user);
+    // When zooming bigger than 8, show both Cities and Spots
+    else if (zoom >= 8) {
+      // '' = Spots AND Cities
+      mw.HWMaps.Spots.getMarkers('', zoom);
+      hideZoomInfoOverlay();
     }
-    ractive.set({spot: data.query.spot});
-    if(moveTo) {
-      hwMoveToSpot('spot', id);
+    // When zoom is equal or smaller than 6, we clear all the markers
+    else {
+      mw.HWMaps.Map.clearMarkers();
+      mw.HWMaps.Map.resetMapState();
+      showZoomInfoOverlay();
     }
-    loadComments(id, false, 'spot', true);
-    $('#hw-special-page-spinner').hide();
 
-    $('.hw-spot-edit-button').click(function(evt) {
-      evt.preventDefault();
-      var $form = $('#spot-edit-form-wrap form');
-      $form.find('input[name="page_name"]').val($(this).data('title'));
-      $form.submit();
-    });
+    updateSpecialPageURL();
+  }
 
-    $('.your-rate').hide();
+  /**
+   * Stores current map state to URL, producing URLs such as:
+   * `/Special:HWMap?lat=49.1170&lng=11.7004&zoom=6`
+   */
+  function updateSpecialPageURL() {
+    mw.log('HWMaps::SpecialPage::updateSpecialPageURL');
 
-    $('.rating-widget .rate').click(function(evt) {
-      $('.your-rate').hide();
-      $('.rate').show();
-      evt.preventDefault();
-      $(this).hide();
-      var id = $(this).attr('id').replace(/rate_/, '');
+    var center = mw.HWMaps.leafletMap.getCenter(),
+        state = {
+          'lat': center.lat,
+          'lng': center.lng,
+          'zoom': mw.HWMaps.leafletMap.getZoom()
+        },
+        // Instance for the location of the current window
+        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.Uri
+        uri = new mw.Uri();
 
-      $('#your_rate_' + id).show();
-    });
+    // Add URL parameters, automatically handling ? and & as needed
+    uri.extend(state);
 
-    $(document).mouseup(function (e) {
-      var container = $('.rating-widget .rate');
+    // Push to HTML5 URL history
+    // Uses `modules/vendor/HTML5-History-API`
+    history.pushState(state, null, uri.toString());
+  }
 
-      if (!container.is(e.target) // if the target of the click isn't the container...
-          && container.has(e.target).length === 0) // ... nor a descendant of the container
-      {
-        $('.your-rate').hide();
-        $('.rate').show();
+  /**
+   *
+   */
+  function initSpecialPageTemplate() {
+    mw.log('HWMaps::SpecialPage::initSpecialPageTemplate');
+    var spot = {};
+    $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMap.SpecialPageSpot.template.html?v=' + cacheBust).then(function(templateHtml) {
+      ractiveTemplate = new Ractive({
+        el: 'hw-specialpage-spot',
+        template: templateHtml,
+        data: {
+          userId: mw.config.get('wgUserId')
+        }
+      });
+
+      // If URL had spot id defined, open that spot
+      var urlParamSpot = mw.util.getParamValue('spot');
+      if (urlParamSpot) {
+        mw.log('HWMaps::SpecialPage::initSpecialPageTemplate: open spot by URL - ' + urlParamSpot);
+        SpecialPage.openSpecialPageSpot(urlParamSpot, true);
       }
     });
+  }
 
-  });
-  $('#hwspot').addClass('hw-open-spot');
-  $('#hwmap').addClass('hw-open-spot-map');
-};
+  // Export
+  mw.HWMaps.SpecialPage = SpecialPage;
+
+}(mediaWiki, jQuery, L, Ractive));
+
+
+/*
+@TODO:
+if (mw.util.getParamValue('spot')) {
+*/

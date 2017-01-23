@@ -120,6 +120,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
   'ractive' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/ractive/ractive.js',
+      'modules/js/ext.HWMap.Ractive.binding.js'
     )
   ),
 
@@ -129,29 +130,66 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     )
   ),
 
+  'lodash' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/vendor/lodash/dist/lodash.js'
+    )
+  ),
+
+  'ext.HWMap.SpecialPage' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/js/ext.HWMap.SpecialPage.js',
+    )
+  ),
+  'ext.HWMap.City' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/js/ext.HWMap.City.js',
+    )
+  ),
+  'ext.HWMap.Country' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/js/ext.HWMap.Country.js',
+    )
+  ),
+  'ext.HWMap.CountryRating' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/js/ext.HWMap.CountryRating.js',
+    )
+  ),
+  'ext.HWMap.Toolbar' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/js/ext.HWMap.Toolbar.js',
+    )
+  ),
+  'ext.HWMap.NewSpot' => $wgHWMapResourceBoilerplate + array(
+    'scripts' => array(
+      'modules/js/ext.HWMap.NewSpot.js',
+    )
+  ),
+
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'mediawiki.page.startup',
       'mediawiki.util',
       'oojs-ui-core',
       'oojs-ui-widgets',
-      'jquery.tipsy', // deprecated in MW 1.28
+      'jquery.tipsy', // @TODO: deprecated in MW 1.28
+      'jquery.spinner',
       'leaflet',
       'bootstrap-grid',
       'PruneCluster',
       'ractive',
-      'autogrow'
+      'autogrow',
+      'lodash'
     ),
     'scripts' => array(
-      'modules/js/ext.HWMap.HwGeoPoint.js',
-      'modules/js/ext.HWMap.Spots.js',
-      'modules/js/ext.HWMap.NewSpot.js',
-      'modules/js/ext.HWMap.SpecialPage.js',
-      'modules/js/ext.HWMap.Country.js',
-      'modules/js/ext.HWMap.City.js',
-      'modules/js/ext.HWMap.Country.Rating.js',
-      'modules/js/ext.HWMap.Toolbar.js',
-      'modules/js/ext.HWMap.js'
+      'modules/js/ext.HWMap.js',
+      'modules/js/ext.HWMap.GeoPoint.js',
+      'modules/js/ext.HWMap.Map.js',
+      'modules/js/ext.HWMap.Comments.js',
+      'modules/js/ext.HWMap.Waitingtimes.js',
+      'modules/js/ext.HWMap.Ratings.js',
+      'modules/js/ext.HWMap.Spots.js'
     ),
     'styles' => array(
       'modules/less/ext.HWMap.less',

@@ -2,62 +2,297 @@
  * Functions used for operations on spots
  */
 
-/**
- * Spot icon builder
- *
- * @return L.marker
- */
-var iconSpot = function (rating) {
-  if (rating >= 4.5) {
-    return icons.verygood;
-  }
-  else if (rating >= 3.5) {
-    return icons.good;
-  }
-  else if (rating >= 2.5 ) {
-    return icons.average;
-  }
-  else if (rating >= 1.5) {
-    return icons.bad;
-  }
-  else if (rating >= 1) {
-    return icons.senseless;
-  }
-  else {
-    return icons.unknown;
-  }
-};
+(function(mw, $, L, Ractive) {
+  mw.log('mw.HWMaps::Spots');
 
-//Get the rating label according to the rating average
-var getRatingLabel = function (rating) {
-  if (rating >= 4.5) {
-    return 'Very good';
+  /**
+   * @class mw.HWMaps.Spots
+   *
+   * @constructor
+   */
+  function Spots() {
+    mw.log('HWMaps::Spots::constructor');
   }
-  else if (rating >= 3.5) {
-    return 'Good';
-  }
-  else if (rating >= 2.5 ) {
-    return 'Average';
-  }
-  else if (rating >= 1.5) {
-    return 'Bad';
-  }
-  else if (rating >= 1) {
-    return 'Senseless';
-  }
-  else {
-    return 'Unknown';
-  }
-};
+
+  /**
+   * Leaflet-icon builder for spot markers
+   *
+   * @param {number} rating
+   * @return L.marker
+   */
+  Spots.getSpotIcon = function(rating) {
+    mw.log('HWMaps::Spots::getSpotIcon');
+
+    // Validate rating
+    rating = Number(rating || 0);
+
+    if (rating >= 4.5) {
+      return mw.HWMaps.icons.verygood;
+    }
+    else if (rating >= 3.5) {
+      return mw.HWMaps.icons.good;
+    }
+    else if (rating >= 2.5 ) {
+      return mw.HWMaps.icons.average;
+    }
+    else if (rating >= 1.5) {
+      return mw.HWMaps.icons.bad;
+    }
+    else if (rating >= 1) {
+      return mw.HWMaps.icons.senseless;
+    }
+
+    return mw.HWMaps.icons.unknown;
+  };
+
+  /**
+   * Clear markers from the map
+   */
+  Spots.clearMarkers = function(category) {
+    mw.log('HWMaps::Spots::clearMarkers');
+    if (!category || category === 'Spots') {
+      mw.HWMaps.leafletLayers.spots.RemoveMarkers();
+    }
+    if (!category || category === 'Cities') {
+      mw.HWMaps.leafletLayers.cities.RemoveMarkers();
+    }
+  };
+
+  /**
+   * Populate map with city or spot markers
+   * @param {string} category, `Cities` or `Spots`
+   */
+  Spots.getMarkers = function(category, zoom) {
+    mw.log('HWMaps::Spots::getMarkers');
+
+    // Validate category && zoom
+    category = String(category || '');
+    zoom = parseInt(zoom, 10) || 0; // `parseInt` could return `NaN`
+
+    // Get current bounding box from the map
+    bounds = mw.HWMaps.leafletMap.getBounds();
+
+    // Check if current bouding box is different
+    // than previously saved bounding box
+    if (bounds._northEast.lat > mw.HWMaps.lastBounds.NElat ||
+       bounds._northEast.lng > mw.HWMaps.lastBounds.NElng ||
+       bounds._southWest.lat < mw.HWMaps.lastBounds.SWlat ||
+       bounds._southWest.lng < mw.HWMaps.lastBounds.SWlng ||
+       zoom !== mw.HWMaps.lastZoom) {
+      mw.log('HWMaps::Spots::getMarkers: Out of cached bounds, get fresh markers!');
+
+      // mw.HWMaps.Map.clearMarkers();
+
+      // Extends cached bounds so that we'll allow little bit of movement
+      // without fetching new set of spots
+      mw.HWMaps.lastBounds = {
+        NElat: bounds._northEast.lat + 1,
+        NElng: bounds._northEast.lng + 1,
+        SWlat: bounds._southWest.lat - 1,
+        SWlng: bounds._southWest.lng - 1
+      };
+    } else {
+      mw.log('HWMaps::Spots::getMarkers: Inside previously cached bounds.');
+      return;
+    }
+
+    // Build the API URL
+    var queryUri = new mw.Uri(mw.util.wikiScript('api'));
+    queryUri.extend({
+      action: 'hwmapapi',
+      category: category,
+      SWlat: mw.HWMaps.lastBounds.SWlat,
+      SWlon: mw.HWMaps.lastBounds.SWlng,
+      NElat: mw.HWMaps.lastBounds.NElat,
+      NElon: mw.HWMaps.lastBounds.NElng,
+      format: 'json'
+    });
+
+    mw.log('HWMaps::Spots::getMarkers: API Query:');
+    mw.log(queryUri.toString());
+
+    // Query API
+    $.get(queryUri.toString(), function(data) {
+
+      mw.log('HWMaps::Spots::getMarkers: API response:');
+      mw.log(data);
+
+      // API returned error
+      if (data.error) {
+        // Bubble notification
+        // `mw.message` gets message translation, see `i18n/en.json`
+        // `tag` replaces any previous bubbles by same tag
+        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+        mw.notify(
+          mw.message('hwmap-error-loading-markers') + ' ' + mw.message('hwmap-please-reload'),
+          { tag: 'hwmap-error' }
+        );
+        // Console log
+        mw.log.error('HWMaps::Spots::initialize error getting data from the API #348fhj');
+        mw.log.error(data.error);
+        return;
+      }
+
+      // Clear out possibly previous markers from the map
+      mw.HWMaps.Map.clearMarkers(category);
+
+      // No data from the API
+      if (!data.query) {
+        mw.log('HWMaps::Spots::initialize API did not return any points. #g31128');
+        return;
+      }
+
+      // Add the new markers
+      var spots = data.query.spots;
+      for (var i = -1, len = spots.length; ++i < len;) {
+
+        // Build a marker
+        var marker = new PruneCluster.Marker(
+          spots[i].location[0],
+          spots[i].location[1]
+        );
+
+        // Attach article ID to marker
+        marker.data.HWid = spots[i].id;
+
+        if (spots[i].category === 'Spots') {
+          // Add icon
+          marker.data.icon = Spots.getSpotIcon(spots[i].average_rating);
+          marker.data.HWtype = 'spot';
+
+          // Register marker
+          mw.HWMaps.leafletLayers.spots.RegisterMarker(marker);
+        }
+        else if (spots[i].category === 'Cities') {
+          // Add icon
+          marker.data.icon = mw.HWMaps.icons.city;
+          marker.data.title = spots[i].title;
+          marker.data.HWtype = 'city';
+
+          // Register marker
+          mw.HWMaps.leafletLayers.cities.RegisterMarker(marker);
+        }
+      }
+
+      // Change cluster area size depending on the zoom level
+      // Higher number means more markers "merged".
+      // https://github.com/SINTEF-9012/PruneCluster#set-the-clustering-size
+      if (zoom !== mw.HWMaps.lastZoom) {
+        mw.HWMaps.lastZoom = zoom;
+        if (zoom < 8) {
+          mw.HWMaps.leafletLayers.spots.Cluster.Size = 120;
+        }
+        else if (zoom < 11) {
+          mw.HWMaps.leafletLayers.spots.Cluster.Size = 80;
+        }
+        else {
+          mw.HWMaps.leafletLayers.spots.Cluster.Size = 10;
+        }
+      }
+
+      // Ensure PruneCluster notices new markers
+      if (!category || category === 'Spots') {
+        mw.HWMaps.leafletLayers.spots.ProcessView();
+      }
+      if (!category || category === 'Cities') {
+        mw.HWMaps.leafletLayers.cities.ProcessView();
+      }
+
+      // Tooltips for city markers
+      // `jQuery.tipsy` got deprecated in MW 1.28 and should
+      // thus be replaced with something else, e.g. OOjs UI:
+      // https://www.mediawiki.org/wiki/OOjs_UI
+      if ($.fn.tipsy) {
+        $('.tipsy').remove();
+        $('.hw-city-icon').tipsy({
+          title: function() {
+            var orginalTitle = this.getAttribute('original-title') || 'City';
+            return 'Open ' + orginalTitle.replace(/_/g,' ');
+          },
+          gravity: $.fn.tipsy.autoNS || false
+        });
+      } else {
+        mw.log.warn('HWMaps::Spots: No jQuery Tipsy available. #fj93jh');
+      }
+
+    });
+
+  };
+
+  /**
+   * Get string presentation of a numeric hitchability rating
+   * @param {int} rating 0-5
+   * @return {string}
+   */
+  Spots.getRatingLabel = function(rating) {
+    mw.log('HWMaps::Spots::getRatingLabel');
+
+    // Validate rating
+    rating = Number(rating || 0);
+
+    if (rating >= 4.5) {
+      return 'Very good';
+    }
+    else if (rating >= 3.5) {
+      return 'Good';
+    }
+    else if (rating >= 2.5 ) {
+      return 'Average';
+    }
+    else if (rating >= 1.5) {
+      return 'Bad';
+    }
+    else if (rating >= 1) {
+      return 'Senseless';
+    }
+    else {
+      return 'Unknown';
+    }
+  };
+
+  /**
+   * parse timestamp into a human readable format
+   * @todo Use Moment.js here instead, it ships with MediaWiki.
+   * @param {string} timestamp
+   * @return {string}
+   */
+  Spots.parseTimestamp = function(timestamp) {
+    mw.log('HWMaps::Spots::parseTimestamp: ' + timestamp);
+    return timestamp ? timestamp.slice(6, 8) + '.' + timestamp.slice(4, 6) + '.' + timestamp.slice(0, 4) : '';
+  };
+
+  /**
+   * Open Google Street View at coordinates
+   *
+   * @param {Float} lat
+   * @param {Float} lng
+   */
+  Spots.openStreetView = function(lat, lng) {
+    mw.log('HWMaps::Spots::openStreetView: ' + parseFloat(lat) + ', ' + parseFloat(lng));
+    window.location = 'https://maps.google.com/maps?q=&layer=c&cbll=' + parseFloat(lat) + ',' + parseFloat(lng);
+  };
+
+  // Export
+  mw.HWMaps.Spots = Spots;
+
+}(mediaWiki, jQuery, L, Ractive));
+
+
+
+/*
+
+
+// Get the rating label according to the rating average
+
 
 var animateMarker = function(id) {
 }
 
 // Update spot marker with new rating
 window.updateSpotMarker = function(id, newRating) {
-  for(var i = 0; i < spotsLayer.Cluster._markers.length; i++) {
-    if (spotsLayer.Cluster._markers[i].data.HWid == id) {
-      if (spotsLayer.Cluster._markers[i].data.average != newRating) {
+  for (var i = 0; i < spotsLayer.Cluster._markers.length; i++) {
+    if (spotsLayer.Cluster._markers[i].data.HWid === id) {
+      if (spotsLayer.Cluster._markers[i].data.average !== newRating) {
         spotsLayer.Cluster._markers[i].data.icon = iconSpot(newRating);
         spotsLayer.Cluster._markers[i].data.average = newRating;
         spotsLayer.RedrawIcons();
@@ -68,25 +303,8 @@ window.updateSpotMarker = function(id, newRating) {
   }
 };
 
-// Function to get edit token
-var getToken = function (callback) {
-  if (userId) {
-    $.get( mw.util.wikiScript('api') + '?action=query&meta=tokens&format=json', function( data ) {
-      callback(data.query.tokens.csrftoken);
-    });
-  }
-  else {
-    callback(null);
-  }
-};
-
-// Function to parse timestamp in a human readable format
-var parseTimestamp = function (timestamp) {
-  return timestamp.slice(6, 8) + '.' + timestamp.slice(4, 6) + '.' + timestamp.slice(0, 4);
-};
-
 var slideSpeed = 300;
-var slideShow = function (id, state) {
+var slideShow = function(id, state) {
   var content = $(id);
   if (state == 'down') {
     content.css({ 'display': 'block' });
@@ -102,61 +320,65 @@ var slideShow = function (id, state) {
     content.animate({
       height: 0
     }, slideSpeed, function() {
-      content.css({'display': 'none'});
+      content.css({ 'display': 'none' });
     });
   }
 }
 
 var commentLoaded = [];
-window.loadComments = function (id, reload, spotObjectPath, specialPageLoad) {
+window.loadComments = function(id, reload, spotObjectPath, specialPageLoad) {
   if (typeof commentLoaded[id] === 'undefined' || reload || specialPageLoad) {
-    $('#comment-spinner-' + id).css({'visibility': 'visible'});
+    $('#hw-comment-spinner-' + id).css({ 'visibility': 'visible' });
     $.get( mw.util.wikiScript('api') + '?action=hwgetcomments&format=json&pageid=' + id, function(data) {
       if (data.query) {
         //Update spot with new average
         for(var j = 0; j < data.query.comments.length ; j++) {
-          data.query.comments[j].timestamp_label = parseTimestamp(data.query.comments[j].timestamp);
+          data.query.comments[j].timestamp_label = Spots.parseTimestamp(data.query.comments[j].timestamp);
         }
         ractive.set(spotObjectPath + '.comments', data.query.comments);
         ractive.set(spotObjectPath + '.new_comment', '');
         commentLoaded[id] = true;
         if (!reload) {
-          slideShow('#spot-comments-' + id, 'down');
+          slideShow('#hw-spot-comments-' + id, 'down');
         }
       }
       mw.log('show comments')
-      $('#comment-spinner-' + id).css({'visibility': 'hidden'});
+      $('#hw-comment-spinner-' + id).css({ 'visibility': 'hidden' });
     });
   }
-  else if (commentLoaded[id] == true){
-    slideShow('#spot-comments-' + id, 'up');
+  else if (commentLoaded[id] == true) {
+    slideShow('#hw-spot-comments-' + id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    slideShow('#spot-comments-' + id, 'down');
+    slideShow('#hw-spot-comments-' + id, 'down');
     commentLoaded[id] = true;
   }
 };
 
-window.toggleComments = function (id) {
-  if (commentLoaded[id] == true){
-    slideShow('#spot-comments-' + id, 'up');
+window.toggleComments = function(id) {
+  if (commentLoaded[id] == true) {
+    slideShow('#hw-spot-comments-' + id, 'up');
     commentLoaded[id] = false;
   }
   else {
-    slideShow('#spot-comments-' + id, 'down');
+    slideShow('#hw-spot-comments-' + id, 'down');
     commentLoaded[id] = true;
   }
 };
 
 //Add Comment
-window.addComment = function (id, spotObjectPath) {
+window.addComment = function(id, spotObjectPath) {
   //Get token
-  getToken(function(token) {
+  mw.HWMaps.Map.getToken(function(token) {
     if (token) {
-      newComment = ractive.get(spotObjectPath + '.new_comment').replace(/\n/g, '<br />');
+      newComment = ractive.get(spotObjectPath + '.hw-new_comment').replace(/\n/g, '<br />');
       //Post new rating
-      $.post( mw.util.wikiScript('api') + '?action=hwaddcomment&format=json', {commenttext: newComment, pageid: id, token: token})
+      $.post( mw.util.wikiScript('api') + '?action=hwaddcomment&format=json', {
+        commenttext: newComment,
+        pageid: id,
+        token: token
+      })
       .done(function( data ) {
         if (data) {
           loadComments(id, true, spotObjectPath);
@@ -171,242 +393,28 @@ window.addComment = function (id, spotObjectPath) {
 };
 
 // Delete Comment
-window.deleteComment = function (commentId, id, spotObjectPath) {
+window.deleteComment = function(commentId, id, spotObjectPath) {
   // Get token
-  getToken(function(token) {
-    if (token) {
-      if (window.confirm('Delete comment ?')) {
-        // Post new rating
-        $.post( mw.util.wikiScript('api') + '?action=hwdeletecomment&format=json', {comment_id: commentId, token: token})
-        .done(function( data ) {
-          if (data) {
-            loadComments(id, true, spotObjectPath);
-            ractive.set(spotObjectPath + '.comment_count', data.query.count );
-          }
-        });
-      }
+  mw.HWMaps.Map.getToken(function(token) {
+    if (!token) {
+      mw.log.error('Not logged in, cannot delete comment. #2gj39F');
+      return;
     }
-    else {
-      mw.log('Not logged in ');
-    }
-  });
-};
-
-var ratingsLoaded = [];
-window.loadRatings = function (id, reload, spotObjectPath) {
-  if (typeof ratingsLoaded[id] === 'undefined' || reload) {
-    $.get( mw.util.wikiScript('api') + '?action=hwgetratings&format=json&pageid=' + id, function(data) {
-      if (data.query.ratings.length) {
-        //Update spot with new average
-        for(var j = 0; j < data.query.ratings.length ; j++) {
-          data.query.ratings[j].rating_label = getRatingLabel(data.query.ratings[j].rating);
-          data.query.ratings[j].timestamp_label = parseTimestamp(data.query.ratings[j].timestamp);
-        }
-        ractive.set(spotObjectPath + '.ratings', data.query.ratings)
-        ractive.set(spotObjectPath + '.ratings_distribution', data.query.distribution);
-        for (var key in data.query.distribution) {
-          $('#spot-ratings-' + id+' .bar-'+key).css({'width': data.query.distribution[key].percentage+'%'});
-        }
-        if (!reload) {
-          slideShow('#spot-ratings-' + id, 'down');
-        }
-        ratingsLoaded[id] = true;
-      }
-      else {
-        ractive.set(spotObjectPath + '.ratings', null);
-      }
-    });
-  }
-  else if (ratingsLoaded[id] == true){
-    slideShow('#spot-ratings-' + id, 'up');
-    ratingsLoaded[id] = false;
-  }
-  else {
-    slideShow('#spot-ratings-' + id, 'down');
-    ratingsLoaded[id] = true;
-  }
-};
-
-//Add rating
-window.hwAddRatings = function(newRating, id, spotObjectPath) {
-  //Get token
-  getToken(function(token) {
-    if (token) {
-      //Post new rating
-      $.post( mw.util.wikiScript('api') + '?action=hwaddrating&format=json', { rating: newRating, pageid: id, token: token })
+    if (window.confirm('Are you sure you want to delete this comment?')) {
+      // Post new rating
+      $.post( mw.util.wikiScript('api') + '?action=hwdeletecomment&format=json', {comment_id: commentId, token: token})
       .done(function( data ) {
-        if (data.query.average) {
-          //Update spot with new average
-          ractive.set(spotObjectPath + '.timestamp_user', parseTimestamp(data.query.timestamp) );
-          ractive.set(spotObjectPath + '.rating_user', newRating);
-          ractive.set(spotObjectPath + '.rating_user_label', getRatingLabel(newRating));
-          ractive.set(spotObjectPath + '.rating_average', data.query.average );
-          ractive.set(spotObjectPath + '.rating_count', data.query.count );
-          ractive.set(spotObjectPath + '.average_label', getRatingLabel(data.query.average));
-          updateSpotMarker(id, data.query.average);
-          if (typeof ratingsLoaded[id] !== 'undefined') {
-            loadRatings(id, true, spotObjectPath);
-          }
+        if (data) {
+          loadComments(id, true, spotObjectPath);
+          ractive.set(spotObjectPath + '.comment_count', data.query.count );
         }
       });
-    }
-    else {
-      mw.log('Not logged in ');
-    }
-  });
-};
-
-//Delete rating
-window.deleteRating = function(id, spotObjectPath) {
-  //Get token
-  getToken(function(token) {
-    if (token) {
-      //Post new rating
-      $.post( mw.util.wikiScript('api') + '?action=hwdeleterating&format=json', { pageid: id, token: token })
-      .done(function( data ) {
-        if (data.query) {
-          //Update spot with new average
-          ractive.set(spotObjectPath + '.timestamp_user', 0);
-          ractive.set(spotObjectPath + '.rating_user', 0);
-          ractive.set(spotObjectPath + '.rating_user_label', null);
-          ractive.set(spotObjectPath + '.rating_average', data.query.average );
-          ractive.set(spotObjectPath + '.rating_count', data.query.count );
-          ractive.set(spotObjectPath + '.average_label', getRatingLabel(data.query.average));
-          updateSpotMarker(id, data.query.average);
-          if (typeof ratingsLoaded[id] !== 'undefined') {
-            loadRatings(id, true, spotObjectPath);
-          }
-        }
-      });
-    }
-    else {
-      mw.log('Not logged in ');
+    } else {
+      mw.log('User cancelled deleting the comment. #gdsgj9');
     }
   });
 };
 
-window.showAddWaitingTime = function(id) {
-  $('#add_waiting_time_' + id).show();
-  $('#waiting_time_button_' + id).hide();
-}
-window.hideAddWaitingTime = function(id) {
-  $('#add_waiting_time_' + id).hide();
-  $('#waiting_time_button_' + id).show();
-}
 
-var waitingTimesLoaded = [];
-window.loadWaintingTimes = function (id, reload, spotObjectPath) {
-  if (typeof waitingTimesLoaded[id] === 'undefined' || reload) {
-    $.get( mw.util.wikiScript('api') + '?action=hwgetwaitingtimes&format=json&pageid=' + id, function(data) {
-      if (data.query.waiting_times.length) {
-        if (!reload) {
-          slideShow('#spot-waitingtimes-' + id, 'down');
-        }
-        //Update spot with new average
-        for(var j = 0; j < data.query.waiting_times.length ; j++) {
-          data.query.waiting_times[j].timestamp_label = parseTimestamp(data.query.waiting_times[j].timestamp);
-        }
-        ractive.set(spotObjectPath + '.waiting_times', data.query.waiting_times)
-        ractive.set(spotObjectPath + '.waiting_times_distribution', data.query.distribution);
-        for (var i = 0; i < data.query.distribution.length; i++) {
-          var barkey = i + 1;
-          $('#spot-waitingtimes-' + id+' .bar-'+barkey).css({'width': data.query.distribution[i].percentage+'%'});
-        }
-        waitingTimesLoaded[id] = true;
-      }
-    });
-  }
-  else if (waitingTimesLoaded[id] == true){
-    slideShow('#spot-waitingtimes-' + id, 'up');
-    waitingTimesLoaded[id] = false;
-  }
-  else {
-    slideShow('#spot-waitingtimes-' + id, 'down');
-    waitingTimesLoaded[id] = true;
-  }
-};
 
-//Add waiting time
-window.addWaitingTime = function(newWaitingTime, id, spotObjectPath) {
-  hideAddWaitingTime(id);
-  //Get token
-  getToken(function(token) {
-    if (token) {
-      //Post new rating
-      $.post( mw.util.wikiScript('api') + '?action=hwaddwaitingtime&format=json', {
-        waiting_time: newWaitingTime,
-        pageid: id,
-        token: token
-      })
-      .done(function( data ) {
-        if (data.query) {
-          //Update spot with new average
-          ractive.set(spotObjectPath + '.waiting_time_average', data.query.average );
-          ractive.set(spotObjectPath + '.waiting_time_count', data.query.count );
-          ractive.set(spotObjectPath + '.new_waiting_time', null);
-          if (typeof ratingsLoaded[id] !== 'undefined') {
-            loadWaintingTimes(id, true, spotObjectPath);
-          }
-        }
-      });
-    }
-    else {
-      mw.log('Not logged in ');
-    }
-  });
-};
-
-window.deleteWaitingTime = function(waiting_time_id, id, spotObjectPath) {
-  //Get token
-  getToken(function(token) {
-    if (token) {
-      if (window.confirm('Delete waiting time ?')){
-        //Post new rating
-        $.post( mw.util.wikiScript('api') + '?action=hwdeletewaitingtime&format=json', {
-          waiting_time_id: waiting_time_id,
-          token: token
-        })
-        .done(function( data ) {
-          if (data.query) {
-            //Update spot with new average
-            ractive.set(spotObjectPath + '.waiting_time_average', data.query.average );
-            ractive.set(spotObjectPath + '.waiting_time_count', data.query.count );
-            if (typeof ratingsLoaded[id] !== 'undefined') {
-              loadWaintingTimes(id, true, spotObjectPath);
-            }
-          }
-        });
-      }
-    }
-    else {
-      mw.log('Not logged in ');
-    }
-  });
-};
-
-window.loadSpotDetails = function (id, reload, spotObjectPath) {
-  mw.log('->HWMap->loadSpotDetails');
-  mw.log(spotObjectPath);
-  loadWaintingTimes(id, reload, spotObjectPath);
-  loadRatings(id, reload, spotObjectPath);
-};
-
-window.hwMoveToSpot = function (spotObjectPath, id) {
-  hwmap.setView([
-    ractive.get(spotObjectPath + '.Location.0.lat'),
-    ractive.get(spotObjectPath + '.Location.0.lon')
-  ], 15);
-  animateSpot(id);
-};
-
-var animateSpot = function (id) {
-  animatedSpot = false;
-  $('.hw-highlight-spot').removeClass('hw-highlight-spot');
-  $('#marker-' + id).addClass('hw-highlight-spot');
-  animatedSpot = id;
-}
-
-var stopAnimateSpot = function () {
-  animatedSpot = false;
-  $('.hw-highlight-spot').removeClass('hw-highlight-spot');
-}
+*/

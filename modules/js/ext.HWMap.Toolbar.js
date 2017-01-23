@@ -5,41 +5,60 @@
  * Relies to OOjs UI/Widgets
  * https://www.mediawiki.org/wiki/OOjs_UI/Widgets/Buttons_and_Switches
  */
-var $hwmapToolbar;
+(function(mw, $) {
 
-var setupMapToolbar = function () {
-  mw.log('->HWMap->setupMapToolbar');
+  mw.log('HWMaps::Toolbar');
 
-  $hwmapToolbar = $('.hwmap-toolbar');
+  var $hwMapToolbar;
 
-  // Add buttons inside the toolbar if it exists
-  if ($hwmapToolbar.length) {
-    setupNewSpotButton();
-    setupWorldMapButton();
+  /**
+   * @class mw.HWMaps.Toolbar
+   *
+   * @constructor
+   */
+  function Toolbar() {
+
   }
-};
 
-/**
- * "Add new spot" button
- */
-var setupNewSpotButton = function () {
-  var newSpotButton = new OO.ui.ButtonWidget({
-    label: 'Add new spot',
-    // icon: 'MapPinAdd',
-    // `#add` in the URL initializes adding a new spot at `HWMap` page
-    href: mw.config.get('wgArticlePath').replace('$1', 'Special:HWMap#add')
-  });
-  $hwmapToolbar.append(newSpotButton.$element);
-};
+  /**
+   * Initialize
+   */
+  Toolbar.initialize = function() {
+    $hwMapToolbar = $('.hw-map-toolbar');
+    // Add buttons inside the toolbar if it exists
+    if ($hwMapToolbar.length) {
+      initializeWorldMapButton();
+      initializeNewSpotButton();
+    }
+  }
 
-/**
- * "World map" button
- */
-var setupWorldMapButton = function () {
-  var worldMapButton = new OO.ui.ButtonWidget({
-    label: 'World map',
-    // icon: 'Map',
-    href: mw.config.get('wgArticlePath').replace('$1', 'Special:HWMap')
-  });
-  $hwmapToolbar.append(worldMapButton.$element);
-};
+  /**
+   * "World map" button
+   */
+  function initializeWorldMapButton() {
+    mw.log('HWMaps::Toolbar::initializeWorldMapButton');
+    var worldMapButton = new OO.ui.ButtonWidget({
+      label: 'World map',
+      // icon: 'Map',
+      href: mw.config.get('wgArticlePath').replace('$1', 'Special:HWMap')
+    });
+    $hwMapToolbar.append(worldMapButton.$element);
+  }
+
+  /**
+   * "Add new spot" button
+   */
+  function initializeNewSpotButton() {
+    mw.log('HWMaps::Toolbar::initializeNewSpotButton');
+    var newSpotButton = new OO.ui.ButtonWidget({
+      label: 'Add new spot',
+      // icon: 'MapPinAdd',
+      // `#add` in the URL initializes adding a new spot at `HWMap` page
+      href: mw.config.get('wgArticlePath').replace('$1', 'Special:HWMap#hwmap-add')
+    });
+    $hwMapToolbar.append(newSpotButton.$element);
+  }
+
+  mw.HWMaps.Toolbar = Toolbar;
+
+}(mediaWiki, jQuery));

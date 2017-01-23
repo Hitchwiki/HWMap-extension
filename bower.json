@@ -10,9 +10,10 @@
   "dependencies": {
     "leaflet": "~0.7.7",
     "PruneCluster": "~1.1.0",
-    "ractive": "~0.6.1",
+    "ractive": "~0.8.9",
     "bootstrap-grid": "https://github.com/simison/bootstrap-grid.git",
     "HTML5-History-API": "https://github.com/devote/HTML5-History-API",
-    "autogrow": "https://github.com/ultimatedelman/autogrow.git"
+    "autogrow": "https://github.com/ultimatedelman/autogrow.git",
+    "lodash": "~4.17.3"
   }
 }
