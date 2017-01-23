@@ -1,4 +1,4 @@
 {
-    "directory": "modules/vendor",
-    "json": "bower.json"
+  "directory": "modules/vendor",
+  "analytics": false
 }
