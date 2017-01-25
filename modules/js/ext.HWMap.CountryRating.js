@@ -27,7 +27,7 @@
         el: 'hw-country-rating',
         template: template,
         data: {
-          userId: mw.config.get('wgUserId') || false
+          userId: mw.config.get('wgUserId')
         }
       });
 

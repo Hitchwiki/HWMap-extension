@@ -124,7 +124,7 @@
         // `tag` replaces any previous bubbles by same tag
         // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
         mw.notify(
-          mw.message('hwmap-error-loading-markers') + ' ' + mw.message('hwmap-please-reload'),
+          mw.message('hwmap-error-loading-markers').text() + ' ' + mw.message('hwmap-please-reload').text(),
           { tag: 'hwmap-error' }
         );
         // Console log
@@ -206,8 +206,8 @@
         $('.tipsy').remove();
         $('.hw-city-icon').tipsy({
           title: function() {
-            var orginalTitle = this.getAttribute('original-title') || 'City';
-            return 'Open ' + orginalTitle.replace(/_/g,' ');
+            var orginalTitle = this.getAttribute('original-title');
+            return orginalTitle ? mw.message('hwmap-open-cityname', orginalTitle.replace(/_/g, ' ')).text() : mw.message('hwmap-open-city').text();
           },
           gravity: $.fn.tipsy.autoNS || false
         });
@@ -230,24 +230,29 @@
     // Validate rating
     rating = Number(rating || 0);
 
+    // See https://www.mediawiki.org/wiki/Manual:Messages_API
+    // for details how to use `mw.message()`
     if (rating >= 4.5) {
-      return 'Very good';
+      return mw.message('hwmap-hitchability-very-good').text();
     }
-    else if (rating >= 3.5) {
-      return 'Good';
+
+    if (rating >= 3.5) {
+      return mw.message('hwmap-hitchability-good').text();
     }
-    else if (rating >= 2.5 ) {
-      return 'Average';
+
+    if (rating >= 2.5 ) {
+      return mw.message('hwmap-hitchability-average').text();
     }
-    else if (rating >= 1.5) {
-      return 'Bad';
+
+    if (rating >= 1.5) {
+      return mw.message('hwmap-hitchability-bad').text();
     }
-    else if (rating >= 1) {
-      return 'Senseless';
+
+    if (rating >= 1) {
+      return mw.message('hwmap-hitchability-senseless').text();
     }
-    else {
-      return 'Unknown';
-    }
+
+    return mw.message('hwmap-hitchability-unknown').text();
   };
 
   /**

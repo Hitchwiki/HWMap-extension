@@ -33,7 +33,6 @@
     mw.log('HWMaps::Map::constructor');
   }
 
-
   /**
    * Get edit token for MediaWiki API
    *
@@ -60,6 +59,11 @@
           mw.log.warn('HWMaps::Map::getToken: error receiving csrf token from MediaWiki API. #39ghhh');
           callback(null);
         }
+      })
+      // https://api.jquery.com/deferred.fail/
+      .fail(function() {
+        mw.log.warn('HWMaps::Map::getToken: cannot retreive csrf token from MediaWiki API. #f93h2h');
+        callback(null);
       });
     } else {
       mw.log.warn('HWMaps::Map::getToken: User is not authenticated, cannot retreive csrf token from MediaWiki API. #j399ii');
@@ -90,12 +94,10 @@
       titles: mw.config.get('wgTitle'),
       format: 'json'
     }).done(function(data) {
-
       mw.log('mw.HWMaps.Map::getArticleCoordinates - got coordinates:');
       mw.log(data);
 
-
-      if (data.error) {
+      if (data && data.error) {
         mw.log.warn('mw.HWMaps::City::initCityMapSpots: Spots API returned error. #3ijhgf');
         mw.log.warn(data.error);
         return dfd.reject();
@@ -121,14 +123,22 @@
         return dfd.reject();
       }
 
+      var lat = parseFloat(_.get(page, 'coordinates[0].lat')),
+          lon = parseFloat(_.get(page, 'coordinates[0].lon'));
+
+      if (isNaN(lat) || isNaN(lon)) {
+        mw.log.error('mw.HWMaps.Map::getArticleCoordinates: Invalid coordinates. #gj93h2');
+        return dfd.reject();
+      }
+
       // Resolve promise with Leaflet LatLng object
       // http://leafletjs.com/reference-1.0.2.html#latlng
-      var latlng = L.latLng(
-        parseFloat(_.get(page, 'coordinates[0].lat')),
-        parseFloat(_.get(page, 'coordinates[0].lon'))
-      );
-
-      dfd.resolve(latlng);
+      dfd.resolve(L.latLng(lat, lon));
+    })
+    // https://api.jquery.com/deferred.fail/
+    .fail(function() {
+      mw.log.warn('mw.HWMaps::City::initCityMapSpots: Spots API cannot be reached. #g2871f');
+      dfd.reject();
     });
 
     // Return the Promise so caller can't change the Deferred

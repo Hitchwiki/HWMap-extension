@@ -39,9 +39,7 @@
       mw.HWMaps.leafletMap.fireEvent('moveend');
 
     });
-
-  }
-
+  };
 
   /**
    * Fire event when Leaflet map moves

@@ -104,7 +104,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     ),
   ),
 
-  'PruneCluster' => $wgHWMapResourceBoilerplate + array(
+  'prunecluster' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'leaflet',
     ),
@@ -170,6 +170,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
   'ext.HWMap' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
       'mediawiki.page.startup',
+      'mediawiki.jqueryMsg', // https://www.mediawiki.org/wiki/Manual:Messages_API#Using_messages_in_JavaScript
       'mediawiki.util',
       'oojs-ui-core',
       'oojs-ui-widgets',
@@ -177,7 +178,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'jquery.spinner',
       'leaflet',
       'bootstrap-grid',
-      'PruneCluster',
+      'prunecluster',
       'ractive',
       'autogrow',
       'lodash'
@@ -185,16 +186,37 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     'scripts' => array(
       'modules/js/ext.HWMap.js',
       'modules/js/ext.HWMap.GeoPoint.js',
-      'modules/js/ext.HWMap.Map.js',
       'modules/js/ext.HWMap.Comments.js',
       'modules/js/ext.HWMap.Waitingtimes.js',
       'modules/js/ext.HWMap.Ratings.js',
+      'modules/js/ext.HWMap.Map.js',
       'modules/js/ext.HWMap.Spots.js'
     ),
     'styles' => array(
       'modules/less/ext.HWMap.less',
     ),
-    // Other ensures this loads after the Vector skin styles
+    // These the language strings passed on to the frontend so that they can
+    // be used like this in JS: `mw.message('key')`
+    // https://www.mediawiki.org/wiki/Manual:Messages_API#Using_messages_in_JavaScript
+    'messages' => array(
+      'hwmap-hitchability-very-good',
+      'hwmap-hitchability-good',
+      'hwmap-hitchability-average',
+      'hwmap-hitchability-bad',
+      'hwmap-hitchability-senseless',
+      'hwmap-hitchability-unknown',
+      'hwmap-please-reload',
+      'hwmap-please-try-again',
+      'hwmap-error-loading-markers',
+      'hwmap-error-geocoder',
+      'hwmap-error-getting-spots',
+      'hwmap-error-rating-add',
+      'hwmap-error-waitingtimes-load',
+      'hwmap-confirm-removing-waitingtime',
+      'hwmap-open-cityname',
+      'hwmap-open-city'
+    ),
+    // `other` ensures this loads after the Vector skin styles
     'group' => 'other',
     'position' => 'bottom',
   )

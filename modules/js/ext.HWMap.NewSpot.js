@@ -208,7 +208,7 @@
       // `mw.message` gets message translation, see `i18n/en.json`
       // `tag` replaces any previous bubbles by same tag
       // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-      mw.notify(mw.message('hwmap-error-geocoder'), { tag: 'hwmap-error' });
+      mw.notify(mw.message('hwmap-error-geocoder').text(), { tag: 'hwmap-error' });
       return;
     }
 

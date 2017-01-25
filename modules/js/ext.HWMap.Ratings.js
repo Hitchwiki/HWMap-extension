@@ -5,6 +5,8 @@
 (function(mw, $) {
   mw.log('mw.HWMaps::Ratings');
 
+  var ratingsLoaded = [];
+
   /**
    * @class mw.HWMaps.Ratings
    *
@@ -13,6 +15,94 @@
   function Ratings() {
     mw.log('HWMaps::Ratings::constructor');
   }
+
+  /**
+   * Load ratings
+   *
+   * @static
+   * @return instance of jQuery.Promise
+   */
+  Ratings.loadRatings = function(pageId, reload) {
+
+    // https://api.jquery.com/deferred.promise/
+    var dfd = $.Deferred();
+
+    if (typeof ratingsLoaded[pageId] === 'undefined' || reload) {
+
+      $.getJSON(mw.util.wikiScript('api'), {
+        action: 'hwgetratings',
+        format: 'json',
+        pageid: pageId
+      }).done(function(data) {
+        if (data.error) {
+          mw.log.error('mw.HWMaps.Ratings::loadRatings: Error while loading ratings via API. #g98ghhg');
+          // Bubble notification
+          // `mw.message` gets message translation, see `i18n/en.json`
+          // `tag` replaces any previous bubbles by same tag
+          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+          mw.notify(
+            mw.message('hwmap-error-rating-load').text() + ' ' +
+              mw.message('hwmap-please-try-again').text(),
+            { tag: 'hwmap-error' }
+          );
+          return dfd.reject();
+        }
+
+        if (!data.query.ratings || !data.query.ratings.length) {
+          dfd.resolve([]);
+        }
+
+        // Update spot with labels
+        for (var j = 0; j < data.query.ratings.length ; j++) {
+          data.query.ratings[j].rating_label = Spots.getRatingLabel(data.query.ratings[j].rating);
+          data.query.ratings[j].timestamp_label = Spots.parseTimestamp(data.query.ratings[j].timestamp);
+        }
+
+        // Update rating bars
+        // @TODO: job for Ractive?
+        for (var key in data.query.distribution) {
+          $('#hw-spot-ratings-' + pageId + ' .hw-bar-' + key).css({
+            'width': data.query.distribution[key].percentage + '%'
+          });
+        }
+
+        if (!reload) {
+          mw.HWMaps.City.animateElementToggle('#hw-spot-ratings-' + pageId, 'down');
+        }
+
+        ratingsLoaded[pageId] = true;
+
+        dfd.resolve(data.query.ratings);
+      })
+      // https://api.jquery.com/deferred.fail/
+      .fail(function() {
+        mw.log.error('mw.HWMaps.Ratings::loadRatings: Error while loading ratings via API. #g38hh1');
+        // Bubble notification
+        // `mw.message` gets message translation, see `i18n/en.json`
+        // `tag` replaces any previous bubbles by same tag
+        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+        mw.notify(
+          mw.message('hwmap-error-rating-load').text() + ' ' +
+            mw.message('hwmap-please-try-again').text(),
+          { tag: 'hwmap-error' }
+        );
+        dfd.reject();
+      });
+
+    } else if (ratingsLoaded[pageId] == true) {
+      mw.HWMaps.City.animateElementToggle('#hw-spot-ratings-' + pageId, 'up');
+      ratingsLoaded[pageId] = false;
+      dfd.resolve();
+    } else {
+      mw.HWMaps.City.animateElementToggle('#hw-spot-ratings-' + pageId, 'down');
+      ratingsLoaded[pageId] = true;
+      dfd.resolve();
+    }
+
+    // Return the Promise so caller can't change the Deferred
+    // https://api.jquery.com/deferred.promise/
+    return dfd.promise();
+  };
 
   /**
    * Add rating
@@ -39,19 +129,33 @@
       }).done(function(data) {
         if (data.error) {
           mw.log.error('mw.HWMaps.Ratings::addRating: Error while accessing rating API. #399ggd');
+          mw.log.error(data.error);
           // Bubble notification
           // `mw.message` gets message translation, see `i18n/en.json`
           // `tag` replaces any previous bubbles by same tag
           // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
           mw.notify(
-            mw.message('hwmap-error-rating-add') + ' ' +
-              mw.message('hwmap-please-try-again'),
+            mw.message('hwmap-error-rating-add').text() + ' ' +
+              mw.message('hwmap-please-try-again').text(),
             { tag: 'hwmap-error' }
           );
           return dfd.reject();
         }
 
         dfd.resolve(data);
+      })
+      .fail(function() {
+        mw.log.error('mw.HWMaps.Ratings::addRating: Error while accessing rating API. #g23igh');
+        // Bubble notification
+        // `mw.message` gets message translation, see `i18n/en.json`
+        // `tag` replaces any previous bubbles by same tag
+        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+        mw.notify(
+          mw.message('hwmap-error-rating-add').text() + ' ' +
+            mw.message('hwmap-please-try-again').text(),
+          { tag: 'hwmap-error' }
+        );
+        dfd.reject();
       });
     });
 
@@ -98,39 +202,9 @@
 
 /*
 
-var ratingsLoaded = [];
+
 window.loadRatings = function(id, reload, spotObjectPath) {
-  if (typeof ratingsLoaded[id] === 'undefined' || reload) {
-    $.get( mw.util.wikiScript('api') + '?action=hwgetratings&format=json&pageid=' + id, function(data) {
-      if (data.query.ratings.length) {
-        // Update spot with new average
-        for(var j = 0; j < data.query.ratings.length ; j++) {
-          data.query.ratings[j].rating_label = Spots.getRatingLabel(data.query.ratings[j].rating);
-          data.query.ratings[j].timestamp_label = Spots.parseTimestamp(data.query.ratings[j].timestamp);
-        }
-        ractive.set(spotObjectPath + '.ratings', data.query.ratings)
-        ractive.set(spotObjectPath + '.ratings_distribution', data.query.distribution);
-        for (var key in data.query.distribution) {
-          $('#hw-spot-ratings-' + id+' .bar-'+key).css({ 'width': data.query.distribution[key].percentage+'%' });
-        }
-        if (!reload) {
-          slideShow('#hw-spot-ratings-' + id, 'down');
-        }
-        ratingsLoaded[id] = true;
-      }
-      else {
-        ractive.set(spotObjectPath + '.ratings', null);
-      }
-    });
-  }
-  else if (ratingsLoaded[id] == true) {
-    slideShow('#hw-spot-ratings-' + id, 'up');
-    ratingsLoaded[id] = false;
-  }
-  else {
-    slideShow('#hw-spot-ratings-' + id, 'down');
-    ratingsLoaded[id] = true;
-  }
+
 };
 
 // Delete rating

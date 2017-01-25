@@ -13,12 +13,14 @@
   {{#this:index}}
   <!-- Spot -->
 
+  <!--
   <ul>
     <li>_isBadSpotVisible: {{_isBadSpotVisible}}</li>
     <li>_isAddingWaitingTimeVisible: {{_isAddingWaitingTimeVisible}}</li>
     <li>_isCommentsVisible: {{_isCommentsVisible}}</li>
     <li>_isStatisticsVisible: {{_isStatisticsVisible}}</li>
   </ul>
+  -->
 
   <div id="hw-spot_{{id}}"
        class="hw-spot hw-spot-rating-average-{{rating_average}}"
@@ -67,23 +69,23 @@
                   <span onclick="mw.HWMaps.City.addRating(5, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
                     <span class="hw-bubble hw-bubble-verygood"></span> Very Good
                   </span>
-                  <span onclick="mw.HWMaps.Ratings.addRating(4, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+                  <span onclick="mw.HWMaps.City.addRating(4, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
                     <span class="hw-bubble hw-bubble-good"></span> Good
                   </span>
-                  <span onclick="mw.HWMaps.Ratings.addRating(3, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+                  <span onclick="mw.HWMaps.City.addRating(3, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
                     <span class="hw-bubble hw-bubble-average"></span> Average
                   </span>
-                  <span onclick="mw.HWMaps.Ratings.addRating(2, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+                  <span onclick="mw.HWMaps.City.addRating(2, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
                     <span class="hw-bubble hw-bubble-bad"></span> Bad
                   </span>
-                  <span onclick="mw.HWMaps.Ratings.addRating(1, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+                  <span onclick="mw.HWMaps.City.addRating(1, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
                     <span class="hw-bubble hw-bubble-senseless"></span> Senseless
                   </span>
                   {{#timestamp_user}}
                     <span class="hw-rating-choice-timestamp">
                       You rated {{timestamp_user}}
                     </span>
-                    <span onclick="deleteRating({{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice-remove">
+                    <span onclick="mw.HWMaps.City.deleteRating({{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice-remove">
                       Remove my rating
                     </span>
                   {{/timestamp_user}}
@@ -96,47 +98,36 @@
           <!-- Waiting times -->
           <div class="hw-waiting-time">
             <div class="hw-waiting-time-widget">
-              <!--
-              <button on-click="toggleAddingWaitingTime">toggle</button>
-              <button on-click="hwDoToggleAddingWaitingTime">2</button>
-              <button on-click="hwDoToggleAddingWaitingTime">3a</button>
-              <button on-click="../hwDoToggleAddingWaitingTime">3b</button>
-              <button on-click="../../hwDoToggleAddingWaitingTime">3c</button>
-              <button on-click="@this.set('_isAddingWaitingTimeVisible', 'bar')">4</button>
-              <button on-click="../_isAddingWaitingTimeVisible.set('_isAddingWaitingTimeVisible', true)">4</button>
-              <button on-click="../../_isAddingWaitingTimeVisible.set('_isAddingWaitingTimeVisible', true)">4</button>
-              -->
-
               {{#if waiting_time_count}}
                 Waiting time {{waiting_time_average}} minutes ({{waiting_time_count}})
               {{else}}
                 No waiting times yet.
               {{/if}}
-              {{#if !_isAddingWaitingTimeVisible}}
+              {{#if _isAddingWaitingTimeVisible}}
+                <div id="hw-add_waiting_time_{{id}}" class="hw-add-waiting-time">
+                  <button class="hw-button hw-button-small" onclick="mw.HWMaps.City.hideAddWaitingTime()">
+                    Cancel
+                  </button>
+                  <input value="{{this.new_waiting_time}}" type="number" class="hw-waiting-time-input" min="0" max="1440" placeholder="min." title="In minutes..." />
+                  <button class="hw-button hw-button-small" onclick="mw.HWMaps.City.addWaitingTime({{this.new_waiting_time}}, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
+                    Add
+                  </button>
+                  <div class="hw-add-time-help">
+                    {{#if Math.floor(this.new_waiting_time / 60)}}
+                      {{Math.floor(this.new_waiting_time / 60)}} hour(s)
+                    {{/if}}
+                    {{#if this.new_waiting_time % 60}}
+                      {{this.new_waiting_time % 60}} minute(s)
+                    {{/if}}
+                  </div>
+                </div>
+              {{else}}
                 <button id="hw-waiting_time_button_{{id}}"
                         type="button"
-                        on-click="@this.toggle('_isAddingWaitingTimeVisible')"
+                        onclick="mw.HWMaps.City.toggleAddingWaitingTime('spots.groupSpots.{{cardinalDirection}}.{{index}}')"
                         class="hw-waiting-time-button hw-button hw-button-small">
                   Add your experiences?
                 </button>
-              {{else}}
-              <div id="hw-add_waiting_time_{{id}}" class="hw-add-waiting-time">
-                <button class="hw-button hw-button-small" on-click="@this.toggle('_isAddingWaitingTimeVisible')">
-                  Cancel
-                </button>
-                <input value="{{this.new_waiting_time}}" type="number" class="hw-waiting-time-input" min="0" max="1440" placeholder="min." title="In minutes..." />
-                <button class="hw-button hw-button-small" onclick="addWaitingTime({{this.new_waiting_time}}, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
-                  Add
-                </button>
-                <div class="hw-add-time-help">
-                  {{#if Math.floor(this.new_waiting_time / 60)}}
-                    {{Math.floor(this.new_waiting_time / 60)}} hour(s)
-                  {{/if}}
-                  {{#if this.new_waiting_time % 60}}
-                    {{this.new_waiting_time % 60}} minute(s)
-                  {{/if}}
-                </div>
-              </div>
               {{/if}}
             </div>
           </div>
@@ -146,7 +137,7 @@
           <div class="hw-spot-actions">
 
             {{#if rating_count || waiting_time_count}}
-            <button onclick="loadSpotDetails({{id}}, false, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')"
+            <button onclick="mw.HWMaps.City.loadSpotDetails('{{id}}', false, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')"
                     type="button"
                     class="hw-button hw-button-small">
               <i class="fa fa-bar-chart"></i>
@@ -157,7 +148,7 @@
 
             <button type="button"
                     class="hw-button hw-button-small"
-                    onclick="loadComments({{id}}, false, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
+                    onclick="mw.HWMaps.City.loadComments('{{id}}', false, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
               <i class="fa fa-comment-o"></i>
               Comments
             </button>
@@ -165,7 +156,7 @@
 
             <button type="button"
                     class="hw-button hw-button-small"
-                    onclick="mw.HWMaps.City.moveMapToSpot('spots.groupSpots.{{cardinalDirection}}.{{index}}', '{{id}}')">
+                    onclick="mw.HWMaps.City.moveMapToSpot('{{Location.0.lat}}', '{{Location.0.lon}}', '{{id}}')">
               <i class="fa fa-map-marker"></i>
               Show on map
             </button>
@@ -202,7 +193,7 @@
 
         <!-- Spot content header -->
         {{#if CitiesDirection || RoadsDirection}}
-        <div class="hw-spot-content-header" onclick="mw.HWMaps.City.moveMapToSpot('spots.groupSpots.{{cardinalDirection}}.{{index}}', '{{id}}')">
+        <div class="hw-spot-content-header">
           <strong class="hw-spot-towards">
             {{#if CitiesDirection}}
               Towards
@@ -224,6 +215,8 @@
           <!--
             If spot is bad, it's minimized so it wouldn't take space.
             Use this to toggle it open again.
+
+            Can be toggled also using `mw.HWMaps.City.toggleBadSpot()`
           -->
           <label class="hw-switch hw-switch-right pull-right">
             Show details
@@ -285,7 +278,12 @@
             <tr>
               <td>{{waiting_time}} mins</td>
               <td>{{user_name}}</td>
-              <td>{{timestamp_label}} {{#if user_id==userId}}<i onclick="deleteWaitingTime('{{waiting_time_id}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-waiting-time-delete"></i>{{/if}}</td>
+              <td>
+                {{timestamp_label}}
+                {{#if user_id == userId}}
+                  <i onclick="mw.HWMaps.City.deleteWaitingTime('{{waiting_time_id}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-waiting-time-delete"></i>
+                {{/if}}
+              </td>
             </tr>
             {{/waiting_times}}
           </table>
@@ -350,7 +348,7 @@
           {{#comments}}
           <div class="hw-comment">
             {{#if user_id == userId}}
-              <i onclick="deleteComment('{{comment_id}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-comment-delete"></i>
+              <i onclick="mw.HWMaps.City.deleteComment('{{comment_id}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-comment-delete"></i>
             {{/if}}
             {{{commenttext}}}
             <span class="hw-comment-meta">By {{user_name}}, {{timestamp_label}}</span>
@@ -362,7 +360,7 @@
             <p>Please log in to add a comment</p>
           {{/if}}
           {{#if this.new_comment.length}}
-            <button class="hw-comment-button" onclick="addComment('{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
+            <button class="hw-comment-button" onclick="mw.HWMaps.City.addComment('{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
               Add comment
             </button>
           {{/if}}
