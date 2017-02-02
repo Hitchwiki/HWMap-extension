@@ -76,7 +76,7 @@
    * @static
    * @return instance of jQuery.Promise
    */
-  Comments.deleteComment = function(commentId, pageId) {
+  Comments.deleteComment = function(commentId) {
     mw.log('mw.HWMaps.Comments::deleteComment: ' + commentId);
 
     // https://api.jquery.com/deferred.promise/
@@ -158,12 +158,13 @@
         return dfd.reject();
       }
 
-      commentText = commentText.replace(/\n/g, '<br/>');
+      // @TODO:
+      //commentText = commentText.replace(/\n/g, '<br/>');
 
       //Post new rating
       $.post(mw.util.wikiScript('api') + '?action=hwaddcomment&format=json', {
         commenttext: commentText,
-        pageid: id,
+        pageid: pageId,
         token: token
       }).done(function(data) {
         if (data.error) {

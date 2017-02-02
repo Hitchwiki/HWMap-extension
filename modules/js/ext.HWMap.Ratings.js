@@ -5,8 +5,6 @@
 (function(mw, $) {
   mw.log('mw.HWMaps::Ratings');
 
-  var ratingsLoaded = [];
-
   /**
    * @class mw.HWMaps.Ratings
    *
@@ -28,50 +26,15 @@
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
 
-    // if (typeof ratingsLoaded[pageId] === 'undefined' || reload) {
-
-      $.getJSON(mw.util.wikiScript('api'), {
-        action: 'hwgetratings',
-        format: 'json',
-        pageid: pageId
-      }).done(function(data) {
-        mw.log('mw.HWMaps.Ratings::loadRatings done:');
-        mw.log(data);
-        if (data.error) {
-          mw.log.error('mw.HWMaps.Ratings::loadRatings: Error while loading ratings via API. #g98ghhg');
-          // Bubble notification
-          // `mw.message` gets message translation, see `i18n/en.json`
-          // `tag` replaces any previous bubbles by same tag
-          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-          mw.notify(
-            mw.message('hwmap-error-rating-load').text() + ' ' +
-              mw.message('hwmap-please-try-again').text(),
-            { tag: 'hwmap-error' }
-          );
-          return dfd.reject();
-        }
-
-        /*
-        if (!data.query.ratings || !data.query.ratings.length) {
-          return dfd.resolve();
-        }
-        */
-
-        // Update spot with labels
-        if (data.query.ratings && data.query.ratings.length) {
-          for (var j = 0; j < data.query.ratings.length ; j++) {
-            data.query.ratings[j].rating_label = mw.HWMaps.Spots.getRatingLabel(data.query.ratings[j].rating);
-            data.query.ratings[j].timestamp_label = mw.HWMaps.Spots.parseTimestamp(data.query.ratings[j].timestamp);
-          }
-        }
-
-        ratingsLoaded[pageId] = true;
-
-        dfd.resolve(data.query);
-      })
-      // https://api.jquery.com/deferred.fail/
-      .fail(function() {
-        mw.log.error('mw.HWMaps.Ratings::loadRatings: Error while loading ratings via API. #g38hh1');
+    $.getJSON(mw.util.wikiScript('api'), {
+      action: 'hwgetratings',
+      format: 'json',
+      pageid: pageId
+    }).done(function(data) {
+      mw.log('mw.HWMaps.Ratings::loadRatings done:');
+      mw.log(data);
+      if (data.error) {
+        mw.log.error('mw.HWMaps.Ratings::loadRatings: Error while loading ratings via API. #g98ghhg');
         // Bubble notification
         // `mw.message` gets message translation, see `i18n/en.json`
         // `tag` replaces any previous bubbles by same tag
@@ -81,20 +44,33 @@
             mw.message('hwmap-please-try-again').text(),
           { tag: 'hwmap-error' }
         );
-        dfd.reject();
-      });
+        return dfd.reject();
+      }
 
-    /*
-    } else if (ratingsLoaded[pageId] == true) {
-      mw.HWMaps.City.animateElementToggle('#hw-spot-ratings-' + pageId, 'up');
-      ratingsLoaded[pageId] = false;
-      dfd.resolve();
-    } else {
-      mw.HWMaps.City.animateElementToggle('#hw-spot-ratings-' + pageId, 'down');
-      ratingsLoaded[pageId] = true;
-      dfd.resolve();
-    }
-    */
+      // Update spot with labels
+      if (data.query.ratings && data.query.ratings.length) {
+        for (var j = 0; j < data.query.ratings.length ; j++) {
+          data.query.ratings[j].rating_label = mw.HWMaps.Spots.getRatingLabel(data.query.ratings[j].rating);
+          data.query.ratings[j].timestamp_label = mw.HWMaps.Spots.parseTimestamp(data.query.ratings[j].timestamp);
+        }
+      }
+
+      dfd.resolve(data.query);
+    })
+    // https://api.jquery.com/deferred.fail/
+    .fail(function() {
+      mw.log.error('mw.HWMaps.Ratings::loadRatings: Error while loading ratings via API. #g38hh1');
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-rating-load').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
+      dfd.reject();
+    });
 
     // Return the Promise so caller can't change the Deferred
     // https://api.jquery.com/deferred.promise/

@@ -5,8 +5,6 @@
 (function(mw, $) {
   mw.log('mw.HWMaps::Waitingtimes');
 
-  var waitingTimesLoaded = [];
-
   /**
    * @class mw.HWMaps.Waitingtimes
    *
@@ -20,69 +18,20 @@
    * Load waiting times trough API
    * @return instance of jQuery.Promise
    */
-  Waitingtimes.loadWaitingTimes = function(pageId, reload) {
+  Waitingtimes.loadWaitingTimes = function(pageId) {
     mw.log('HWMaps::Waitingtimes::loadWaitingTimes: ' + pageId);
 
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
 
-    // if (typeof waitingTimesLoaded[pageId] === 'undefined' || reload) {
-
-      $.getJSON(mw.util.wikiScript('api'), {
-        action: 'hwgetwaitingtimes',
-        format: 'json',
-        pageid: pageId
-      }).done( function(data) {
-        if (data.error) {
-          mw.log.error('mw.HWMaps.Waitingtimes.loadWaitingTimes: Error while accessing API. #39g883');
-          mw.log.error(data.error);
-          // Bubble notification
-          // `mw.message` gets message translation, see `i18n/en.json`
-          // `tag` replaces any previous bubbles by same tag
-          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-          mw.notify(
-            mw.message('hwmap-error-waitingtimes-load').text() + ' ' +
-              mw.message('hwmap-please-try-again').text(),
-            { tag: 'hwmap-error' }
-          );
-          return dfd.reject();
-        }
-
-        /*
-        if (!data.query || data.query.waiting_times || !data.query.waiting_times.length) {
-          mw.log.error('mw.HWMaps.Waitingtimes.loadWaitingTimes: did not receive any data trough API. #30ghh3');
-          return dfd.reject();
-        }
-        */
-
-        /*
-        if (!reload) {
-          mw.HWMaps.City.animateElementToggle('#hw-spot-waitingtimes-' + pageId, 'down');
-        }
-        */
-
-        // Update spot with new average
-        if (data.query.waiting_times && data.query.waiting_times.length) {
-          for(var j = 0; j < data.query.waiting_times.length ; j++) {
-            data.query.waiting_times[j].timestamp_label = mw.HWMaps.Spots.parseTimestamp(data.query.waiting_times[j].timestamp);
-          }
-        }
-
-        /*
-        for (var i = 0; i < data.query.distribution.length; i++) {
-          var barKey = i + 1;
-          $('#hw-spot-waitingtimes-' + pageId + ' .hw-bar-' + barKey).css({
-            'width': data.query.distribution[i].percentage + '%'
-          });
-        }
-        */
-
-        waitingTimesLoaded[pageId] = true;
-        dfd.resolve(data.query);
-      })
-      // https://api.jquery.com/deferred.fail/
-      .fail(function() {
-        mw.log.error('mw.HWMaps.Waitingtimes.loadWaitingTimes: Error while accessing API. #9857jf');
+    $.getJSON(mw.util.wikiScript('api'), {
+      action: 'hwgetwaitingtimes',
+      format: 'json',
+      pageid: pageId
+    }).done(function(data) {
+      if (data.error) {
+        mw.log.error('mw.HWMaps.Waitingtimes.loadWaitingTimes: Error while accessing API. #39g883');
+        mw.log.error(data.error);
         // Bubble notification
         // `mw.message` gets message translation, see `i18n/en.json`
         // `tag` replaces any previous bubbles by same tag
@@ -92,20 +41,32 @@
             mw.message('hwmap-please-try-again').text(),
           { tag: 'hwmap-error' }
         );
-        dfd.reject();
-      });
+        return dfd.reject();
+      }
 
-    /*
-    } else if (waitingTimesLoaded[pageId] === true) {
-      // mw.HWMaps.City.animateElementToggle('#hw-spot-waitingtimes-' + pageId, 'up');
-      waitingTimesLoaded[pageId] = false;
-      dfd.resolve();
-    } else {
-      // mw.HWMaps.City.animateElementToggle('#hw-spot-waitingtimes-' + pageId, 'down');
-      waitingTimesLoaded[pageId] = true;
-      dfd.resolve();
-    }
-    */
+      // Update spot with new label
+      if (data.query.waiting_times && data.query.waiting_times.length) {
+        for(var j = 0; j < data.query.waiting_times.length ; j++) {
+          data.query.waiting_times[j].timestamp_label = mw.HWMaps.Spots.parseTimestamp(data.query.waiting_times[j].timestamp);
+        }
+      }
+
+      dfd.resolve(data.query);
+    })
+    // https://api.jquery.com/deferred.fail/
+    .fail(function() {
+      mw.log.error('mw.HWMaps.Waitingtimes.loadWaitingTimes: Error while accessing API. #9857jf');
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-waitingtimes-load').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
+      dfd.reject();
+    });
 
     // Return the Promise so caller can't change the Deferred
     // https://api.jquery.com/deferred.promise/
@@ -198,7 +159,7 @@
     var dfd = $.Deferred();
 
     // Invalid waiting time
-    if (isNaN(parseInt(newWaitingTime))) {
+    if (isNaN(parseInt(newWaitingTime, 10))) {
       dfd.reject();
     } else {
 
@@ -211,7 +172,7 @@
 
         // Post new waiting time
         $.post(mw.util.wikiScript('api') + '?action=hwaddwaitingtime&format=json', {
-          waiting_time: parseInt(newWaitingTime),
+          waiting_time: parseInt(newWaitingTime, 10),
           pageid: pageId,
           token: token
         })
@@ -239,11 +200,6 @@
 
           // Resolve
           dfd.resolve(data.query);
-          /*
-          if (typeof ratingsLoaded[id] !== 'undefined') {
-            loadWaintingTimes(id, true, spotObjectPath);
-          }
-          */
         })
         .fail(function() {
           mw.log.error('mw.HWMaps.Waitingtimes.addWaitingTime: error via API when adding waiting time. #g38fgg');

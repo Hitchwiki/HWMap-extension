@@ -462,6 +462,7 @@
         }
 
         if (response && response.average) {
+          mw.HWMaps.Spots.updateSpotMarker(pageId, response.average);
           ractiveSpots.set(spotObjectPath + '.rating_average', parseFloat(response.average));
           ractiveSpots.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
         }
@@ -471,7 +472,6 @@
         }
       }
 
-      // updateSpotMarker(pageId, response.average);
       /*
       if (typeof ratingsLoaded[pageId] !== 'undefined') {
         Ratings.load(pageId, true, spotObjectPath);
@@ -496,13 +496,10 @@
         ractiveSpots.set(spotObjectPath + '.rating_user_label', null);
         ractiveSpots.set(spotObjectPath + '.rating_average', response.average || 0);
         ractiveSpots.set(spotObjectPath + '.rating_count', response.count || 0);
-        ractiveSpots.set(spotObjectPath + '.average_label', Spots.getRatingLabel(response.average));
-        /*
-        updateSpotMarker(pageId, response.average);
-        if (typeof ratingsLoaded[pageid] !== 'undefined') {
-          Ratings.load(pageId, true, spotObjectPath);
-        }
-        */
+        ractiveSpots.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
+
+        // Update marker on the map
+        mw.HWMaps.Spots.updateSpotMarker(pageId, response.average || 0);
       }
     });
 
@@ -511,15 +508,19 @@
   /**
    * Remove comment
    */
-  City.deleteComment = function(pageId, spotObjectPath) {
-    mw.log('mw.HWMaps::City::deleteComment: ' + pageId);
+  City.deleteComment = function(commentId, spotObjectPath) {
+    mw.log('mw.HWMaps::City::deleteComment: ' + commentId);
 
-    mw.HWMaps.Comments.deleteComment(pageId).done(function(data) {
+    mw.HWMaps.Comments.deleteComment(commentId).done(function(data) {
       mw.log('mw.HWMaps::City::deleteComment: done');
       mw.log(data);
+
+      // Reload comments
+      City.loadComments(pageId, true, spotObjectPath);
+
+      // Update spot with real count
       if (_.has(data, 'count')) {
-        // Update spot
-        ractiveSpots.set(spotObjectPath + '.comment_count', data.count || 0);
+        ractiveSpots.set(spotObjectPath + '.comment_count', data.count);
       }
     });
   };
@@ -529,26 +530,32 @@
    */
   City.addComment = function(commentText, pageId, spotObjectPath) {
     mw.log('mw.HWMaps::City::deleteComment: ' + pageId);
+    mw.log(commentText);
 
-    var currentCommentCount = ractiveSpots.get(spotObjectPath + '.comment_count') || 0;
+    var commentButton = $('#hw-spot-comments-' + pageId + ' button'),
+        commentTextarea = $('#hw-spot-comments-' + pageId + ' textarea');
 
-    // Optimistic comment count update
-    ractiveSpots.set(spotObjectPath + '.comment_count', currentCommentCount + 1);
+    // Disable comment inputs
+    commentButton.prop('disabled', true);
+    commentTextarea.prop('disabled', true);
 
     mw.HWMaps.Comments.addComment(commentText, pageId).done(function(data) {
       mw.log('mw.HWMaps::City::addComment: done');
       mw.log(data);
 
-      // Empty comment field
+      // Empty comment field and enable inputs
       ractiveSpots.set(spotObjectPath + '.new_comment', '');
+      commentButton.prop('disabled', false);
+      commentTextarea.prop('disabled', false);
 
       // Reload comments
       City.loadComments(pageId, true, spotObjectPath);
 
       // Update spot with real count
       if (_.has(data, 'count')) {
-        ractiveSpots.set(spotObjectPath + '.comment_count', data.count || 0);
+        ractiveSpots.set(spotObjectPath + '.comment_count', data.count);
       }
+
     });
   };
 

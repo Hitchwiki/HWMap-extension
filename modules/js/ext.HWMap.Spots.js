@@ -277,56 +277,24 @@
     window.location = 'https://maps.google.com/maps?q=&layer=c&cbll=' + parseFloat(lat) + ',' + parseFloat(lng);
   };
 
+  /**
+   * Redraw icon for marker by id when its rating changes
+   */
+  Spots.updateSpotMarker = function(id, newRating) {
+    for (var i = 0; i < mw.HWMaps.leafletLayers.spots.Cluster._markers.length; i++) {
+      if (mw.HWMaps.leafletLayers.spots.Cluster._markers[i].data.HWid === id) {
+        if (mw.HWMaps.leafletLayers.spots.Cluster._markers[i].data.average !== newRating) {
+          mw.HWMaps.leafletLayers.spots.Cluster._markers[i].data.icon = Spots.getSpotIcon(newRating);
+          mw.HWMaps.leafletLayers.spots.Cluster._markers[i].data.average = newRating;
+          mw.HWMaps.leafletLayers.spots.RedrawIcons();
+          mw.HWMaps.leafletLayers.spots.ProcessView();
+        }
+        break;
+      }
+    }
+  };
+
   // Export
   mw.HWMaps.Spots = Spots;
 
 }(mediaWiki, jQuery, L, Ractive));
-
-
-
-/*
-
-
-// Get the rating label according to the rating average
-
-
-var animateMarker = function(id) {
-}
-
-// Update spot marker with new rating
-window.updateSpotMarker = function(id, newRating) {
-  for (var i = 0; i < spotsLayer.Cluster._markers.length; i++) {
-    if (spotsLayer.Cluster._markers[i].data.HWid === id) {
-      if (spotsLayer.Cluster._markers[i].data.average !== newRating) {
-        spotsLayer.Cluster._markers[i].data.icon = iconSpot(newRating);
-        spotsLayer.Cluster._markers[i].data.average = newRating;
-        spotsLayer.RedrawIcons();
-        spotsLayer.ProcessView();
-      }
-      break;
-    }
-  }
-};
-
-var slideSpeed = 300;
-var slideShow = function(id, state) {
-  var content = $(id);
-  if (state == 'down') {
-    content.css({ 'display': 'block' });
-    var contentHeight = content.css({ 'height': 'auto' }).height();
-    content.css({ 'height': '' });
-    content.animate({
-      height: contentHeight
-    }, slideSpeed, function() {
-      content.css({ 'height': 'auto' });
-    });
-  }
-  else if (state == 'up') {
-    content.animate({
-      height: 0
-    }, slideSpeed, function() {
-      content.css({ 'display': 'none' });
-    });
-  }
-}
-*/
