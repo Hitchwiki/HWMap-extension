@@ -211,6 +211,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'hwmap-error-geocoder',
       'hwmap-error-getting-spots',
       'hwmap-error-rating-add',
+      'hwmap-error-rating-delete',
       'hwmap-error-waitingtimes-load',
       'hwmap-confirm-removing-waitingtime',
       'hwmap-open-cityname',

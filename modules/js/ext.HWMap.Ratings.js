@@ -49,7 +49,7 @@
         }
 
         if (!data.query.ratings || !data.query.ratings.length) {
-          dfd.resolve([]);
+          return dfd.resolve();
         }
 
         // Update spot with labels
@@ -58,21 +58,9 @@
           data.query.ratings[j].timestamp_label = Spots.parseTimestamp(data.query.ratings[j].timestamp);
         }
 
-        // Update rating bars
-        // @TODO: job for Ractive?
-        for (var key in data.query.distribution) {
-          $('#hw-spot-ratings-' + pageId + ' .hw-bar-' + key).css({
-            'width': data.query.distribution[key].percentage + '%'
-          });
-        }
-
-        if (!reload) {
-          mw.HWMaps.City.animateElementToggle('#hw-spot-ratings-' + pageId, 'down');
-        }
-
         ratingsLoaded[pageId] = true;
 
-        dfd.resolve(data.query.ratings);
+        dfd.resolve(data.query);
       })
       // https://api.jquery.com/deferred.fail/
       .fail(function() {
@@ -111,6 +99,7 @@
    * @return instance of jQuery.Promise
    */
   Ratings.addRating = function(newRating, id) {
+    mw.log('HWMaps::Ratings::addRating');
 
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
@@ -119,10 +108,10 @@
     mw.HWMaps.Map.getToken(function(token) {
       if (!token) {
         mw.log.error('HWMaps::Ratings::addRating: Not logged in, cannot add rating. #jgg8FF');
-        return;
+        return dfd.reject();
       }
       // Post new rating
-      $.post( mw.util.wikiScript('api') + '?action=hwaddrating&format=json', {
+      $.post(mw.util.wikiScript('api') + '?action=hwaddrating&format=json', {
         rating: newRating,
         pageid: id,
         token: token
@@ -142,7 +131,7 @@
           return dfd.reject();
         }
 
-        dfd.resolve(data);
+        dfd.resolve(data.query);
       })
       .fail(function() {
         mw.log.error('mw.HWMaps.Ratings::addRating: Error while accessing rating API. #g23igh');
@@ -156,6 +145,68 @@
           { tag: 'hwmap-error' }
         );
         dfd.reject();
+      });
+    });
+
+    // Return the Promise so caller can't change the Deferred
+    // https://api.jquery.com/deferred.promise/
+    return dfd.promise();
+  };
+
+  /**
+   * Delete rating
+   *
+   * @static
+   * @return instance of jQuery.Promise
+   */
+  Ratings.deleteRating = function(pageId) {
+    mw.log('HWMaps::Ratings::deleteRating');
+
+    // https://api.jquery.com/deferred.promise/
+    var dfd = $.Deferred();
+
+    // Get token
+    mw.HWMaps.Map.getToken(function(token) {
+
+      if (!token) {
+        mw.log.error('HWMaps::Ratings::deleteRating: Not logged in, cannot delete rating. #i30Fff');
+        return dfd.reject();
+      }
+
+      $.post(mw.util.wikiScript('api') + '?action=hwdeleterating&format=json', {
+        pageid: pageId,
+        token: token
+      }).done(function(data) {
+
+        if (data.error) {
+          mw.log.error('mw.HWMaps.Ratings::deleteRating: Error while accessing rating API. #g2i311');
+          mw.log.error(data.error);
+          // Bubble notification
+          // `mw.message` gets message translation, see `i18n/en.json`
+          // `tag` replaces any previous bubbles by same tag
+          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+          mw.notify(
+            mw.message('hwmap-error-rating-delete').text() + ' ' +
+              mw.message('hwmap-please-try-again').text(),
+            { tag: 'hwmap-error' }
+          );
+          return dfd.reject();
+        }
+
+        dfd.resolve(data.query);
+      })
+      .fail(function() {
+        mw.log.error('mw.HWMaps.Ratings::deleteRating: Error while accessing rating API. #93t842');
+        // Bubble notification
+        // `mw.message` gets message translation, see `i18n/en.json`
+        // `tag` replaces any previous bubbles by same tag
+        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+        mw.notify(
+          mw.message('hwmap-error-rating-delete').text() + ' ' +
+            mw.message('hwmap-please-try-again').text(),
+          { tag: 'hwmap-error' }
+        );
+        return dfd.reject();
       });
     });
 

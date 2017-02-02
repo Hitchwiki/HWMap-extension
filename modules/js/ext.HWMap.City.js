@@ -479,6 +479,35 @@
   };
 
   /**
+   * Remove rating
+   * Removes only rating of currently authenticated user
+   */
+  City.deleteRating = function(pageId, spotObjectPath) {
+
+    mw.log('mw.HWMaps::City::deleteRating: ' + pageId);
+
+    mw.HWMaps.Ratings.deleteRating(pageId).done(function(response) {
+      if (response) {
+        // Update spot with new statistics
+        ractiveSpots.set(spotObjectPath + '.timestamp_user', 0);
+        ractiveSpots.set(spotObjectPath + '.rating_user', 0);
+        ractiveSpots.set(spotObjectPath + '.rating_user_label', null);
+        ractiveSpots.set(spotObjectPath + '.rating_average', response.average || 0);
+        ractiveSpots.set(spotObjectPath + '.rating_count', response.count || 0);
+        ractiveSpots.set(spotObjectPath + '.average_label', Spots.getRatingLabel(response.average));
+        /*
+        updateSpotMarker(pageId, response.average);
+        if (typeof ratingsLoaded[pageid] !== 'undefined') {
+          Ratings.load(pageId, true, spotObjectPath);
+        }
+        */
+      }
+    });
+
+  };
+
+
+  /**
    * Load detailed waiting times for a spot
    *
    * @return instance of jQuery.Promise
@@ -566,9 +595,9 @@
   /**
    * Add waiting time to spot at city template
    */
-  City.addWaitingTime = function(newWaitingTime, pageId, spotObjectPath) {
-    mw.log('mw.HWMaps::City::addWaitingTime');
-    mw.HWMaps.Waitingtimes.addWaitingTime(newWaitingTime, pageId).done(function(data) {
+  City.addWaitingTime = function(newWaitingTimeMins, pageId, spotObjectPath) {
+    mw.log('mw.HWMaps::City::addWaitingTime: ' + newWaitingTime + ' min');
+    mw.HWMaps.Waitingtimes.addWaitingTime(newWaitingTimeMins, pageId).done(function(data) {
       mw.log('mw.HWMaps::City::addWaitingTime done:');
       mw.log(data);
 
@@ -582,8 +611,9 @@
         ractiveSpots.set(spotObjectPath + '.waiting_time_count', data.count );
       }
 
-      // Clear out input value
-      ractiveSpots.set(spotObjectPath + '.new_waiting_time', null);
+      // Clear out input values
+      ractiveSpots.set(spotObjectPath + '.new_waiting_time_h', null);
+      ractiveSpots.set(spotObjectPath + '.new_waiting_time_m', null);
     });
   };
 
@@ -617,6 +647,22 @@
 
       if (data && data.distribution) {
         ractiveSpots.set(spotObjectPath + '.ratings_distribution', data.distribution);
+      }
+
+      // Update rating bars
+      // @TODO: oldschool - this is a job for RactiveJS
+      /*
+      if (data.distribution) {
+        for (var key in data.distribution) {
+          $('#hw-spot-ratings-' + pageId + ' .hw-bar-' + key).css({
+            'width': data.distribution[key].percentage + '%'
+          });
+        }
+      }
+      */
+
+      if (!reload) {
+        City.animateElementToggle('#hw-spot-ratings-' + pageId, 'down');
       }
 
       // Resolve promise

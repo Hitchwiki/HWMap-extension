@@ -17,6 +17,7 @@
   "hwmap-error-geocoder": "Failed to load location information for the point.",
   "hwmap-error-getting-spots": "Failed to load spots.",
   "hwmap-error-rating-add": "Failed to add your rating.",
+  "hwmap-error-rating-delete": "Failed to remove your rating.",
   "hwmap-error-waitingtimes-load": "Failed to load waiting times.",
   "hwmap-confirm-removing-waitingtime": "Remove waiting time?",
   "hwmap-open-cityname": "Open $1",
