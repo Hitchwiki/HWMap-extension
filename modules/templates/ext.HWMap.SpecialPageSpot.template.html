@@ -112,33 +112,33 @@
         </span>
         <div id="hw-spot-ratings-{{id}}" class="hw-spot-ratings">
           <div class="hw-bar-graph-details">
-            <span class="hw-bar-5 hw-graph-bar"></span>
-            <span class="hw-bar-4 hw-graph-bar"></span>
-            <span class="hw-bar-3 hw-graph-bar"></span>
-            <span class="hw-bar-2 hw-graph-bar"></span>
-            <span class="hw-bar-1 hw-graph-bar"></span>
-            <div class="hw-distribution-details">
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-verygood"></span> Very good</p></div>
-                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.5.percentage)}}% ({{ratings_distribution.5.count}})</p></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-good"></span> Good</p></div>
-                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.4.percentage)}}% ({{ratings_distribution.4.count}})</p></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-average"></span> Average</p></div>
-                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.3.percentage)}}% ({{ratings_distribution.3.count}})</p></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-bad"></span> Bad</p></div>
-                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.2.percentage)}}% ({{ratings_distribution.2.count}})</p></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-senseless"></span> Senseless</p></div>
-                <div class="col-xs-6"><p>{{Math.round(ratings_distribution.1.percentage)}}% ({{ratings_distribution.1.count}})</p></div>
-              </div>
-            </div>
+            <span class="hw-bar-5 hw-graph-bar" style="width: {{Math.round(ratings_distribution.5.percentage) || 0}}%;"></span>
+            <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.round(ratings_distribution.4.percentage) || 0}}%;"></span>
+            <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.round(ratings_distribution.3.percentage) || 0}}%;"></span>
+            <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.round(ratings_distribution.2.percentage) || 0}}%;"></span>
+            <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.round(ratings_distribution.1.percentage) || 0}}%;"></span>
+            <table class="hw-distribution-details">
+              <tr>
+                <td><span class="hw-bubble hw-bubble-verygood"></span> Very good</td>
+                <td>{{Math.round(ratings_distribution.5.percentage) || 0}}% ({{ratings_distribution.5.count || 0}})</td>
+              </tr>
+              <tr>
+                <td><span class="hw-bubble hw-bubble-good"></span> Good</td>
+                <td>{{Math.round(ratings_distribution.4.percentage) || 0}}% ({{ratings_distribution.4.count || 0}})</td>
+              </tr>
+              <tr>
+                <td><span class="hw-bubble hw-bubble-average"></span> Average</td>
+                <td>{{Math.round(ratings_distribution.3.percentage) || 0}}% ({{ratings_distribution.3.count || 0}})</td>
+              </tr>
+              <tr>
+                <td><span class="hw-bubble hw-bubble-bad"></span> Bad</td>
+                <td>{{Math.round(ratings_distribution.2.percentage) || 0}}% ({{ratings_distribution.2.count || 0}})</td>
+              </tr>
+              <tr>
+                <td><span class="hw-bubble hw-bubble-senseless"></span> Senseless</td>
+                <td>{{Math.round(ratings_distribution.1.percentage) || 0}}% ({{ratings_distribution.1.count || 0}})</td>
+              </tr>
+            </table>
           </div>
           <div class="hw-list-ratings">
             <table class="table table-striped table-hover">
@@ -169,54 +169,47 @@
                   class="hw-waiting-time-button hw-button hw-button-small">
             Add your experience
           </button>
-          toggle: {{_isAddingWaitingTimeVisible}}
         </div>
 
         {{#if _isAddingWaitingTimeVisible}}
           <div id="hw-add_waiting_time_{{id}}" class="hw-add-waiting-time">
+            <input value="{{this.new_waiting_time_h}}" type="number" class="hw-waiting-time-input" min="0" max="24" step="1" value="0" placeholder="h" title="Hours..." /> h.
+            <input value="{{this.new_waiting_time_m}}" type="number" class="hw-waiting-time-input" min="0" max="60" step="1" value="0" placeholder="m" title="Minutes..." /> m.
+            <button class="hw-button hw-button-small"
+                    onclick="mw.HWMaps.SpecialPage.addWaitingTime({{this.new_waiting_time_m + Math.floor(this.new_waiting_time_h * 60)}}, {{id}})">
+              Add
+            </button>
             <button class="hw-button hw-button-small"
                     onclick="mw.HWMaps.SpecialPage.toggleAddingWaitingTime()">
               Cancel
             </button>
-            <input value="{{this.new_waiting_time}}" type="number" class="hw-waiting-time-input" min="0" max="9999" placeholder="min.">
-            <button class="hw-button hw-button-small" onclick="mw.HWMaps.SpecialPage.addWaitingTime({{this.new_waiting_time}}, {{id}})">
-              Add
-            </button>
-            <div class="hw-add-time-help">
-              {{#if Math.floor(this.new_waiting_time / 60)}}
-                {{Math.floor(this.new_waiting_time / 60)}} hour
-              {{/if}}
-              {{#if this.new_waiting_time % 60}}
-                {{this.new_waiting_time % 60}} minutes
-              {{/if}}
-            </div>
           </div>
         {{/if}}
 
         <div id="hw-spot-waitingtimes-{{id}}" class="hw-spot-waiting-times">
           <div class="hw-bar-graph-details">
-            <span class="hw-bar-1 hw-graph-bar"></span>
-            <span class="hw-bar-2 hw-graph-bar"></span>
-            <span class="hw-bar-3 hw-graph-bar"></span>
-            <span class="hw-bar-4 hw-graph-bar"></span>
-            <div class="hw-distribution-details">
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-good"></span> &#60; 15 minutes</p></div>
-                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.0.percentage)}}% ({{waiting_times_distribution.0.count}})</p></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-average"></span> &#60; 30 minutes</p></div>
-                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.1.percentage)}}% ({{waiting_times_distribution.1.count}})</p></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-bad"></span> &#60; 60 minutes</p></div>
-                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.2.percentage)}}% ({{waiting_times_distribution.2.count}})</p></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6"><p><span class="hw-bubble hw-bubble-senseless"></span> 1h +</p></div>
-                <div class="col-xs-6"><p>{{Math.round(waiting_times_distribution.3.percentage)}}% ({{waiting_times_distribution.3.count}})</p></div>
-              </div>
-            </div>
+            <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.0.percentage) || 0}}%;"></span>
+            <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.1.percentage) || 0}}%;"></span>
+            <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.2.percentage) || 0}}%;"></span>
+            <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.3.percentage) || 0}}%;"></span>
+            <table class="hw-distribution-details">
+              <tr>
+                <td><span class="hw-bubble hw-bubble-good"></span> &#60; 15 minutes</td>
+                <td>{{Math.round(waiting_times_distribution.0.percentage) || 0}}% ({{waiting_times_distribution.0.count || 0}})</td>
+              </tr>
+              <tr>
+                <td><span class="hw-bubble hw-bubble-average"></span> &#60; 30 minutes</td>
+                <td>{{Math.round(waiting_times_distribution.1.percentage) || 0}}% ({{waiting_times_distribution.1.count || 0}})</td>
+              </tr>
+              <tr>
+                <td><span class="hw-bubble hw-bubble-bad"></span> &#60; 60 minutes</td>
+                <td>{{Math.round(waiting_times_distribution.2.percentage) || 0}}% ({{waiting_times_distribution.2.count || 0}})</td>
+              </tr>
+              <tr>
+                <td><span class="hw-bubble hw-bubble-senseless"></span> 1h +</td>
+                <td>{{Math.round(waiting_times_distribution.3.percentage) || 0}}% ({{waiting_times_distribution.3.count || 0}})</td>
+              </tr>
+            </table>
           </div>
           <div class="hw-list-waiting-times">
             <table class="table table-striped table-hover">

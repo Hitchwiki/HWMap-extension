@@ -19,7 +19,11 @@
   "hwmap-error-rating-add": "Failed to add your rating.",
   "hwmap-error-rating-delete": "Failed to remove your rating.",
   "hwmap-error-waitingtimes-load": "Failed to load waiting times.",
+  "hwmap-error-comment-delete": "Failed to remove comment.",
+  "hwmap-error-comment-add": "Failed to add comment.",
+  "hwmap-error-comment-load": "Failed to load comments.",
   "hwmap-confirm-removing-waitingtime": "Remove waiting time?",
+  "hwmap-missing-waitingtime": "Missing correct time to add...",
   "hwmap-open-cityname": "Open $1",
   "hwmap-open-city": "Open city"
 }

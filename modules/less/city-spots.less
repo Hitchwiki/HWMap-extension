@@ -90,6 +90,32 @@
   &.hw-spot-rating-average-4 { border-left-color: @hw-color-good; }
   &.hw-spot-rating-average-5 { border-left-color: @hw-color-verygood; }
 
+  // Long descriptions are cut short
+  .hw-spot-description-long {
+    display: block;
+    max-height: 230px;
+    overflow: hidden;
+    position: relative;
+
+    // Add extra element with white-transparent gradient over the extra text
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      height: 30px;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&0+0,0+100,1+100 */
+      background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+      background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+    }
+  }
+
   // When spots are "bad" or "senseless", this class is added to them.
   // Hide most of the data inside spot element if this is active.
   &.hw-spot-is-minimized {
@@ -156,7 +182,15 @@
 // Contains description etc basic info
 .hw-spot-content {
 }
+
+// Contains detailed statistics
 .hw-spot-statistics {
+  border-top: 1px solid @hw-grey-light;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 // Header section of the spot, containing info about directions
@@ -199,6 +233,17 @@
     border-bottom: 1px solid @hw-grey-light;
   }
 }
+
+// Some buttons fill the whole column
+.hw-waiting-time-button,
+.hw-spot-actions .hw-button {
+  width: 100%;
+  text-align: left;
+  clear: both;
+  margin: 1px 0;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
 /*
 .hw-spot-comments {
   border: 1px solid yellow;
@@ -206,12 +251,13 @@
 */
 
 
-// Spots list main title (h2)
-.hw-spots {
+// Spots list main title
+h2#hw-spots {
   &, a {
     color: #333;
   }
 }
+
 /*
 // Single spot
 .hw-spot {
@@ -277,10 +323,12 @@
 //!------ Detail list ------!//
 .hw-spot-ratings,
 .hw-spot-waiting-times {
+/*
   display: none;
-  height: 0px;
+  height: 0;
   margin: 20px 0;
-  max-width: 280px;
+  */
+  max-width: 320px;
   width: 95%;
 }
 
@@ -288,7 +336,6 @@
 .hw-list-waiting-times {
   margin-top: 6px;
   font-size: 12px;
-  width: 100%;
   background-color: @hw-grey-light;
   border: 1px solid @hw-grey-medium;
   padding: 7px 5px 7px 5px;
@@ -302,7 +349,7 @@
       height: 20px;
       td, th {
         margin: 0 3px 0 3px;
-        line-height: 0px;
+        line-height: 0;
       }
     }
   }
@@ -321,7 +368,6 @@
 #hw-spot-edit-form-wrap {
   display: none;
 }
-
 
 .hw-spot-icon {
   border-radius: 50%;

@@ -23,17 +23,20 @@
    * @return instance of jQuery.Promise
    */
   Ratings.loadRatings = function(pageId, reload) {
+    mw.log('mw.HWMaps.Ratings::loadRatings: ' + pageId);
 
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
 
-    if (typeof ratingsLoaded[pageId] === 'undefined' || reload) {
+    // if (typeof ratingsLoaded[pageId] === 'undefined' || reload) {
 
       $.getJSON(mw.util.wikiScript('api'), {
         action: 'hwgetratings',
         format: 'json',
         pageid: pageId
       }).done(function(data) {
+        mw.log('mw.HWMaps.Ratings::loadRatings done:');
+        mw.log(data);
         if (data.error) {
           mw.log.error('mw.HWMaps.Ratings::loadRatings: Error while loading ratings via API. #g98ghhg');
           // Bubble notification
@@ -48,14 +51,18 @@
           return dfd.reject();
         }
 
+        /*
         if (!data.query.ratings || !data.query.ratings.length) {
           return dfd.resolve();
         }
+        */
 
         // Update spot with labels
-        for (var j = 0; j < data.query.ratings.length ; j++) {
-          data.query.ratings[j].rating_label = Spots.getRatingLabel(data.query.ratings[j].rating);
-          data.query.ratings[j].timestamp_label = Spots.parseTimestamp(data.query.ratings[j].timestamp);
+        if (data.query.ratings && data.query.ratings.length) {
+          for (var j = 0; j < data.query.ratings.length ; j++) {
+            data.query.ratings[j].rating_label = mw.HWMaps.Spots.getRatingLabel(data.query.ratings[j].rating);
+            data.query.ratings[j].timestamp_label = mw.HWMaps.Spots.parseTimestamp(data.query.ratings[j].timestamp);
+          }
         }
 
         ratingsLoaded[pageId] = true;
@@ -77,6 +84,7 @@
         dfd.reject();
       });
 
+    /*
     } else if (ratingsLoaded[pageId] == true) {
       mw.HWMaps.City.animateElementToggle('#hw-spot-ratings-' + pageId, 'up');
       ratingsLoaded[pageId] = false;
@@ -86,6 +94,7 @@
       ratingsLoaded[pageId] = true;
       dfd.resolve();
     }
+    */
 
     // Return the Promise so caller can't change the Deferred
     // https://api.jquery.com/deferred.promise/
@@ -275,7 +284,7 @@ window.deleteRating = function(id, spotObjectPath) {
         ractive.set(spotObjectPath + '.rating_user_label', null);
         ractive.set(spotObjectPath + '.rating_average', data.query.average );
         ractive.set(spotObjectPath + '.rating_count', data.query.count );
-        ractive.set(spotObjectPath + '.average_label', Spots.getRatingLabel(data.query.average));
+        ractive.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(data.query.average));
         updateSpotMarker(id, data.query.average);
         if (typeof ratingsLoaded[id] !== 'undefined') {
           loadRatings(id, true, spotObjectPath);

@@ -186,11 +186,11 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     'scripts' => array(
       'modules/js/ext.HWMap.js',
       'modules/js/ext.HWMap.GeoPoint.js',
+      'modules/js/ext.HWMap.Spots.js',
       'modules/js/ext.HWMap.Comments.js',
       'modules/js/ext.HWMap.Waitingtimes.js',
       'modules/js/ext.HWMap.Ratings.js',
-      'modules/js/ext.HWMap.Map.js',
-      'modules/js/ext.HWMap.Spots.js'
+      'modules/js/ext.HWMap.Map.js'
     ),
     'styles' => array(
       'modules/less/ext.HWMap.less',
@@ -213,7 +213,11 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'hwmap-error-rating-add',
       'hwmap-error-rating-delete',
       'hwmap-error-waitingtimes-load',
+      'hwmap-error-comment-delete',
+      'hwmap-error-comment-add',
+      'hwmap-error-comment-load',
       'hwmap-confirm-removing-waitingtime',
+      'hwmap-missing-waitingtime',
       'hwmap-open-cityname',
       'hwmap-open-city'
     ),
