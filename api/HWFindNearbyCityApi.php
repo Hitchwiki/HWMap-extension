@@ -112,8 +112,8 @@ class HWFindNearbyCityApi extends ApiBase {
         'name' => urldecode(str_replace('_', ' ', $row->page_title)),
         // 'category' => $row->cl_to,
         'location' => array(
-          $row->gt_lat,
-          $row->gt_lon
+          floatval($row->gt_lat),
+          floatval($row->gt_lon)
         ),
         // round for reliable comparison later on
         // See `lib/SphericalGeometry/`
@@ -188,8 +188,8 @@ class HWFindNearbyCityApi extends ApiBase {
       'page_id' => 0,
       'name' => $place->name,
       'location' => array(
-        $place->lat,
-        $place->lng
+        floatval($place->lat),
+        floatval($place->lng)
       ),
       // round for reliable comparison later on
       // See `lib/SphericalGeometry/`
@@ -218,8 +218,8 @@ class HWFindNearbyCityApi extends ApiBase {
       'page_id' => 0,
       'name' => $place->name,
       'location' => array(
-        $place->lat,
-        $place->lng
+        floatval($place->lat),
+        floatval($place->lng)
       ),
       // round for reliable comparison later on
       // See `lib/SphericalGeometry/`

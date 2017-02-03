@@ -101,9 +101,9 @@ class HWSpotIdApi extends ApiBase {
       $spot_average_rating_api = new ApiMain( $spot_average_rating );
       $spot_average_rating_api->execute();
       $spot_average_rating_data = $spot_average_rating_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
-      $spot->rating_average = $spot_average_rating_data['query']['ratings'][0]['rating_average'];
-      $spot->rating_count = $spot_average_rating_data['query']['ratings'][0]['rating_count'];
-      $spot->rating_user =  $spot_average_rating_data['query']['ratings'][0]['rating_user'];
+      $spot->rating_average = floatval($spot_average_rating_data['query']['ratings'][0]['rating_average']);
+      $spot->rating_count = intval($spot_average_rating_data['query']['ratings'][0]['rating_count'], 10) || 0;
+      $spot->rating_user =  intval($spot_average_rating_data['query']['ratings'][0]['rating_user'], 10);
       $spot->timestamp_user =  $spot_average_rating_data['query']['ratings'][0]['timestamp_user'];
 
       // And get the average detail
