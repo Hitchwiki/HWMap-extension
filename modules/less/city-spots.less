@@ -4,24 +4,31 @@
 @spot-minimum-height: 70px;
 @spot-spacing: 5px;
 
-.hw-incity-spots {
+// Big titles dividing spots into "cardinal directions" suchs as "North"
+.mw-body h3.hw-cardinal-direction {
+  font-weight: normal;
+  display: inline-block;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  &, a {
+    font-size: 24px;
+    line-height: 25px;
+    color: #333;
+    text-decoration: none;
+  }
+  a:hover,
+  a:active {
+    text-decoration: none;
+    color: lighten(#333, 10%);
+  }
+}
 
-  // Big titles dividing spots into "cardinal directions" suchs as "North"
-  .mw-body h3.hw-cardinal-direction {
-    font-weight: normal;
-    display: inline-block;
-    margin-top: 30px;
-    margin-bottom: 10px;
+.hw-city-page {
+
+  // Spots list main title
+  h2#hw-spots {
     &, a {
-      font-size: 24px;
-      line-height: 25px;
       color: #333;
-      text-decoration: none;
-    }
-    a:hover,
-    a:active {
-      text-decoration: none;
-      color: lighten(#333, 10%);
     }
   }
 
@@ -182,8 +189,10 @@
   }
 
   // Contains description etc basic info
+  /*
   .hw-spot-content {
   }
+  */
 
   // Contains detailed statistics
   .hw-spot-statistics {
@@ -245,81 +254,6 @@
     padding-top: 5px;
     padding-bottom: 5px;
   }
-  /*
-  .hw-spot-comments {
-    border: 1px solid yellow;
-  }
-  */
-
-
-  // Spots list main title
-  h2#hw-spots {
-    &, a {
-      color: #333;
-    }
-  }
-
-  /*
-  // Single spot
-  .hw-spot {
-    .hw-spot-main-col {
-      border-bottom: 2px solid @hw-grey-medium;
-      padding-top: 5px;
-      padding-bottom: 5px;
-    }
-    .hw-spot-head {
-      margin-bottom: 10px;
-    }
-    .hw-spot-towards {
-    }
-    .hw-spot-locate {
-      display: block;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      width: 15px;
-      background: @hw-grey-light;
-      color: @hw-grey-medium;
-      text-decoration: none;
-      overflow: hidden;
-      &:active,
-      &:hover {
-        outline: none;
-        background: @hw-grey-light;
-      }
-    }
-  }
-  */
-
-  /*
-  .hw-spot-footer {
-    min-height: @hw-footer-height;
-    text-align: left;
-    .col-footer-left-border {
-      border-left: 1px solid @hw-grey-medium;
-    }
-    .col-footer-right-border {
-      border-right: 1px solid @hw-grey-medium;
-    }
-    .col-spot-footer {
-      min-height: @hw-footer-height;
-      padding: 0;
-      .hw-button-big {
-        margin-top: 5px;
-      }
-    }
-    .comment-spinner {
-      position: absolute;
-      left: -3px;
-      top: 27px;
-      font-size: 16px;
-      margin: 2px;
-      visibility: hidden;
-    }
-  }
-  */
-
 
   //!------ Detail list ------!//
   .hw-spot-ratings,
@@ -358,21 +292,9 @@
     }
   }
 
+}
 
-  //!------ Semantic MW form for initiating the spot edit form popup ------!//
-
-  #hw-spot-edit-form-wrap {
-    display: none;
-  }
-
-  .hw-spot-icon {
-    border-radius: 50%;
-    .transition('box-shadow' 50ms);
-    border: 2px solid transparent;
-    &.hw-highlight-spot {
-      border: 2px solid fade(@hw-rating-hover, 70%);
-      box-shadow: 0 0 15px @hw-rating-hover;
-    }
-  }
-
+//!------ Semantic MW form for initiating the spot edit form popup ------!//
+#hw-spot-edit-form-wrap {
+  display: none;
 }

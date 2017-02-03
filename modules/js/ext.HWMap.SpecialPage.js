@@ -213,7 +213,7 @@
       mw.log('Response from the API:');
       mw.log(data);
 
-      if (!data.error) {
+      if (data.error) {
         mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #39gy2g');
         return;
       }
