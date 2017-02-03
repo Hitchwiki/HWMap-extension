@@ -8,26 +8,31 @@
   width: 100%;
   line-height: @hw-rating-height;
   margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
   .hw-average,
   .hw-rate {
     padding: 0 5px;
-    display: inline-block;
     height: @hw-rating-height;
     line-height: @hw-rating-height;
+  }
+  .hw-rate {
+    display: inline-block;
   }
   .hw-average {
     border: 1px solid @hw-grey-dark;
     border-radius: 2px 0 0 2px;
-    color: white;
-    float: left;
+    color: #fff;
+    display: flex;
+    flex-grow: 1;
   }
   .hw-average-no-user {
     border-radius: 2px;
   }
   &, // Also works as a default background color for `.hw-rating-widget`
-  .hw-average-0 {
+  .hw-average-null {
     background-color: @hw-color-unknown;
-    color: white;
+    color: #fff;
   }
   .hw-rate-0 {
     background-color: @hw-grey-light;
@@ -35,23 +40,23 @@
   }
   .hw-average-1, .hw-rate-1 {
     background-color: @hw-color-senseless;
-    color: white;
+    color: #fff;
   }
   .hw-average-2, .hw-rate-2 {
     background-color: @hw-color-bad;
-    color: white;
+    color: #fff;
   }
   .hw-average-3, .hw-rate-3 {
     background-color: @hw-color-average;
-    color: white;
+    color: #fff;
   }
   .hw-average-4, .hw-rate-4 {
     background-color: @hw-color-good;
-    color: white;
+    color: #fff;
   }
   .hw-average-5, .hw-rate-5 {
     background-color: @hw-color-verygood;
-    color: white;
+    color: #fff;
   }
   .hw-rate {
     display: block;
@@ -64,10 +69,9 @@
   .hw-your-rate {
     display: none; // Bring it visible using `.is-active`
     position: absolute;
-    // float: right;
     right: 0;
+    top: 22px;
     z-index: 20;
-    // width: 150px;
     border: 1px solid @hw-grey-medium;
     border-top: 0;
     background-color: @hw-grey-lighter;
@@ -88,7 +92,7 @@
       height: @hw-rating-height;
       line-height: @hw-rating-height;
       color: @hw-grey-dark;
-      &:hover{
+      &:hover {
         background: @hw-grey-light;
       }
     }

@@ -34,6 +34,7 @@
           {{#if rating_count || waiting_time_count}}
             <button type="button"
                     class="hw-button hw-button-small"
+                    id="hw-stats-button-{{id}}"
                     onclick="mw.HWMaps.Spots.loadStatistics({{id}}, 'hw-stats-button-{{id}}', '{{@keypath}}')">
               <i class="fa fa-bar-chart"></i>
               Stats
@@ -105,13 +106,16 @@
       <!-- Statistics -->
       {{#if _isStatisticsVisible}}
       <div class="hw-spot-statistics">
-        {{>waitingtimesTemplate}}
-        {{>ratingsTemplate}}
+        <h4>Waiting times distribution</h4>
+        {{>statsWaitingtimesTemplate}}
+        <h4>Ratings distribution</h4>
+        {{>statsRatingsTemplate}}
       </div>
       {{/if}}
       <!-- /Statistics -->
 
       <!-- Comments -->
+      <h4>Comments</h4>
       {{>commentsTemplate}}
       <!-- /Comments -->
 

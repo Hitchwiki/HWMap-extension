@@ -2,39 +2,40 @@
 <div id="hw-spot-waitingtimes-{{id}}" class="hw-spot-waiting-times">
   {{#if waiting_times && waiting_times_distribution}}
   <div class="hw-bar-graph-details">
-    <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.0.percentage) || 0}}%;"></span>
-    <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.1.percentage) || 0}}%;"></span>
-    <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.2.percentage) || 0}}%;"></span>
-    <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.3.percentage) || 0}}%;"></span>
+    <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.floor(waiting_times_distribution.0.percentage) || 0}}%;"></span>
+    <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.floor(waiting_times_distribution.1.percentage) || 0}}%;"></span>
+    <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.floor(waiting_times_distribution.2.percentage) || 0}}%;"></span>
+    <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.floor(waiting_times_distribution.3.percentage) || 0}}%;"></span>
     <table class="hw-distribution-details">
       <tr>
         <td><span class="hw-bubble hw-bubble-good"></span> &#60; 15 minutes</td>
-        <td>{{Math.round(waiting_times_distribution.0.percentage) || 0}}% ({{waiting_times_distribution.0.count || 0}})</td>
+        <td>{{Math.floor(waiting_times_distribution.0.percentage) || 0}}% ({{waiting_times_distribution.0.count || 0}})</td>
       </tr>
       <tr>
         <td><span class="hw-bubble hw-bubble-average"></span> &#60; 30 minutes</td>
-        <td>{{Math.round(waiting_times_distribution.1.percentage) || 0}}% ({{waiting_times_distribution.1.count || 0}})</td>
+        <td>{{Math.floor(waiting_times_distribution.1.percentage) || 0}}% ({{waiting_times_distribution.1.count || 0}})</td>
       </tr>
       <tr>
         <td><span class="hw-bubble hw-bubble-bad"></span> &#60; 60 minutes</td>
-        <td>{{Math.round(waiting_times_distribution.2.percentage) || 0}}% ({{waiting_times_distribution.2.count || 0}})</td>
+        <td>{{Math.floor(waiting_times_distribution.2.percentage) || 0}}% ({{waiting_times_distribution.2.count || 0}})</td>
       </tr>
       <tr>
         <td><span class="hw-bubble hw-bubble-senseless"></span> 1h +</td>
-        <td>{{Math.round(waiting_times_distribution.3.percentage) || 0}}% ({{waiting_times_distribution.3.count || 0}})</td>
+        <td>{{Math.floor(waiting_times_distribution.3.percentage) || 0}}% ({{waiting_times_distribution.3.count || 0}})</td>
       </tr>
     </table>
   </div>
   <div class="hw-list-waiting-times">
-    <table>
+    <table class="hw-list-table">
       {{#waiting_times}}
       <tr>
         <td>{{waiting_time}} mins</td>
         <td>{{user_name}}</td>
+        <td>{{timestamp_label}}</td>
         <td>
-          {{timestamp_label}}
           {{#if user_id == userId}}
-            <i onclick="mw.HWMaps.Waitingtimes.uiDeleteWaitingTime('{{waiting_time_id}}', '{{id}}', '{{@keypath}}')" class="fa fa-trash hw-waiting-time-delete"></i>
+            <i onclick="mw.HWMaps.Waitingtimes.uiDeleteWaitingTime('{{waiting_time_id}}', '{{id}}', '{{@keypath}}')"
+               class="fa fa-trash hw-waiting-time-delete"></i>
           {{/if}}
         </td>
       </tr>

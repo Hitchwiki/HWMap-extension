@@ -55,6 +55,20 @@
   }
 }
 
+.hw-list-table {
+  width: 100%;
+  tr {
+    /*
+    &:nth-child(even) {
+
+    }
+    */
+    &:nth-child(odd) {
+      background: @hw-grey-light;
+    }
+  }
+}
+
 // Graph bar colors
 .hw-spot-waiting-times {
   .hw-bar-4 { background-color: @hw-color-senseless; }

@@ -145,7 +145,7 @@ class HWMapCityApi extends ApiBase {
         if (array_key_exists($rating_res['pageid'], $spot_indices)) {
           $index = $spot_indices[$rating_res['pageid']];
           $spots[$index]->rating_average = floatval($rating_res['rating_average']);
-          $spots[$index]->rating_count = intval($rating_res['rating_count'], 10) || 0;
+          $spots[$index]->rating_count = intval($rating_res['rating_count'], 10);
           $spots[$index]->rating_user = intval($rating_res['rating_user'], 10);
           $spots[$index]->timestamp_user = $rating_res['timestamp_user'];
 
@@ -180,7 +180,7 @@ class HWMapCityApi extends ApiBase {
         if (array_key_exists($waiting_times_res['pageid'], $spot_indices)) {
           $index = $spot_indices[$waiting_times_res['pageid']];
           $spots[$index]->waiting_time_average = intval($waiting_times_res['waiting_time_average'], 10);
-          $spots[$index]->waiting_time_count = intval($waiting_times_res['waiting_time_count'], 10) || 0;
+          $spots[$index]->waiting_time_count = intval($waiting_times_res['waiting_time_count'], 10);
         }
       }
     }
@@ -210,7 +210,7 @@ class HWMapCityApi extends ApiBase {
         }
         */
         if ($index < count($spots)) {
-          $spots[$index]->comment_count = intval($count_res['comment_count'], 10) || 0;
+          $spots[$index]->comment_count = intval($count_res['comment_count'], 10);
         }
       }
     }

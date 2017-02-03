@@ -55,11 +55,11 @@ class HWSpotIdApi extends ApiBase {
     $result = $get_spotdata_data['query']['results'][$first_key];
 
     // Get the properties
-    foreach($properties_array as $propertie) {
+    foreach ($properties_array as $propertie) {
       // Check if the propertie have multiple value
-      if($result['printouts'][$propertie][0]['fulltext']) {
+      if ($result['printouts'][$propertie][0]['fulltext']) {
         $spot->$propertie = [];
-        for($i = 0; $i < count($result['printouts'][$propertie]); ++$i) {
+        for ($i = 0; $i < count($result['printouts'][$propertie]); ++$i) {
           array_push($spot->$propertie, $result['printouts'][$propertie][$i]['fulltext']);
         }
       }
@@ -102,8 +102,8 @@ class HWSpotIdApi extends ApiBase {
       $spot_average_rating_api->execute();
       $spot_average_rating_data = $spot_average_rating_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
       $spot->rating_average = floatval($spot_average_rating_data['query']['ratings'][0]['rating_average']);
-      $spot->rating_count = intval($spot_average_rating_data['query']['ratings'][0]['rating_count'], 10) || 0;
-      $spot->rating_user =  intval($spot_average_rating_data['query']['ratings'][0]['rating_user'], 10);
+      $spot->rating_count = intval($spot_average_rating_data['query']['ratings'][0]['rating_count'], 10);
+      $spot->rating_user = intval($spot_average_rating_data['query']['ratings'][0]['rating_user'], 10);
       $spot->timestamp_user =  $spot_average_rating_data['query']['ratings'][0]['timestamp_user'];
 
       // And get the average detail
@@ -115,7 +115,7 @@ class HWSpotIdApi extends ApiBase {
         ),
         true
       );
-      $spot_average_detail_api = new ApiMain( $spot_average_detail );
+      $spot_average_detail_api = new ApiMain($spot_average_detail);
       $spot_average_detail_api->execute();
       $spot_average_detail_data = $spot_average_detail_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
       $spot->ratings = $spot_average_detail_data['query']['ratings'];
@@ -133,12 +133,11 @@ class HWSpotIdApi extends ApiBase {
         ),
         true
       );
-      $spot_waiting_times_api = new ApiMain( $spot_waiting_times );
+      $spot_waiting_times_api = new ApiMain($spot_waiting_times);
       $spot_waiting_times_api->execute();
       $spot_waiting_times_data = $spot_waiting_times_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
-      $spot->waiting_time_average = $spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_average'];
-      $spot->waiting_time_count = $spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_count'];
-
+      $spot->waiting_time_average = floatval($spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_average']);
+      $spot->waiting_time_count = intval($spot_waiting_times_data['query']['waiting_times'][0]['waiting_time_count'], 10);
     }
 
 
@@ -153,10 +152,10 @@ class HWSpotIdApi extends ApiBase {
         ),
         true
       );
-      $spot_comment_count_api = new ApiMain( $spot_comment_count );
+      $spot_comment_count_api = new ApiMain($spot_comment_count);
       $spot_comment_count_api->execute();
       $spot_comment_count_data = $spot_comment_count_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
-      $spot->comment_count = $spot_comment_count_data['query']['comment_counts'][0]['comment_count'];
+      $spot->comment_count = intval($spot_comment_count_data['query']['comment_counts'][0]['comment_count'], 10);
 
       // And get the comments details
       $spot_comment_detail = new DerivativeRequest(

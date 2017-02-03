@@ -142,37 +142,6 @@
   /**
    *
    */
-  SpecialPage.addRating = function(newRating, pageId) {
-
-    // Validate new rating
-    newRating = parseInt(newRating, 10) || 0;
-
-    mw.log('mw.HWMaps::SpecialPage::addRating: ' + pageId + ' (' + newRating + ')');
-
-    mw.HWMaps.Ratings.addRating(newRating, pageId).done(function(response) {
-      if (response) {
-        mw.HWMaps.ractive.set('spot.rating_user', newRating);
-        mw.HWMaps.ractive.set('spot.rating_user_label', mw.HWMaps.Spots.getRatingLabel(newRating));
-
-        if (response && response.timestamp) {
-          mw.HWMaps.ractive.set('spot.timestamp_user', mw.HWMaps.Spots.parseTimestamp(response.timestamp));
-        }
-
-        if (response && response.average) {
-          mw.HWMaps.ractive.set('spot.rating_average', parseFloat(response.average));
-          mw.HWMaps.ractive.set('spot.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
-        }
-
-        if (response && response.count) {
-          mw.HWMaps.ractive.set('spot.rating_count', parseInt(response.count, 10));
-        }
-      }
-    });
-  };
-
-  /**
-   *
-   */
   SpecialPage.openSpot = function(pageId, panTo) {
     mw.log('HWMaps::SpecialPage::openSpot');
 
@@ -259,7 +228,7 @@
       data.query.spot._isAddingComment = false;
       data.query.spot._new_comment = '';
 
-      if (_.has(data, 'data.query.spot.rating_average')) {
+      if (_.has(data, 'query.spot.rating_average')) {
         data.query.spot.average_label = mw.HWMaps.Spots.getRatingLabel(data.query.spot.rating_average);
       }
 
@@ -267,7 +236,7 @@
         data.query.spot.timestamp_user = mw.HWMaps.Spots.parseTimestamp(data.query.spot.timestamp_user);
       }
 
-      if (_.has(data, 'data.query.spot.rating_user')) {
+      if (_.has(data, 'query.spot.rating_user')) {
         data.query.spot.rating_user_label = mw.HWMaps.Spots.getRatingLabel(data.query.spot.rating_user);
       }
 
@@ -335,15 +304,6 @@
   };
 
   /**
-   * Toggles adding waiting time UI on/off for a spot
-   */
-  SpecialPage.toggleAddingWaitingTime = function() {
-    mw.log('mw.HWMaps::City::toggleAddingWaitingTime');
-    // http://docs.ractivejs.org/latest/ractive-toggle
-    mw.HWMaps.ractive.toggle('spot._isAddingWaitingTimeVisible');
-  };
-
-  /**
    * Close sidebar with spot details
    */
   SpecialPage.closeSpecialPageSpot = function() {
@@ -351,64 +311,6 @@
     $hwspot.removeClass('hw-spot-open');
     $hwmap.removeClass('hw-spot-open-map');
     SpecialPage.stopAnimateSpot();
-  };
-
-  /**
-   * Shorthand for loading waiting times and ratings for the spot on city element
-   */
-  SpecialPage.loadSpotDetails = function(pageId) {
-    mw.log('mw.HWMaps::SpecialPage::loadSpotDetails: ' + pageId);
-
-    var $loadSpotDetailsSpinner = $.createSpinner({
-      // ID used to refer this spinner when removing it
-      id: 'hwLoadSpotDetailsSpinner',
-
-      // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
-      size: 'small',
-
-      // Type: 'inline' or 'block'.
-      // Inline creates an inline-block with width and height
-      // equal to spinner size. Block is a block-level element
-      // with width 100%, height equal to spinner size.
-      type: 'block'
-    });
-
-    // Insert below where the spots are going to be loaded
-    $hwspot.append($loadSpotDetailsSpinner);
-
-    var waitingTimesPromise = mw.HWMaps.Waitingtimes.loadWaitingTimes(pageId);
-    var ratingsPromise = mw.HWMaps.Ratings.loadRatings(pageId);
-
-    $.when(waitingTimesPromise, ratingsPromise).done(function(waitingTimesData, ratingsData) {
-      $.removeSpinner('hwLoadSpotDetailsSpinner');
-
-      // Handle data from waiting times API endpoint
-      if (waitingTimesData) {
-        if (waitingTimesData.waiting_times) {
-          mw.HWMaps.ractive.set('spot.waiting_times', waitingTimesData.waiting_times);
-        }
-
-        if (waitingTimesData.distribution) {
-          mw.HWMaps.ractive.set('spot.waiting_times_distribution', waitingTimesData.distribution);
-        }
-      }
-
-      // Handle data from ratings API endpoint
-      mw.HWMaps.ractive.set('spot.ratings', null);
-      if (ratingsData) {
-        if (ratingsData.ratings && ratingsData.ratings.length) {
-          mw.HWMaps.ractive.set('spot.ratings', ratingsData.ratings);
-        }
-        if (ratingsData.distribution) {
-          mw.HWMaps.ractive.set('spot.ratings_distribution', ratingsData.distribution);
-        }
-      }
-
-      // Show stats html
-      // http://docs.ractivejs.org/latest/ractive-toggle
-      mw.HWMaps.ractive.set('spot._isStatisticsVisible', true);
-    });
-
   };
 
   /**
@@ -524,17 +426,28 @@
     mw.log('HWMaps::SpecialPage::initSpecialPageTemplate');
     var spot = {};
 
-
     // Get HTML templates
     var getTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.SpecialPageSpot.template.html?v=' + cacheBust),
-        getWaitingtimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsWaitingTimes.template.html?v=' + cacheBust),
-        getRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsRatings.template.html?v=' + cacheBust),
+        getStatsWaitingtimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsWaitingTimes.template.html?v=' + cacheBust),
+        getStatsRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsRatings.template.html?v=' + cacheBust),
         getCommentsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Comments.template.html?v=' + cacheBust),
         getRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Ratings.template.html?v=' + cacheBust),
         getWaitingTimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.WaitingTimes.template.html?v=' + cacheBust);
 
-    $.when(getTemplateHtml, getWaitingtimesTemplateHtml, getRatingsTemplateHtml, getCommentsTemplateHtml, getRatingsTemplateHtml, getWaitingTimesTemplateHtml)
-      .done(function(templateHtml, waitingtimesTemplateHtml, ratingsTemplateHtml, commentsTemplateHtml, ratingsTemplateHtml, waitingTimesTemplateHtml) {
+    $.when(
+      getTemplateHtml,
+      getStatsWaitingtimesTemplateHtml,
+      getStatsRatingsTemplateHtml,
+      getCommentsTemplateHtml,
+      getRatingsTemplateHtml,
+      getWaitingTimesTemplateHtml)
+      .done(function(
+        templateHtml,
+        statsWaitingtimesTemplateHtml,
+        statsRatingsTemplateHtml,
+        commentsTemplateHtml,
+        ratingsTemplateHtml,
+        waitingTimesTemplateHtml) {
 
       // http://www.ractivejs.org/
       mw.HWMaps.ractive = new Ractive({
@@ -542,18 +455,13 @@
         template: templateHtml[0],
         // Sub templates
         partials: {
-          waitingtimesTemplate: waitingtimesTemplateHtml[0],
-          ratingsTemplate: ratingsTemplateHtml[0],
+          statsWaitingtimesTemplate: statsWaitingtimesTemplateHtml[0],
+          statsRatingsTemplate: statsRatingsTemplateHtml[0],
           commentsTemplate: commentsTemplateHtml[0],
           ratingsTemplate: ratingsTemplateHtml[0],
           waitingTimesTemplate: waitingTimesTemplateHtml[0]
         },
         data: {
-          test: function(foo) {
-            mw.log('->TEST');
-            mw.log(foo);
-            mw.HWMaps.ractive.set(foo + '.waiting_time_count', 100);
-          },
           userId: mw.config.get('wgUserId')
         }
       });

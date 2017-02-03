@@ -20,12 +20,6 @@
     mw.log('mw.HWMaps::City::constructor');
   }
 
-  City.test = function(foo) {
-    mw.log('->TEST');
-    mw.log(foo);
-    mw.HWMaps.ractive.set(foo + '.waiting_time_count', 100);
-  };
-
   City.initialize = function() {
     mw.log('HWMaps::City::initialize');
 
@@ -272,14 +266,26 @@
 
     // Get HTML templates
     var getTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.CitySpots.template.html?v=' + cacheBust),
-        getWaitingtimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsWaitingTimes.template.html?v=' + cacheBust),
-        getRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsRatings.template.html?v=' + cacheBust),
+        getStatsWaitingtimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsWaitingTimes.template.html?v=' + cacheBust),
+        getStatsRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsRatings.template.html?v=' + cacheBust),
         getCommentsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Comments.template.html?v=' + cacheBust),
         getRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Ratings.template.html?v=' + cacheBust),
         getWaitingTimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.WaitingTimes.template.html?v=' + cacheBust);
 
-    $.when(getTemplateHtml, getWaitingtimesTemplateHtml, getRatingsTemplateHtml, getCommentsTemplateHtml, getRatingsTemplateHtml, getWaitingTimesTemplateHtml)
-      .done(function(templateHtml, waitingtimesTemplateHtml, ratingsTemplateHtml, commentsTemplateHtml, ratingsTemplateHtml, waitingTimesTemplateHtml) {
+    $.when(
+      getTemplateHtml,
+      getStatsWaitingtimesTemplateHtml,
+      getStatsRatingsTemplateHtml,
+      getCommentsTemplateHtml,
+      getRatingsTemplateHtml,
+      getWaitingTimesTemplateHtml)
+      .done(function(
+        templateHtml,
+        statsWaitingtimesTemplateHtml,
+        statsRatingsTemplateHtml,
+        commentsTemplateHtml,
+        ratingsTemplateHtml,
+        waitingTimesTemplateHtml) {
 
       mw.log('mw.HWMaps::City::initCityTemplate: got html templates');
 
@@ -293,16 +299,11 @@
         template: templateHtml[0],
         // Sub templates
         partials: {
-          waitingtimesTemplate: waitingtimesTemplateHtml[0],
-          ratingsTemplate: ratingsTemplateHtml[0],
+          statsWaitingtimesTemplate: statsWaitingtimesTemplateHtml[0],
+          statsRatingsTemplate: statsRatingsTemplateHtml[0],
           commentsTemplate: commentsTemplateHtml[0],
           ratingsTemplate: ratingsTemplateHtml[0],
           waitingTimesTemplate: waitingTimesTemplateHtml[0]
-        },
-        test2: function(foo) {
-          mw.log('->TEST2');
-          mw.log(foo);
-          this.set(foo + '.waiting_time_count', 100);
         },
         data: {
           // Helper function to turn strings like `foo bar` to `foo_bar`
@@ -395,56 +396,45 @@
         City.scrollPageToSpot(data.HWid);
       }
     }
-    // When clicking city marker, scroll on top of the current article
-    else if (data.HWtype === 'city') {
-      leafletMarker.on('click', function() {
-        $('html, body').animate({
-          scrollTop: $('body').offset().top
-        }, 'fast');
-      });
-    }
   }
 
   /**
    *
    */
-  City.scrollPageToSpot = function(id) {
-    if (!id ) {
+  City.scrollPageToSpot = function(pageId) {
+    if (!pageId) {
       return;
     }
 
-    var $elementToScroll = $('#hw-spot_' + id);
+    var $elementToScroll = $('#hw-spot_' + pageId);
 
-    if (!$elementToScroll.length) {
-      mw.log.warn('mw.HWMaps::City::prepareCityViewMarkers: No element to scroll to.');
-      return;
+    if ($elementToScroll.length) {
+      // Scroll spot element on the page to the view
+      // Has a slight offset so that top part would be little bit lower
+      // than top part of the browser
+      $('html, body').animate({
+        scrollTop: $elementToScroll.offset().top - 100
+      }, 'fast');
     }
-
-    // Scroll spot element on the page to the view
-    // Has a slight offset so that top part would be little bit lower
-    // than top part of the browser
-    $('html, body').animate({
-      scrollTop: $elementToScroll.offset().top - 100
-    }, 'fast');
 
     animatedSpot = false;
-    City.highlightMarker(id);
-    animatedSpot = id;
+    City.highlightMarker(pageId);
+    animatedSpot = pageId;
   };
 
   /**
    * Add "highlight" graphic to marker on map
    */
-  City.highlightMarker = function(id) {
-    var $marker = $('#hw-marker-' + id);
-
-    if (!id || !$marker.length) {
-      return;
-    }
+  City.highlightMarker = function(pageId) {
 
     // Remove highlighting from any previously highlited spot
     $('.hw-highlight-spot').removeClass('hw-highlight-spot');
-    $marker.addClass('hw-highlight-spot');
+
+    // Add highlighting to requested marker
+    var $marker = $('#hw-marker-' + pageId);
+    if ($marker.length) {
+      $marker.addClass('hw-highlight-spot');
+    }
   };
 
   /**
@@ -483,8 +473,7 @@
   };
 
   /**
-   *
-   *
+   * Load comments
    * @return instance of jQuery.Promise
    */
   City.loadComments = function(pageId, spotObjectPath) {
