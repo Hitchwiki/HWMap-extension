@@ -174,15 +174,15 @@
   /**
    *
    */
-  SpecialPage.openSpot = function(id, panTo) {
+  SpecialPage.openSpot = function(pageId, panTo) {
     mw.log('HWMaps::SpecialPage::openSpot');
 
-    if (!id) {
+    if (!pageId) {
       mw.log.error('HWMaps::SpecialPage::openSpot: No ID defined for loading a spot. #fj902j');
       return;
     }
 
-    SpecialPage.animateSpot(id);
+    SpecialPage.animateSpot(pageId);
 
     // Wipe out any previously opened spot
     ractiveTemplate.set({ spot: null });
@@ -197,7 +197,6 @@
     apiUri.extend({
       'action': 'hwspotidapi',
       'format': 'json',
-      //'user_id': mw.config.get('wgUserId'),
       'properties': [
         'Location',
         'Country',
@@ -205,7 +204,7 @@
         'CitiesDirection',
         'RoadsDirection'
       ].join(','),
-      'page_id': id
+      'page_id': pageId
     });
 
     mw.log('apiUri: ' + apiUri);
@@ -214,79 +213,48 @@
       mw.log('Response from the API:');
       mw.log(data);
 
-      // Handle API errors
+      if (!data.error) {
+        mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #39gy2g');
+        return;
+      }
+
+      // Handle missing API response
       if (!data.query || !data.query.spot) {
         mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #iivbh2');
         return;
       }
 
-      data.query.spot.id = id;
+      data.query.spot.id = pageId;
 
       // Visual toggles at the UI used by Ractive
       data.query.spot._isAddingWaitingTimeVisible = false;
       data.query.spot._isStatisticsVisible = false;
 
-      if (data.query.spot.rating_average) {
+      if (_.has(data, 'data.query.spot.rating_average')) {
         data.query.spot.average_label = mw.HWMaps.Spots.getRatingLabel(data.query.spot.rating_average);
       }
 
-      if (data.query.spot.timestamp_user) {
+      if (_.has(data, 'query.spot.timestamp_user')) {
         data.query.spot.timestamp_user = mw.HWMaps.Spots.parseTimestamp(data.query.spot.timestamp_user);
       }
 
-      if (data.query.spot.rating_user) {
+      if (_.has(data, 'data.query.spot.rating_user')) {
         data.query.spot.rating_user_label = mw.HWMaps.Spots.getRatingLabel(data.query.spot.rating_user);
       }
 
+      // Pass spot to template
       ractiveTemplate.set({ spot: data.query.spot });
 
       // Set map view if we should pan to this spot
-      if (panTo) {
+      if (panTo && _.has(data, 'query.spot.Location')) {
         SpecialPage.setMapView(data.query.spot.Location.lat, data.query.spot.Location.lon, 15, id);
       }
-
-      // @TODO
-      // loadComments(id, false, 'spot', true);
 
       // Initialize rating widget
       mw.HWMaps.Ratings.initRatingWidgets();
 
       // Hides loading animation
       $hwspot.removeClass('hw-spot-loading');
-
-      /*
-      $('.hw-spot-edit-button').click(function(e) {
-        e.preventDefault();
-        var $form = $('#hw-spot-edit-form-wrap form');
-        $form.find('input[name="page_name"]').val($(this).data('title'));
-        $form.submit();
-      });
-      */
-
-      /*
-      $('.hw-your-rate').hide();
-
-      $('.hw-rating-widget .hw-rate').click(function(e) {
-        $('.hw-your-rate').hide();
-        $('.hw-rate').show();
-        e.preventDefault();
-        $(this).hide();
-        var id = $(this).attr('id').replace(/rate_/, '');
-        $('#hw-your_rate_' + id).show();
-      });
-
-      $(document).mouseup(function(e) {
-        var container = $('.hw-rating-widget .hw-rate');
-
-        if (!container.is(e.target) // if the target of the click isn't the container...
-            && container.has(e.target).length === 0) // ... nor a descendant of the container
-        {
-          $('.hw-your-rate').hide();
-          $('.hw-rate').show();
-        }
-      });
-      */
-
     });
 
     $hwspot.addClass('hw-spot-open');
@@ -299,12 +267,14 @@
    */
   SpecialPage.editSpot = function(title) {
     mw.log('HWMaps::SpecialPage::editSpot: ' + title);
-    var $form = $('#hw-spot-edit-form-wrap form');
+    var $formWrap = $('#hw-spot-edit-form-wrap');
 
-    if (!$form.length) {
+    if (!$formWrap.length) {
       mw.log.error('HWMaps::SpecialPage::editSpot: Could not find form element! #j93812');
       return;
     }
+
+    var $form = $formWrap.find('form');
 
     $form.find('input[name="page_name"]').val(title);
     $form.submit();
@@ -313,7 +283,7 @@
     // editing a spot, cancelling editing or any other reason.
     // There's also `.popupform-wrapper`
     $('.popupform-innerdocument').on('remove', function() {
-      mw.log('HWMaps::SpecialPage::editSpot -> DONE: ' + title);
+      mw.log('HWMaps::SpecialPage::editSpot: DONE: ' + title);
       // Reset zoom,bound cache so any map movement will Always load new spots
       // This is so that if user moved the spot to a new location, we'll get it
       // again to the map doing this.
@@ -364,8 +334,8 @@
     // Insert below where the spots are going to be loaded
     $hwspot.append($loadSpotDetailsSpinner);
 
-    var waitingTimesPromise = mw.HWMaps.Waitingtimes.loadWaitingTimes(pageId, false);
-    var ratingsPromise = mw.HWMaps.Ratings.loadRatings(pageId, false);
+    var waitingTimesPromise = mw.HWMaps.Waitingtimes.loadWaitingTimes(pageId);
+    var ratingsPromise = mw.HWMaps.Ratings.loadRatings(pageId);
 
     $.when(waitingTimesPromise, ratingsPromise).done(function(waitingTimesData, ratingsData) {
       $.removeSpinner('hwLoadSpotDetailsSpinner');
@@ -511,10 +481,31 @@
   function initSpecialPageTemplate() {
     mw.log('HWMaps::SpecialPage::initSpecialPageTemplate');
     var spot = {};
-    $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMap.SpecialPageSpot.template.html?v=' + cacheBust).then(function(templateHtml) {
+
+
+    // Get HTML templates
+    var getTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.SpecialPageSpot.template.html?v=' + cacheBust),
+        getWaitingtimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsWaitingTimes.template.html?v=' + cacheBust),
+        getRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.StatsRatings.template.html?v=' + cacheBust),
+        getCommentsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Comments.template.html?v=' + cacheBust),
+        getRatingsTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Ratings.template.html?v=' + cacheBust),
+        getWaitingTimesTemplateHtml = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.WaitingTimes.template.html?v=' + cacheBust);
+
+    $.when(getTemplateHtml, getWaitingtimesTemplateHtml, getRatingsTemplateHtml, getCommentsTemplateHtml, getRatingsTemplateHtml, getWaitingTimesTemplateHtml)
+      .done(function(templateHtml, waitingtimesTemplateHtml, ratingsTemplateHtml, commentsTemplateHtml, ratingsTemplateHtml, waitingTimesTemplateHtml) {
+
+      // http://www.ractivejs.org/
       ractiveTemplate = new Ractive({
         el: 'hw-specialpage-spot',
-        template: templateHtml,
+        template: templateHtml[0],
+        // Sub templates
+        partials: {
+          waitingtimesTemplate: waitingtimesTemplateHtml[0],
+          ratingsTemplate: ratingsTemplateHtml[0],
+          commentsTemplate: commentsTemplateHtml[0],
+          ratingsTemplate: ratingsTemplateHtml[0],
+          waitingTimesTemplate: waitingTimesTemplateHtml[0]
+        },
         data: {
           userId: mw.config.get('wgUserId')
         }

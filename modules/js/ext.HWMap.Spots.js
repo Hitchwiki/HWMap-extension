@@ -274,7 +274,7 @@
    */
   Spots.openStreetView = function(lat, lng) {
     mw.log('HWMaps::Spots::openStreetView: ' + parseFloat(lat) + ', ' + parseFloat(lng));
-    window.location = 'https://maps.google.com/maps?q=&layer=c&cbll=' + parseFloat(lat) + ',' + parseFloat(lng);
+    window.open('https://maps.google.com/maps?q=&layer=c&cbll=' + parseFloat(lat) + ',' + parseFloat(lng), '_blank');
   };
 
   /**

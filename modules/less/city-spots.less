@@ -4,372 +4,375 @@
 @spot-minimum-height: 70px;
 @spot-spacing: 5px;
 
-// Big titles dividing spots into "cardinal directions" suchs as "North"
-.mw-body h3.hw-cardinal-direction {
-  font-weight: normal;
-  display: inline-block;
-  margin-top: 30px;
-  margin-bottom: 10px;
-  &, a {
-    font-size: 24px;
-    line-height: 25px;
-    color: #333;
-    text-decoration: none;
-  }
-  a:hover,
-  a:active {
-    text-decoration: none;
-    color: lighten(#333, 10%);
-  }
-}
+.hw-incity-spots {
 
-// Start spot flex grid
-// Put only flexbox/grid related styles here, not the actual color styles etc
-.hw-spot {
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
-  align-items: stretch;
-  padding: @spot-spacing;
-  margin-bottom: 15px;
-}
-.hw-spot-main {
-  min-height: @spot-minimum-height;
-  display: flex;
-  flex-flow: row;
-  align-items: stretch;
-}
-.hw-spot-meta {
-  margin: 0 @spot-spacing;
-  padding: @spot-spacing;
-  flex: 3 1 30%;
-  order: 2;
-}
-.hw-spot-content {
-  margin: 0 @spot-spacing;
-  padding: @spot-spacing;
-  flex: 1 6 70%;
-  order: 3;
-}
-.hw-spot-comments,
-.hw-spot-statistics {
-  display: block;
-  margin: @spot-spacing;
-  padding: @spot-spacing;
-}
-.hw-spot-description {
-  flex-grow: 1;
-}
+  // Big titles dividing spots into "cardinal directions" suchs as "North"
+  .mw-body h3.hw-cardinal-direction {
+    font-weight: normal;
+    display: inline-block;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    &, a {
+      font-size: 24px;
+      line-height: 25px;
+      color: #333;
+      text-decoration: none;
+    }
+    a:hover,
+    a:active {
+      text-decoration: none;
+      color: lighten(#333, 10%);
+    }
+  }
 
-/* Too narrow to support all columns */
-@media all and (max-width: 640px) {
+  // Start spot flex grid
+  // Put only flexbox/grid related styles here, not the actual color styles etc
   .hw-spot {
-    flex-direction: column;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: @spot-spacing;
+    margin-bottom: 15px;
   }
-  .hw-spot > .hw-spot-meta,
-  .hw-spot > .hw-spot-content {
-  /* Return them to document order */
-    order: 0;
+  .hw-spot-main {
+    min-height: @spot-minimum-height;
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
   }
-}
-// End spot flex grid
-
-// Wrapper for the spot
-.hw-spot {
-  position: relative;
-  clear: both;
-  border: 1px solid @hw-grey-medium;
-
-  // Spots have a left-border in different color depending on their average rating
-  border-left-width: 3px;
-  border-left-style: solid;
-  border-left-color: @hw-grey-medium;
-  &.hw-spot-rating-average-1 { border-left-color: @hw-color-senseless; }
-  &.hw-spot-rating-average-2 { border-left-color: @hw-color-bad; }
-  &.hw-spot-rating-average-3 { border-left-color: @hw-color-average; }
-  &.hw-spot-rating-average-4 { border-left-color: @hw-color-good; }
-  &.hw-spot-rating-average-5 { border-left-color: @hw-color-verygood; }
-
-  // Long descriptions are cut short
-  .hw-spot-description-long {
+  .hw-spot-meta {
+    margin: 0 @spot-spacing;
+    padding: @spot-spacing;
+    flex: 3 1 30%;
+    order: 2;
+  }
+  .hw-spot-content {
+    margin: 0 @spot-spacing;
+    padding: @spot-spacing;
+    flex: 1 6 70%;
+    order: 3;
+  }
+  .hw-spot-comments,
+  .hw-spot-statistics {
     display: block;
-    max-height: 230px;
-    overflow: hidden;
+    margin: @spot-spacing;
+    padding: @spot-spacing;
+  }
+  .hw-spot-description {
+    flex-grow: 1;
+  }
+
+  /* Too narrow to support all columns */
+  @media all and (max-width: 640px) {
+    .hw-spot {
+      flex-direction: column;
+    }
+    .hw-spot > .hw-spot-meta,
+    .hw-spot > .hw-spot-content {
+    /* Return them to document order */
+      order: 0;
+    }
+  }
+  // End spot flex grid
+
+  // Wrapper for the spot
+  .hw-spot {
     position: relative;
+    clear: both;
+    border: 1px solid @hw-grey-medium;
 
-    // Add extra element with white-transparent gradient over the extra text
-    &:after {
-      content: '';
+    // Spots have a left-border in different color depending on their average rating
+    border-left-width: 3px;
+    border-left-style: solid;
+    border-left-color: @hw-grey-medium;
+    &.hw-spot-rating-average-1 { border-left-color: @hw-color-senseless; }
+    &.hw-spot-rating-average-2 { border-left-color: @hw-color-bad; }
+    &.hw-spot-rating-average-3 { border-left-color: @hw-color-average; }
+    &.hw-spot-rating-average-4 { border-left-color: @hw-color-good; }
+    &.hw-spot-rating-average-5 { border-left-color: @hw-color-verygood; }
+
+    // Long descriptions are cut short
+    .hw-spot-description-long {
       display: block;
-      position: absolute;
-      height: 30px;
-      width: 100%;
-      bottom: 0;
-      left: 0;
-      right: 0;
-
-      /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&0+0,0+100,1+100 */
-      background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
-      background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
-      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
-    }
-  }
-
-  // When spots are "bad" or "senseless", this class is added to them.
-  // Hide most of the data inside spot element if this is active.
-  &.hw-spot-is-minimized {
-    .hw-spot-meta,
-    .hw-spot-content-header,
-    .hw-spot-description-empty {
-      display: none;
-    }
-    // Description text is smaller than usual
-    // Only first bits of the description is shown, the rest stays hidden
-    max-height: @spot-minimum-height;
-    overflow: hidden;
-    .hw-spot-content {
+      max-height: 230px;
       overflow: hidden;
-    }
-    // Text and "Hitchability" title are quite much more hidden on bad spots
-    .hw-spot-description,
-    .hw-spot-title {
-      opacity: 0.6;
-    }
-    .hw-spot-description {
-      font-size: 13px;
-      line-height: 15px;
-      overflow: hidden;
-      // Causes only first line of first <p> be visible:
-      /*
-      p {
-        display: none;
-        &:first-of-type {
-          display: inline;
-          // text-overflow: ellipsis;
-          // white-space: nowrap;
-          overflow: hidden;
-        }
+      position: relative;
+
+      // Add extra element with white-transparent gradient over the extra text
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        height: 30px;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&0+0,0+100,1+100 */
+        background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
       }
-      */
     }
 
-    // Add extra element with white-transparent gradient over the bad place
-    &:after {
-      content: '';
-      display: block;
-      position: absolute;
-      height: 30px;
-      width: 100%;
-      bottom: 0;
-      left: 0;
-      right: 0;
+    // When spots are "bad" or "senseless", this class is added to them.
+    // Hide most of the data inside spot element if this is active.
+    &.hw-spot-is-minimized {
+      .hw-spot-meta,
+      .hw-spot-content-header,
+      .hw-spot-description-empty {
+        display: none;
+      }
+      // Description text is smaller than usual
+      // Only first bits of the description is shown, the rest stays hidden
+      max-height: @spot-minimum-height;
+      overflow: hidden;
+      .hw-spot-content {
+        overflow: hidden;
+      }
+      // Text and "Hitchability" title are quite much more hidden on bad spots
+      .hw-spot-description,
+      .hw-spot-title {
+        opacity: 0.6;
+      }
+      .hw-spot-description {
+        font-size: 13px;
+        line-height: 15px;
+        overflow: hidden;
+        // Causes only first line of first <p> be visible:
+        /*
+        p {
+          display: none;
+          &:first-of-type {
+            display: inline;
+            // text-overflow: ellipsis;
+            // white-space: nowrap;
+            overflow: hidden;
+          }
+        }
+        */
+      }
 
-      /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&0+0,0+100,1+100 */
-      background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
-      background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
-      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+      // Add extra element with white-transparent gradient over the bad place
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        height: 30px;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&0+0,0+100,1+100 */
+        background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+      }
     }
   }
-}
 
-// Styles when spot is highlighted on the list
-.hw-spot-hover {
-  background-color: @hw-grey-light;
-}
-
-// Contains description etc basic info
-.hw-spot-content {
-}
-
-// Contains detailed statistics
-.hw-spot-statistics {
-  border-top: 1px solid @hw-grey-light;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-// Header section of the spot, containing info about directions
-.hw-spot-content-header {
-  &, a {
-    font-size: 16px;
-    color: @hw-grey-dark;
+  // Styles when spot is highlighted on the list
+  .hw-spot-hover {
+    background-color: @hw-grey-light;
   }
-  font-weight: normal;
-  a {
-    font-weight: bold;
+
+  // Contains description etc basic info
+  .hw-spot-content {
   }
-}
 
-// A text shown when no spot description
-.hw-spot-description-empty {
-  border: 1px solid green;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-style: italic;
-  &, a {
-    color: @hw-grey-medium;
-    text-decoration: none;
+  // Contains detailed statistics
+  .hw-spot-statistics {
+    border-top: 1px solid @hw-grey-light;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
   }
-  a:hover {
-    text-decoration: underline;
+
+  // Header section of the spot, containing info about directions
+  .hw-spot-content-header {
+    &, a {
+      font-size: 16px;
+      color: @hw-grey-dark;
+    }
+    font-weight: normal;
+    a {
+      font-weight: bold;
+    }
   }
-}
 
-// Hitchability, waiting times etc
-.hw-spot-meta {
-  border-right: 1px solid @hw-grey-light;
-  .hw-waiting-time,
-  .hw-spot-actions,
-  .hw-ratings {
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid @hw-grey-light;
+  // A text shown when no spot description
+  .hw-spot-description-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-style: italic;
+    &, a {
+      color: @hw-grey-medium;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
   }
-}
 
-// Some buttons fill the whole column
-.hw-waiting-time-button,
-.hw-spot-actions .hw-button {
-  width: 100%;
-  text-align: left;
-  clear: both;
-  margin: 1px 0;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-/*
-.hw-spot-comments {
-  border: 1px solid yellow;
-}
-*/
-
-
-// Spots list main title
-h2#hw-spots {
-  &, a {
-    color: #333;
+  // Hitchability, waiting times etc
+  .hw-spot-meta {
+    border-right: 1px solid @hw-grey-light;
+    .hw-waiting-time,
+    .hw-spot-actions,
+    .hw-ratings {
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid @hw-grey-light;
+    }
   }
-}
 
-/*
-// Single spot
-.hw-spot {
-  .hw-spot-main-col {
-    border-bottom: 2px solid @hw-grey-medium;
+  // Some buttons fill the whole column
+  .hw-waiting-time-button,
+  .hw-spot-actions .hw-button {
+    width: 100%;
+    text-align: left;
+    clear: both;
+    margin: 1px 0;
     padding-top: 5px;
     padding-bottom: 5px;
   }
-  .hw-spot-head {
-    margin-bottom: 10px;
+  /*
+  .hw-spot-comments {
+    border: 1px solid yellow;
   }
-  .hw-spot-towards {
+  */
+
+
+  // Spots list main title
+  h2#hw-spots {
+    &, a {
+      color: #333;
+    }
   }
-  .hw-spot-locate {
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 15px;
-    background: @hw-grey-light;
-    color: @hw-grey-medium;
-    text-decoration: none;
-    overflow: hidden;
-    &:active,
-    &:hover {
-      outline: none;
+
+  /*
+  // Single spot
+  .hw-spot {
+    .hw-spot-main-col {
+      border-bottom: 2px solid @hw-grey-medium;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    .hw-spot-head {
+      margin-bottom: 10px;
+    }
+    .hw-spot-towards {
+    }
+    .hw-spot-locate {
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 15px;
       background: @hw-grey-light;
-    }
-  }
-}
-*/
-
-/*
-.hw-spot-footer {
-  min-height: @hw-footer-height;
-  text-align: left;
-  .col-footer-left-border {
-    border-left: 1px solid @hw-grey-medium;
-  }
-  .col-footer-right-border {
-    border-right: 1px solid @hw-grey-medium;
-  }
-  .col-spot-footer {
-    min-height: @hw-footer-height;
-    padding: 0;
-    .hw-button-big {
-      margin-top: 5px;
-    }
-  }
-  .comment-spinner {
-    position: absolute;
-    left: -3px;
-    top: 27px;
-    font-size: 16px;
-    margin: 2px;
-    visibility: hidden;
-  }
-}
-*/
-
-
-//!------ Detail list ------!//
-.hw-spot-ratings,
-.hw-spot-waiting-times {
-  max-width: 320px;
-  margin: 5px;
-}
-
-.hw-list-ratings,
-.hw-list-waiting-times {
-  margin-top: 6px;
-  font-size: 12px;
-  background-color: @hw-grey-light;
-  border: 1px solid @hw-grey-medium;
-  padding: 7px 5px 7px 5px;
-  max-height: 200px;
-  overflow-y: auto;
-  table {
-    text-align: left;
-    width: 100%;
-    tr {
-      border-bottom: 1px solid @hw-grey-medium;
-      height: 20px;
-      td, th {
-        margin: 0 3px 0 3px;
-        line-height: 0;
+      color: @hw-grey-medium;
+      text-decoration: none;
+      overflow: hidden;
+      &:active,
+      &:hover {
+        outline: none;
+        background: @hw-grey-light;
       }
     }
   }
-  .hw-waiting-time-delete {
-    cursor: pointer;
-    margin-left: 2px;
-    &:hover {
-      color: @hw-color-senseless;
+  */
+
+  /*
+  .hw-spot-footer {
+    min-height: @hw-footer-height;
+    text-align: left;
+    .col-footer-left-border {
+      border-left: 1px solid @hw-grey-medium;
+    }
+    .col-footer-right-border {
+      border-right: 1px solid @hw-grey-medium;
+    }
+    .col-spot-footer {
+      min-height: @hw-footer-height;
+      padding: 0;
+      .hw-button-big {
+        margin-top: 5px;
+      }
+    }
+    .comment-spinner {
+      position: absolute;
+      left: -3px;
+      top: 27px;
+      font-size: 16px;
+      margin: 2px;
+      visibility: hidden;
     }
   }
-}
+  */
 
 
-//!------ Semantic MW form for initiating the spot edit form popup ------!//
-
-#hw-spot-edit-form-wrap {
-  display: none;
-}
-
-.hw-spot-icon {
-  border-radius: 50%;
-  .transition('box-shadow' 50ms);
-  border: 2px solid transparent;
-  &.hw-highlight-spot {
-    border: 2px solid fade(@hw-rating-hover, 70%);
-    box-shadow: 0 0 15px @hw-rating-hover;
+  //!------ Detail list ------!//
+  .hw-spot-ratings,
+  .hw-spot-waiting-times {
+    max-width: 320px;
+    margin: 5px;
   }
+
+  .hw-list-ratings,
+  .hw-list-waiting-times {
+    margin-top: 6px;
+    font-size: 12px;
+    background-color: @hw-grey-light;
+    border: 1px solid @hw-grey-medium;
+    padding: 7px 5px 7px 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    table {
+      text-align: left;
+      width: 100%;
+      tr {
+        border-bottom: 1px solid @hw-grey-medium;
+        height: 20px;
+        td, th {
+          margin: 0 3px 0 3px;
+          line-height: 0;
+        }
+      }
+    }
+    .hw-waiting-time-delete {
+      cursor: pointer;
+      margin-left: 2px;
+      &:hover {
+        color: @hw-color-senseless;
+      }
+    }
+  }
+
+
+  //!------ Semantic MW form for initiating the spot edit form popup ------!//
+
+  #hw-spot-edit-form-wrap {
+    display: none;
+  }
+
+  .hw-spot-icon {
+    border-radius: 50%;
+    .transition('box-shadow' 50ms);
+    border: 2px solid transparent;
+    &.hw-highlight-spot {
+      border: 2px solid fade(@hw-rating-hover, 70%);
+      box-shadow: 0 0 15px @hw-rating-hover;
+    }
+  }
+
 }

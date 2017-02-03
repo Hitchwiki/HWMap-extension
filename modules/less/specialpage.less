@@ -128,7 +128,7 @@
     float: right;
     background-color: white;
     &.hw-spot-open {
-      width: 25%;
+      width: 35%;
       /*
       @media screen and (max-width: 768px) {
         width: 45%;
@@ -146,23 +146,6 @@
     // Towards / Directions
     .hw-spot-towards {
       font-size: 13px;
-    }
-
-    // Loading animation
-    .hw-spot-spinner {
-      display: none; // By default hidden
-      margin-top: 100px;
-      text-align: center;
-      font-size: 40px;
-      color: @hw-grey-medium;
-      // This element has a Font-Awesome spinner inside it
-      * {
-        // Faster loading animation (2s by default)
-        animation-duration: 1s;
-      }
-    }
-    &.hw-spot-loading .hw-spot-spinner {
-      display: block;
     }
 
     // Close sidebar "X"
@@ -188,18 +171,60 @@
   }
   // SpecialPage HWMap sidebar when clicking a spot open
 
-  /*
-  .hw-specialpage-spot {
-    h2 {
+  .hw-specialpage-spot-content {
+    // Spacing around all the content on sidebar
+    padding: 13px;
+  }
 
+  // Header section of the spot, containing info about directions
+  .hw-spot-content-header {
+    &, a {
+      font-size: 16px;
+      color: @hw-grey-dark;
+    }
+    font-weight: normal;
+    a {
+      font-weight: bold;
     }
   }
 
+  // A text shown when no spot description
+  .hw-spot-description-empty {
+    display: flex;
+    min-height: 100px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-style: italic;
+    &, a {
+      color: @hw-grey-medium;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // Hitchability, waiting times etc
+  .hw-spot-meta {
+    border-right: 1px solid @hw-grey-light;
+    .hw-waiting-time,
+    .hw-spot-actions,
+    .hw-ratings {
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid @hw-grey-light;
+    }
+  }
+  /*
   .hw-specialpage-spot-actions {
 
   }
   */
 
+  #hw-spot-edit-form-wrap {
+    display: none;
+  }
 
   /**
    * @TODO: Why this is visible on SpecialPage and

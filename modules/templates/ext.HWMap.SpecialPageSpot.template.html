@@ -5,7 +5,7 @@
     <h2>Hitchhiking Spot</h2>
 
     {{#spot}}
-    <div class="hw-specialpage-spot" id="hw-spot_{{id}}">
+    <div class="hw-specialpage-spot-content" id="hw-spot_{{id}}">
 
       <!-- Spot content -->
       <div class="hw-spot-content">
@@ -30,6 +30,7 @@
 
         <!-- Spot actions -->
         <div class="hw-specialpage-spot-actions">
+
           {{#if rating_count || waiting_time_count}}
             <button type="button"
                     class="hw-button hw-button-small"
@@ -38,12 +39,21 @@
               Stats
             </button>
           {{/if}}
+
           <button type="button"
                   class="hw-button hw-button-small"
                   onclick="mw.HWMaps.SpecialPage.setMapView('{{Location.0.lat}}', '{{Location.0.lon}}', 15, '{{id}}')">
             <i class="fa fa-map-marker"></i>
-            Locate
+            Show on map
           </button>
+
+          <button type="button"
+                  class="hw-button hw-button-small"
+                  onclick="mw.HWMaps.Spots.openStreetView('{{Location.0.lat}}', '{{Location.0.lon}}')">
+            <i class="fa fa-map-marker"></i>
+            Street view
+          </button>
+
           {{#if userId}}
             <button type="button"
                     class="hw-button hw-button-small hw-spot-edit-button"
@@ -52,6 +62,7 @@
               Edit
             </button>
           {{/if}}
+
         </div>
         <!-- /Spot actions -->
 
@@ -60,7 +71,14 @@
         {{#if Description}}
           {{{Description}}}
         {{else}}
-          <p><a href="#" class="hw-spot-edit-button" data-title="{{title}}">>Write a description</a> for this spot?</p>
+          <div class="hw-spot-description-empty">
+            <a href="#"
+               class="hw-spot-edit-button"
+               onclick="mw.HWMaps.SpecialPage.editSpot('{{title}}')">
+              Write a description
+            </a>
+            for this spot?
+          </div>
         {{/if}}
         </div>
         <!-- /Spot description -->
@@ -70,190 +88,30 @@
 
       <!-- Ratings -->
       <div class="hw-ratings">
-        <span class="hw-rating-widget hw-average-{{rating_average || 0}}">
-          <span class="hw-average {{#if rating_average > 0}}hw-average-{{Math.round(rating_average)}}{{else}}hw-average-null{{/if}} {{#if !userId}}hw-average-no-user{{/if}}">
-            {{average_label}}
-            {{#if rating_count > 0}}
-              <small>({{rating_count}})</small>
-            {{/if}}
-          </span>
-          {{#if userId}}
-            <span id="hw-rate_{{id}}" class="hw-rate {{#if rating_user > 0}}hw-rate-{{Math.round(rating_user)}}{{else}}hw-rate-null{{/if}}">
-              {{#if rating_user > 0}}
-                <small>You rated: </small>{{rating_user_label}}
-              {{else}}
-                Rate
-              {{/if}}
-              <i class="fa fa-caret-down"></i>
-            </span>
-            <span id="hw-your_rate_{{id}}" class="hw-your-rate">
-              <span class="rating-choice-head">
-                {{#if rating_user}}
-                  Your rated: {{rating_user_label}}
-                {{else}}
-                  Your rating
-                {{/if}}
-              </span>
-              <span onclick="mw.HWMaps.SpecialPage.addRating(5, {{id}})" class="rating-choice"><span class="hw-bubble hw-bubble-verygood"></span> Very Good</span>
-              <span onclick="mw.HWMaps.SpecialPage.addRating(4, {{id}})" class="rating-choice"><span class="hw-bubble hw-bubble-good"></span> Good</span>
-              <span onclick="mw.HWMaps.SpecialPage.addRating(3, {{id}})" class="rating-choice"><span class="hw-bubble hw-bubble-average"></span> Average</span>
-              <span onclick="mw.HWMaps.SpecialPage.addRating(2, {{id}})" class="rating-choice"><span class="hw-bubble hw-bubble-bad"></span> Bad</span>
-              <span onclick="mw.HWMaps.SpecialPage.addRating(1, {{id}})" class="rating-choice"><span class="hw-bubble hw-bubble-senseless"></span> Senseless</span>
-              {{#timestamp_user}}
-                <span class="hw-rating-choice-timestamp">
-                  You rated {{timestamp_user}}
-                </span>
-                <span onclick="mw.HWMaps.SpecialPage.deleteRating({{id}}, 'spot')" class="rating-choice-remove">
-                  Remove my rating
-                </span>
-              {{/timestamp_user}}
-            </span>
-          {{/if}}
-        </span>
-        <div id="hw-spot-ratings-{{id}}" class="hw-spot-ratings">
-          <div class="hw-bar-graph-details">
-            <span class="hw-bar-5 hw-graph-bar" style="width: {{Math.round(ratings_distribution.5.percentage) || 0}}%;"></span>
-            <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.round(ratings_distribution.4.percentage) || 0}}%;"></span>
-            <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.round(ratings_distribution.3.percentage) || 0}}%;"></span>
-            <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.round(ratings_distribution.2.percentage) || 0}}%;"></span>
-            <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.round(ratings_distribution.1.percentage) || 0}}%;"></span>
-            <table class="hw-distribution-details">
-              <tr>
-                <td><span class="hw-bubble hw-bubble-verygood"></span> Very good</td>
-                <td>{{Math.round(ratings_distribution.5.percentage) || 0}}% ({{ratings_distribution.5.count || 0}})</td>
-              </tr>
-              <tr>
-                <td><span class="hw-bubble hw-bubble-good"></span> Good</td>
-                <td>{{Math.round(ratings_distribution.4.percentage) || 0}}% ({{ratings_distribution.4.count || 0}})</td>
-              </tr>
-              <tr>
-                <td><span class="hw-bubble hw-bubble-average"></span> Average</td>
-                <td>{{Math.round(ratings_distribution.3.percentage) || 0}}% ({{ratings_distribution.3.count || 0}})</td>
-              </tr>
-              <tr>
-                <td><span class="hw-bubble hw-bubble-bad"></span> Bad</td>
-                <td>{{Math.round(ratings_distribution.2.percentage) || 0}}% ({{ratings_distribution.2.count || 0}})</td>
-              </tr>
-              <tr>
-                <td><span class="hw-bubble hw-bubble-senseless"></span> Senseless</td>
-                <td>{{Math.round(ratings_distribution.1.percentage) || 0}}% ({{ratings_distribution.1.count || 0}})</td>
-              </tr>
-            </table>
-          </div>
-          <div class="hw-list-ratings">
-            <table class="table table-striped table-hover">
-              {{#ratings}}
-              <tr>
-                <td>{{rating_label}}</td>
-                <td>{{user_name}}</td>
-                <td>{{timestamp_label}}</td>
-              </tr>
-              {{/ratings}}
-            </table>
-          </div>
-        </div>
+        {{>ratingsTemplate}}
       </div>
       <!-- /Ratings -->
 
-      <!-- Waiting time -->
+      <!-- Waiting times -->
       <div class="hw-waiting-time">
-        <div class="hw-waiting-time-widget">
-          {{#if waiting_time_count}}
-            <span>Waiting time <strong>{{waiting_time_average}}</strong> minutes ({{waiting_time_count}})</span>
-          {{else}}
-            <span>No waiting times yet.</span>
-          {{/if}}
-          <button id="hw-waiting_time_button_{{id}}"
-                  type="button"
-                  onclick="mw.HWMaps.SpecialPage.toggleAddingWaitingTime()"
-                  class="hw-waiting-time-button hw-button hw-button-small">
-            Add your experience
-          </button>
-        </div>
-
-        {{#if _isAddingWaitingTimeVisible}}
-          <div id="hw-add_waiting_time_{{id}}" class="hw-add-waiting-time">
-            <input value="{{this.new_waiting_time_h}}" type="number" class="hw-waiting-time-input" min="0" max="24" step="1" value="0" placeholder="h" title="Hours..." /> h.
-            <input value="{{this.new_waiting_time_m}}" type="number" class="hw-waiting-time-input" min="0" max="60" step="1" value="0" placeholder="m" title="Minutes..." /> m.
-            <button class="hw-button hw-button-small"
-                    onclick="mw.HWMaps.SpecialPage.addWaitingTime({{this.new_waiting_time_m + Math.floor(this.new_waiting_time_h * 60)}}, {{id}})">
-              Add
-            </button>
-            <button class="hw-button hw-button-small"
-                    onclick="mw.HWMaps.SpecialPage.toggleAddingWaitingTime()">
-              Cancel
-            </button>
-          </div>
-        {{/if}}
-
-        <div id="hw-spot-waitingtimes-{{id}}" class="hw-spot-waiting-times">
-          <div class="hw-bar-graph-details">
-            <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.0.percentage) || 0}}%;"></span>
-            <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.1.percentage) || 0}}%;"></span>
-            <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.2.percentage) || 0}}%;"></span>
-            <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.3.percentage) || 0}}%;"></span>
-            <table class="hw-distribution-details">
-              <tr>
-                <td><span class="hw-bubble hw-bubble-good"></span> &#60; 15 minutes</td>
-                <td>{{Math.round(waiting_times_distribution.0.percentage) || 0}}% ({{waiting_times_distribution.0.count || 0}})</td>
-              </tr>
-              <tr>
-                <td><span class="hw-bubble hw-bubble-average"></span> &#60; 30 minutes</td>
-                <td>{{Math.round(waiting_times_distribution.1.percentage) || 0}}% ({{waiting_times_distribution.1.count || 0}})</td>
-              </tr>
-              <tr>
-                <td><span class="hw-bubble hw-bubble-bad"></span> &#60; 60 minutes</td>
-                <td>{{Math.round(waiting_times_distribution.2.percentage) || 0}}% ({{waiting_times_distribution.2.count || 0}})</td>
-              </tr>
-              <tr>
-                <td><span class="hw-bubble hw-bubble-senseless"></span> 1h +</td>
-                <td>{{Math.round(waiting_times_distribution.3.percentage) || 0}}% ({{waiting_times_distribution.3.count || 0}})</td>
-              </tr>
-            </table>
-          </div>
-          <div class="hw-list-waiting-times">
-            <table class="table table-striped table-hover">
-              {{#waiting_times}}
-              <tr>
-                <td>{{waiting_time}} min</td>
-                <td>{{user_name}}</td>
-                <td>
-                  {{timestamp_label}}
-                  {{#if user_id === userId}}
-                    <i onclick="mw.HWMaps.SpecialPage.deleteWaitingTime('{{waiting_time_id}}', '{{id}}', 'spot')" class="fa fa-trash hw-waiting-time-delete"></i>
-                  {{/if}}
-                </td>
-              </tr>
-              {{/waiting_times}}
-            </table>
-          </div>
-        </div>
-
+        {{>waitingTimesTemplate}}
       </div>
-      <!-- /Waiting time -->
+      <!-- /Waiting times -->
+
+      <!-- Statistics -->
+      {{#if _isStatisticsVisible}}
+      <div class="hw-spot-statistics">
+        {{>waitingtimesTemplate}}
+        {{>ratingsTemplate}}
+      </div>
+      {{/if}}
+      <!-- /Statistics -->
 
       <!-- Comments -->
-      <div class="hw-big-map-comments row">
-        <div id="hw-spot-comments-{{id}}" class="hw-spot-comments hide-comment col-md-12">
-          {{#comments}}
-          <div class="hw-comment">
-            {{#if user_id==userId}}<i onclick="mw.HWMaps.SpecialPage.deleteComment('{{comment_id}}', '{{id}}', 'spot')" class="fa fa-trash hw-comment-delete"></i>{{/if}}
-            {{{commenttext}}}
-            <span class="hw-comment-meta">By {{user_name}}, {{timestamp_label}}</span>
-          </div>
-          {{/comments}}
-          {{#if userId}}<textarea class="hw-comment-textarea" placeholder="Add a comment" value='{{this.new_comment}}'></textarea>
-          {{else}}<p>Please log in to add a comment</p>{{/if}}
-          {{#if this.new_comment.length}}<button class="hw-comment-button" onclick="mw.HWMaps.SpecialPage.addComment('{{id}}', 'spot')">Add comment</button> {{/if}}
-        </div>
-      </div>
+      {{>commentsTemplate}}
       <!-- /Comments -->
 
     </div>
     {{/spot}}
-
-    <div class="hw-spot-spinner">
-      <i class="fa fa-circle-o-notch fa-spin"></i>
-    </div>
 
 </div>

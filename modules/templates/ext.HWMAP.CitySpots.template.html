@@ -13,15 +13,6 @@
   {{#this:index}}
   <!-- Spot -->
 
-  <!--
-  <ul>
-    <li>_isBadSpotVisible: {{_isBadSpotVisible}}</li>
-    <li>_isAddingWaitingTimeVisible: {{_isAddingWaitingTimeVisible}}</li>
-    <li>_isCommentsVisible: {{_isCommentsVisible}}</li>
-    <li>_isStatisticsVisible: {{_isStatisticsVisible}}</li>
-  </ul>
-  -->
-
   <div id="hw-spot_{{id}}"
        class="hw-spot hw-spot-rating-average-{{rating_average}}"
        class-hw-spot-is-minimized="{{rating_average < 3 && !_isBadSpotVisible}}">
@@ -36,93 +27,13 @@
 
           <!-- Ratings -->
           <div class="hw-ratings">
-            <span class="hw-rating-widget hw-average-{{rating_average || 0}}">
-              <span class="hw-average {{#if rating_average > 0}}hw-average-{{Math.round(rating_average)}}{{/if}}"
-                    class-average-null="{{ rating_average === 0 }}"
-                    class-average-no-user="{{ !userId }}">
-                {{average_label}}
-                {{#if rating_count > 0}}
-                  <small>({{rating_count}})</small>
-                {{/if}}
-              </span>
-              {{#if userId}}
-                <span id="hw-rate_{{id}}"
-                      class="hw-rate {{#if rating_user > 0}}hw-rate-{{Math.round(rating_user)}}{{/if}}"
-                      class-rate-null="{{ rating_average == 0 }}">
-                  {{#if rating_user > 0}}
-                    <small>You rated:</small> {{rating_user_label}}
-                  {{else}}
-                    Rate
-                  {{/if}}
-                  <i class="fa fa-caret-down"></i>
-                </span>
-                <span id="hw-your_rate_{{id}}" class="hw-your-rate">
-                  <!--
-                  <span class="hw-rating-choice-head">
-                    {{#if rating_user}}
-                      Your rated: {{rating_user_label}}
-                    {{else}}
-                      Your rating
-                    {{/if}}
-                  </span>
-                  -->
-                  <span onclick="mw.HWMaps.City.addRating(5, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
-                    <span class="hw-bubble hw-bubble-verygood"></span> Very Good
-                  </span>
-                  <span onclick="mw.HWMaps.City.addRating(4, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
-                    <span class="hw-bubble hw-bubble-good"></span> Good
-                  </span>
-                  <span onclick="mw.HWMaps.City.addRating(3, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
-                    <span class="hw-bubble hw-bubble-average"></span> Average
-                  </span>
-                  <span onclick="mw.HWMaps.City.addRating(2, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
-                    <span class="hw-bubble hw-bubble-bad"></span> Bad
-                  </span>
-                  <span onclick="mw.HWMaps.City.addRating(1, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
-                    <span class="hw-bubble hw-bubble-senseless"></span> Senseless
-                  </span>
-                  {{#timestamp_user}}
-                    <span class="hw-rating-choice-timestamp">
-                      You rated {{timestamp_user}}
-                    </span>
-                    <span onclick="mw.HWMaps.City.deleteRating({{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice-remove">
-                      Remove my rating
-                    </span>
-                  {{/timestamp_user}}
-                </span>
-              {{/if}}
-            </span>
+            {{>ratingsTemplate}}
           </div>
           <!-- /Ratings -->
 
           <!-- Waiting times -->
           <div class="hw-waiting-time">
-            <div class="hw-waiting-time-widget">
-              {{#if waiting_time_count}}
-                Waiting time {{waiting_time_average}} minutes ({{waiting_time_count}})
-              {{else}}
-                No waiting times yet.
-              {{/if}}
-              {{#if _isAddingWaitingTimeVisible}}
-                <div id="hw-add_waiting_time_{{id}}" class="hw-add-waiting-time">
-                  <input value="{{_new_waiting_time_h}}" type="number" class="hw-waiting-time-input" min="0" max="24" step="1" placeholder="h" title="Hours..." /> h.
-                  <input value="{{_new_waiting_time_m}}" type="number" class="hw-waiting-time-input" min="0" max="60" step="1" placeholder="m" title="Minutes..." /> m.
-                  <button class="hw-button hw-button-small" onclick="mw.HWMaps.City.addWaitingTime('{{_new_waiting_time_h}}', '{{_new_waiting_time_m}}', {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
-                    Add
-                  </button>
-                  <button class="hw-button hw-button-small" onclick="mw.HWMaps.City.toggleAddingWaitingTime('spots.groupSpots.{{cardinalDirection}}.{{index}}')">
-                    Cancel
-                  </button>
-                </div>
-              {{else}}
-                <button id="hw-waiting_time_button_{{id}}"
-                        type="button"
-                        onclick="mw.HWMaps.City.toggleAddingWaitingTime('spots.groupSpots.{{cardinalDirection}}.{{index}}')"
-                        class="hw-waiting-time-button hw-button hw-button-small">
-                  Add your experiences
-                </button>
-              {{/if}}
-            </div>
+            {{>waitingTimesTemplate}}
           </div>
           <!-- /Waiting times -->
 
@@ -130,7 +41,7 @@
           <div class="hw-spot-actions">
 
             {{#if rating_count || waiting_time_count}}
-            <button onclick="mw.HWMaps.City.loadSpotDetails('{{id}}', false, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')"
+            <button onclick="mw.HWMaps.City.loadSpotDetails('{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')"
                     type="button"
                     class="hw-button hw-button-small">
               <i class="fa fa-bar-chart"></i>
@@ -140,7 +51,7 @@
 
             <button type="button"
                     class="hw-button hw-button-small"
-                    onclick="mw.HWMaps.City.loadComments('{{id}}', false, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
+                    onclick="mw.HWMaps.City.loadComments('{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
               <i class="fa fa-comment-o"></i>
               {{#if comment_count > 0}}
                 Comments ({{comment_count}})
@@ -219,15 +130,15 @@
         <!-- Spot description -->
         <div class="hw-spot-description">
         {{#if Description}}
-          {{#if Description.length > 320 && !_isLongDescriptionVisible}}
+          {{#if Description.length > 300 && !_isLongDescriptionVisible}}
             <div class="hw-spot-description-long">
               {{{Description}}} …
             </div>
-            <label class="hw-switch hw-switch-right">
-              Show more
-              <input type="checkbox" checked="{{_isLongDescriptionVisible}}">
-              <div class="toggle"></div>
-            </label>
+            <button type="button"
+                    class="hw-button hw-button-small"
+                    onclick="mw.HWMaps.City.toggleLongDescription('spots.groupSpots.{{cardinalDirection}}.{{index}}')">
+              Read more…
+            </button>
           {{else}}
             {{{Description}}}
           {{/if}}
@@ -246,128 +157,15 @@
     <!-- Statistics -->
     {{#if _isStatisticsVisible}}
     <div class="hw-spot-statistics">
-
-      <!-- Waiting time statistics -->
-      <div id="hw-spot-waitingtimes-{{id}}" class="hw-spot-waiting-times">
-        <div class="hw-bar-graph-details">
-          <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.0.percentage) || 0}}%;"></span>
-          <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.1.percentage) || 0}}%;"></span>
-          <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.2.percentage) || 0}}%;"></span>
-          <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.round(waiting_times_distribution.3.percentage) || 0}}%;"></span>
-          <table class="hw-distribution-details">
-            <tr>
-              <td><span class="hw-bubble hw-bubble-good"></span> &#60; 15 minutes</td>
-              <td>{{Math.round(waiting_times_distribution.0.percentage) || 0}}% ({{waiting_times_distribution.0.count || 0}})</td>
-            </tr>
-            <tr>
-              <td><span class="hw-bubble hw-bubble-average"></span> &#60; 30 minutes</td>
-              <td>{{Math.round(waiting_times_distribution.1.percentage) || 0}}% ({{waiting_times_distribution.1.count || 0}})</td>
-            </tr>
-            <tr>
-              <td><span class="hw-bubble hw-bubble-bad"></span> &#60; 60 minutes</td>
-              <td>{{Math.round(waiting_times_distribution.2.percentage) || 0}}% ({{waiting_times_distribution.2.count || 0}})</td>
-            </tr>
-            <tr>
-              <td><span class="hw-bubble hw-bubble-senseless"></span> 1h +</td>
-              <td>{{Math.round(waiting_times_distribution.3.percentage) || 0}}% ({{waiting_times_distribution.3.count || 0}})</td>
-            </tr>
-          </table>
-        </div>
-        <div class="hw-list-waiting-times">
-          <table class="table table-striped table-hover">
-            {{#waiting_times}}
-            <tr>
-              <td>{{waiting_time}} mins</td>
-              <td>{{user_name}}</td>
-              <td>
-                {{timestamp_label}}
-                {{#if user_id == userId}}
-                  <i onclick="mw.HWMaps.City.deleteWaitingTime('{{waiting_time_id}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-waiting-time-delete"></i>
-                {{/if}}
-              </td>
-            </tr>
-            {{/waiting_times}}
-          </table>
-        </div>
-      </div>
-      <!-- /Waiting time statistics -->
-
-      <!-- Rating statistics -->
-      <div id="hw-spot-ratings-{{id}}" class="hw-spot-ratings">
-        <div class="hw-bar-graph-details">
-          <span class="hw-bar-5 hw-graph-bar" style="width: {{Math.round(ratings_distribution.5.percentage) || 0}}%;"></span>
-          <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.round(ratings_distribution.4.percentage) || 0}}%;"></span>
-          <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.round(ratings_distribution.3.percentage) || 0}}%;"></span>
-          <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.round(ratings_distribution.2.percentage) || 0}}%;"></span>
-          <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.round(ratings_distribution.1.percentage) || 0}}%;"></span>
-          <table class="hw-distribution-details">
-            <tr>
-              <td><span class="hw-bubble hw-bubble-verygood"></span> Very good</td>
-              <td>{{Math.round(ratings_distribution.5.percentage) || 0}}% ({{ratings_distribution.5.count || 0}})</td>
-            </tr>
-            <tr>
-              <td><span class="hw-bubble hw-bubble-good"></span> Good</td>
-              <td>{{Math.round(ratings_distribution.4.percentage) || 0}}% ({{ratings_distribution.4.count || 0}})</td>
-            </tr>
-            <tr>
-              <td><span class="hw-bubble hw-bubble-average"></span> Average</td>
-              <td>{{Math.round(ratings_distribution.3.percentage) || 0}}% ({{ratings_distribution.3.count || 0}})</td>
-            </tr>
-            <tr>
-              <td><span class="hw-bubble hw-bubble-bad"></span> Bad</td>
-              <td>{{Math.round(ratings_distribution.2.percentage) || 0}}% ({{ratings_distribution.2.count || 0}})</td>
-            </tr>
-            <tr>
-              <td><span class="hw-bubble hw-bubble-senseless"></span> Senseless</td>
-              <td>{{Math.round(ratings_distribution.1.percentage) || 0}}% ({{ratings_distribution.1.count || 0}})</td>
-            </tr>
-          </table>
-        </div>
-        <div class="hw-list-ratings">
-          <table class="table table-striped table-hover">
-            {{#ratings}}
-            <tr>
-              <td>{{rating_label}}</td>
-              <td>{{user_name}}</td>
-              <td>{{timestamp_label}}</td>
-            </tr>
-            {{/ratings}}
-          </table>
-        </div>
-      </div>
-      <!-- /Rating statistics -->
-
+      {{>waitingtimesTemplate}}
+      {{>ratingsTemplate}}
     </div>
     {{/if}}
     <!-- /Statistics -->
 
-    <!-- Spot comments -->
     {{#if _isCommentsVisible}}
-    <!--<div class="hw-city-comments">-->
-    <div id="hw-spot-comments-{{id}}" class="hw-spot-comments" transition-in-out="slide"><!-- hw-hide-comment-->
-      {{#comments}}
-      <div class="hw-comment">
-        {{#if user_id == userId}}
-          <i onclick="mw.HWMaps.City.deleteComment('{{comment_id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-comment-delete"></i>
-        {{/if}}
-        {{{commenttext}}}
-        <span class="hw-comment-meta">By {{user_name}}, {{timestamp_label}}</span>
-      </div>
-      {{/comments}}
-      {{#if userId}}
-        <textarea class="hw-comment-textarea" placeholder="Write a comment..." value='{{this.new_comment}}'></textarea>
-      {{else}}
-        <p><em>Please log in to add a comment</em></p>
-      {{/if}}
-      {{#if this.new_comment.length}}
-        <button class="hw-comment-button"
-                onclick="mw.HWMaps.City.addComment('{{this.new_comment}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
-          Add comment
-        </button>
-      {{/if}}
-    </div>
+      {{>commentsTemplate}}
     {{/if}}
-    <!-- /Spot comments -->
 
   </div>
   <!-- /Spot -->

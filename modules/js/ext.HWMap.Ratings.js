@@ -20,7 +20,7 @@
    * @static
    * @return instance of jQuery.Promise
    */
-  Ratings.loadRatings = function(pageId, reload) {
+  Ratings.loadRatings = function(pageId) {
     mw.log('mw.HWMaps.Ratings::loadRatings: ' + pageId);
 
     // https://api.jquery.com/deferred.promise/
