@@ -23,6 +23,11 @@ div.popupform-container {
   }
 }
 .hw-spot-form-column {
+
+  //display: block;
+  max-width: 50%;
+  margin: 0 10px;
+
   // Grows to take space into columns (there are two of these, so `1|1`)
   flex-grow: 1;
   // This element contains `section`s, which in turn are stacket
@@ -35,6 +40,17 @@ div.popupform-container {
 .hw-spot-form-section {
   width: 100%;
 }
+// Cardinal direction list
+.hw-spot-form-section-direction {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+  .checkboxesSpan {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 // Textarea
 .hw-spot-add-description {
   font-size: 15px;
