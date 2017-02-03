@@ -41,8 +41,9 @@
           <div class="hw-spot-actions">
 
             {{#if rating_count || waiting_time_count}}
-            <button onclick="mw.HWMaps.City.loadSpotDetails('{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')"
+            <button onclick="mw.HWMaps.Spots.loadStatistics('{{id}}', 'hw-stats-button-{{id}}', '{{@keypath}}')"
                     type="button"
+                    id="hw-stats-button-{{id}}"
                     class="hw-button hw-button-small">
               <i class="fa fa-bar-chart"></i>
               Stats
@@ -51,7 +52,7 @@
 
             <button type="button"
                     class="hw-button hw-button-small"
-                    onclick="mw.HWMaps.City.loadComments('{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
+                    onclick="mw.HWMaps.City.loadComments('{{id}}', '{{@keypath}}')">
               <i class="fa fa-comment-o"></i>
               {{#if comment_count > 0}}
                 Comments ({{comment_count}})
@@ -136,7 +137,7 @@
             </div>
             <button type="button"
                     class="hw-button hw-button-small"
-                    onclick="mw.HWMaps.City.toggleLongDescription('spots.groupSpots.{{cardinalDirection}}.{{index}}')">
+                    onclick="mw.HWMaps.City.toggleLongDescription('{{@keypath}}')">
               Read more…
             </button>
           {{else}}

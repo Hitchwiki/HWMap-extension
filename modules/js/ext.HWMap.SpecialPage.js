@@ -7,7 +7,6 @@
 
   // Variables with `$` are jQuery objects
   var animatedSpot,
-      ractiveTemplate,
       $zoomInfoOverlay,
       $hwspot,
       $hwmap,
@@ -152,20 +151,20 @@
 
     mw.HWMaps.Ratings.addRating(newRating, pageId).done(function(response) {
       if (response) {
-        ractiveSpots.set('spot.rating_user', newRating);
-        ractiveSpots.set('spot.rating_user_label', mw.HWMaps.Spots.getRatingLabel(newRating));
+        mw.HWMaps.ractive.set('spot.rating_user', newRating);
+        mw.HWMaps.ractive.set('spot.rating_user_label', mw.HWMaps.Spots.getRatingLabel(newRating));
 
         if (response && response.timestamp) {
-          ractiveSpots.set('spot.timestamp_user', mw.HWMaps.Spots.parseTimestamp(response.timestamp));
+          mw.HWMaps.ractive.set('spot.timestamp_user', mw.HWMaps.Spots.parseTimestamp(response.timestamp));
         }
 
         if (response && response.average) {
-          ractiveSpots.set('spot.rating_average', parseFloat(response.average));
-          ractiveSpots.set('spot.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
+          mw.HWMaps.ractive.set('spot.rating_average', parseFloat(response.average));
+          mw.HWMaps.ractive.set('spot.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
         }
 
         if (response && response.count) {
-          ractiveSpots.set('spot.rating_count', parseInt(response.count, 10));
+          mw.HWMaps.ractive.set('spot.rating_count', parseInt(response.count, 10));
         }
       }
     });
@@ -185,10 +184,25 @@
     SpecialPage.animateSpot(pageId);
 
     // Wipe out any previously opened spot
-    ractiveTemplate.set({ spot: null });
+    mw.HWMaps.ractive.set({ spot: null });
 
-    // Loader animation
-    $hwspot.addClass('hw-spot-loading');
+    // Loading spinner
+    var $loadSpotSpinner = $.createSpinner({
+      // ID used to refer this spinner when removing it
+      id: 'hwLoadSpotSpinner',
+
+      // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
+      size: 'large',
+
+      // Type: 'inline' or 'block'.
+      // Inline creates an inline-block with width and height
+      // equal to spinner size. Block is a block-level element
+      // with width 100%, height equal to spinner size.
+      type: 'block'
+    });
+
+    // Insert below where the spots are going to be loaded
+    $hwspot.append($loadSpotSpinner);
 
     // Load data from the API
     var apiUri = new mw.Uri(mw.util.wikiScript('api'));
@@ -215,20 +229,35 @@
 
       if (data.error) {
         mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #39gy2g');
+
+        // Bubble notification
+        // `mw.message` gets message translation, see `i18n/en.json`
+        // `tag` replaces any previous bubbles by same tag
+        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+        mw.notify(
+          mw.message('hwmap-error-spot-load').text() + ' ' +
+            mw.message('hwmap-please-try-again').text(),
+          { tag: 'hwmap-error' }
+        );
         return;
       }
 
       // Handle missing API response
-      if (!data.query || !data.query.spot) {
+      if (!_.has(data, 'query.spot')) {
         mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #iivbh2');
         return;
       }
+
+      // Remove loading spinner
+      $.removeSpinner('hwLoadSpotSpinner');
 
       data.query.spot.id = pageId;
 
       // Visual toggles at the UI used by Ractive
       data.query.spot._isAddingWaitingTimeVisible = false;
       data.query.spot._isStatisticsVisible = false;
+      data.query.spot._isAddingComment = false;
+      data.query.spot._new_comment = '';
 
       if (_.has(data, 'data.query.spot.rating_average')) {
         data.query.spot.average_label = mw.HWMaps.Spots.getRatingLabel(data.query.spot.rating_average);
@@ -243,7 +272,7 @@
       }
 
       // Pass spot to template
-      ractiveTemplate.set({ spot: data.query.spot });
+      mw.HWMaps.ractive.set({ spot: data.query.spot });
 
       // Set map view if we should pan to this spot
       if (panTo && _.has(data, 'query.spot.Location')) {
@@ -252,10 +281,23 @@
 
       // Initialize rating widget
       mw.HWMaps.Ratings.initRatingWidgets();
+    })
+    .fail(function() {
+      mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #g84303');
 
-      // Hides loading animation
-      $hwspot.removeClass('hw-spot-loading');
-    });
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-spot-load').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
+
+      // Remove loading spinner
+      $.removeSpinner('hwLoadSpotSpinner');
+    })
 
     $hwspot.addClass('hw-spot-open');
     $hwmap.addClass('hw-spot-open-map');
@@ -298,11 +340,11 @@
   SpecialPage.toggleAddingWaitingTime = function() {
     mw.log('mw.HWMaps::City::toggleAddingWaitingTime');
     // http://docs.ractivejs.org/latest/ractive-toggle
-    ractiveTemplate.toggle('spot._isAddingWaitingTimeVisible');
+    mw.HWMaps.ractive.toggle('spot._isAddingWaitingTimeVisible');
   };
 
   /**
-   *
+   * Close sidebar with spot details
    */
   SpecialPage.closeSpecialPageSpot = function() {
     mw.log('HWMaps::SpecialPage::closeSpecialPageSpot');
@@ -343,28 +385,28 @@
       // Handle data from waiting times API endpoint
       if (waitingTimesData) {
         if (waitingTimesData.waiting_times) {
-          ractiveTemplate.set('spot.waiting_times', waitingTimesData.waiting_times);
+          mw.HWMaps.ractive.set('spot.waiting_times', waitingTimesData.waiting_times);
         }
 
         if (waitingTimesData.distribution) {
-          ractiveTemplate.set('spot.waiting_times_distribution', waitingTimesData.distribution);
+          mw.HWMaps.ractive.set('spot.waiting_times_distribution', waitingTimesData.distribution);
         }
       }
 
       // Handle data from ratings API endpoint
-      ractiveSpots.set('spot.ratings', null);
+      mw.HWMaps.ractive.set('spot.ratings', null);
       if (ratingsData) {
         if (ratingsData.ratings && ratingsData.ratings.length) {
-          ractiveSpots.set('spot.ratings', ratingsData.ratings);
+          mw.HWMaps.ractive.set('spot.ratings', ratingsData.ratings);
         }
         if (ratingsData.distribution) {
-          ractiveSpots.set('spot.ratings_distribution', ratingsData.distribution);
+          mw.HWMaps.ractive.set('spot.ratings_distribution', ratingsData.distribution);
         }
       }
 
       // Show stats html
       // http://docs.ractivejs.org/latest/ractive-toggle
-      ractiveTemplate.set('spot._isStatisticsVisible', true);
+      mw.HWMaps.ractive.set('spot._isStatisticsVisible', true);
     });
 
   };
@@ -495,7 +537,7 @@
       .done(function(templateHtml, waitingtimesTemplateHtml, ratingsTemplateHtml, commentsTemplateHtml, ratingsTemplateHtml, waitingTimesTemplateHtml) {
 
       // http://www.ractivejs.org/
-      ractiveTemplate = new Ractive({
+      mw.HWMaps.ractive = new Ractive({
         el: 'hw-specialpage-spot',
         template: templateHtml[0],
         // Sub templates
@@ -507,6 +549,11 @@
           waitingTimesTemplate: waitingTimesTemplateHtml[0]
         },
         data: {
+          test: function(foo) {
+            mw.log('->TEST');
+            mw.log(foo);
+            mw.HWMaps.ractive.set(foo + '.waiting_time_count', 100);
+          },
           userId: mw.config.get('wgUserId')
         }
       });

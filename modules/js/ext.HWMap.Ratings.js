@@ -104,15 +104,6 @@
         if (data.error) {
           mw.log.error('mw.HWMaps.Ratings::addRating: Error while accessing rating API. #399ggd');
           mw.log.error(data.error);
-          // Bubble notification
-          // `mw.message` gets message translation, see `i18n/en.json`
-          // `tag` replaces any previous bubbles by same tag
-          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-          mw.notify(
-            mw.message('hwmap-error-rating-add').text() + ' ' +
-              mw.message('hwmap-please-try-again').text(),
-            { tag: 'hwmap-error' }
-          );
           return dfd.reject();
         }
 
@@ -120,15 +111,6 @@
       })
       .fail(function() {
         mw.log.error('mw.HWMaps.Ratings::addRating: Error while accessing rating API. #g23igh');
-        // Bubble notification
-        // `mw.message` gets message translation, see `i18n/en.json`
-        // `tag` replaces any previous bubbles by same tag
-        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-        mw.notify(
-          mw.message('hwmap-error-rating-add').text() + ' ' +
-            mw.message('hwmap-please-try-again').text(),
-          { tag: 'hwmap-error' }
-        );
         dfd.reject();
       });
     });
@@ -166,15 +148,6 @@
         if (data.error) {
           mw.log.error('mw.HWMaps.Ratings::deleteRating: Error while accessing rating API. #g2i311');
           mw.log.error(data.error);
-          // Bubble notification
-          // `mw.message` gets message translation, see `i18n/en.json`
-          // `tag` replaces any previous bubbles by same tag
-          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-          mw.notify(
-            mw.message('hwmap-error-rating-delete').text() + ' ' +
-              mw.message('hwmap-please-try-again').text(),
-            { tag: 'hwmap-error' }
-          );
           return dfd.reject();
         }
 
@@ -182,15 +155,6 @@
       })
       .fail(function() {
         mw.log.error('mw.HWMaps.Ratings::deleteRating: Error while accessing rating API. #93t842');
-        // Bubble notification
-        // `mw.message` gets message translation, see `i18n/en.json`
-        // `tag` replaces any previous bubbles by same tag
-        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-        mw.notify(
-          mw.message('hwmap-error-rating-delete').text() + ' ' +
-            mw.message('hwmap-please-try-again').text(),
-          { tag: 'hwmap-error' }
-        );
         return dfd.reject();
       });
     });
@@ -199,6 +163,81 @@
     // https://api.jquery.com/deferred.promise/
     return dfd.promise();
   };
+
+  /**
+   *
+   */
+  Ratings.uiAddRating = function(newRating, pageId, spotObjectPath) {
+
+    // Validate new rating
+    newRating = parseInt(newRating, 10) || 0;
+
+    mw.log('mw.HWMaps::Ratings::uiAddRating: ' + pageId + ' (' + newRating + ')');
+
+    Ratings.addRating(newRating, pageId).done(function(response) {
+      mw.HWMaps.ractive.set(spotObjectPath + '.rating_user', newRating);
+      mw.HWMaps.ractive.set(spotObjectPath + '.rating_user_label', mw.HWMaps.Spots.getRatingLabel(newRating));
+
+      if (_.has(response, 'timestamp')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.timestamp_user', mw.HWMaps.Spots.parseTimestamp(response.timestamp));
+      }
+
+      if (_.has(response, 'average')) {
+        mw.HWMaps.Spots.updateSpotMarker(pageId, response.average);
+        mw.HWMaps.ractive.set(spotObjectPath + '.rating_average', parseFloat(response.average));
+        mw.HWMaps.ractive.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
+      }
+
+      if (_.has(response, 'count')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.rating_count', parseInt(response.count, 10));
+      }
+    })
+    .fail(function() {
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-rating-add').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
+    });
+  };
+
+  /**
+   * Remove rating
+   */
+  Ratings.uiDeleteRating = function(pageId, spotObjectPath) {
+    mw.log('mw.HWMaps::Ratings::uiDeleteRating: ' + pageId);
+
+    Ratings.deleteRating(pageId).done(function(response) {
+      if (response) {
+        // Update spot with new statistics
+        mw.HWMaps.ractive.set(spotObjectPath + '.timestamp_user', 0);
+        mw.HWMaps.ractive.set(spotObjectPath + '.rating_user', 0);
+        mw.HWMaps.ractive.set(spotObjectPath + '.rating_user_label', null);
+        mw.HWMaps.ractive.set(spotObjectPath + '.rating_average', response.average || 0);
+        mw.HWMaps.ractive.set(spotObjectPath + '.rating_count', response.count || 0);
+        mw.HWMaps.ractive.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
+
+        // Update marker on the map
+        mw.HWMaps.Spots.updateSpotMarker(pageId, response.average || 0);
+      }
+    })
+    .fail(function() {
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-rating-delete').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
+    });
+  };
+
 
   /**
    * Init rating widgets on current page
@@ -234,40 +273,3 @@
   mw.HWMaps.Ratings = Ratings;
 
 }(mediaWiki, jQuery));
-
-
-/*
-
-
-window.loadRatings = function(id, reload, spotObjectPath) {
-
-};
-
-// Delete rating
-window.deleteRating = function(id, spotObjectPath) {
-  // Get token
-  mw.HWMaps.Map.getToken(function(token) {
-    if (!token) {
-      mw.log.error('Not logged in, cannot delete rating. #i30Fff');
-      return;
-    }
-    $.post( mw.util.wikiScript('api') + '?action=hwdeleterating&format=json', { pageid: id, token: token })
-    .done(function( data ) {
-      if (data.query) {
-        // Update spot with new statistics
-        ractive.set(spotObjectPath + '.timestamp_user', 0);
-        ractive.set(spotObjectPath + '.rating_user', 0);
-        ractive.set(spotObjectPath + '.rating_user_label', null);
-        ractive.set(spotObjectPath + '.rating_average', data.query.average );
-        ractive.set(spotObjectPath + '.rating_count', data.query.count );
-        ractive.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(data.query.average));
-        updateSpotMarker(id, data.query.average);
-        if (typeof ratingsLoaded[id] !== 'undefined') {
-          loadRatings(id, true, spotObjectPath);
-        }
-      }
-    });
-
-  });
-};
-*/

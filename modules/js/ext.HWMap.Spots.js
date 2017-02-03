@@ -294,6 +294,80 @@
     }
   };
 
+
+  /**
+   * Load statistics for "waiting times" and "ratings"
+   */
+  Spots.loadStatistics = function(pageId, loadingWrapperId, spotObjectPath) {
+    mw.log('mw.HWMaps::City::loadSpotDetails: ' + pageId);
+
+    var $loadSpotDetailsSpinner = $.createSpinner({
+      // ID used to refer this spinner when removing it
+      id: 'hwLoadSpotDetailsSpinner',
+
+      // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
+      size: 'small',
+
+      // Type: 'inline' or 'block'.
+      // Inline creates an inline-block with width and height
+      // equal to spinner size. Block is a block-level element
+      // with width 100%, height equal to spinner size.
+      type: 'block'
+    });
+
+    var $loadingWrapper = $(loadingWrapperId);
+
+    if ($loadingWrapper.length) {
+      // Insert below where the spots are going to be loaded
+      $loadingWrapper.append($loadSpotDetailsSpinner);
+    }
+
+    var waitingTimesPromise = mw.HWMaps.Waitingtimes.loadWaitingTimes(pageId);
+    var ratingsPromise = mw.HWMaps.Ratings.loadRatings(pageId);
+
+    $.when(waitingTimesPromise, ratingsPromise).done(function(waitingTimeData, ratingsData) {
+      mw.log('mw.HWMaps::City::loadSpotDetails: done');
+      mw.log(waitingTimeData);
+      mw.log(ratingsData);
+
+      if ($loadingWrapper.length) {
+        $.removeSpinner('hwLoadSpotDetailsSpinner');
+      }
+
+      // Waiting times
+      if (_.has(waitingTimeData, 'waiting_times')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.waiting_times', waitingTimeData.waiting_times);
+      }
+
+      // Waiting times stats
+      if (_.has(waitingTimeData, 'distribution')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.waiting_times_distribution', waitingTimeData.distribution);
+      }
+
+      // Ratings
+      if (_.has(ratingsData, 'ratings')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.ratings', ratingsData.ratings);
+      }
+
+      // Ratings stats
+      if (_.has(ratingsData, 'distribution')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.ratings_distribution', ratingsData.distribution);
+      }
+
+      // Show stats html
+      // http://docs.ractivejs.org/latest/ractive-toggle
+      mw.HWMaps.ractive.set(spotObjectPath + '._isStatisticsVisible', true);
+    })
+    .fail(function() {
+      mw.log.error('mw.HWMaps::City::loadSpotDetails: failed');
+      if ($loadingWrapper.length) {
+        $.removeSpinner('hwLoadSpotDetailsSpinner');
+      }
+    });
+
+  };
+
+
   // Export
   mw.HWMaps.Spots = Spots;
 

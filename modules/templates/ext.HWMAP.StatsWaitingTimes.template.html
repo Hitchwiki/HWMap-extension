@@ -26,7 +26,7 @@
     </table>
   </div>
   <div class="hw-list-waiting-times">
-    <table class="table table-striped table-hover">
+    <table>
       {{#waiting_times}}
       <tr>
         <td>{{waiting_time}} mins</td>
@@ -34,7 +34,7 @@
         <td>
           {{timestamp_label}}
           {{#if user_id == userId}}
-            <i onclick="mw.HWMaps.City.deleteWaitingTime('{{waiting_time_id}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-waiting-time-delete"></i>
+            <i onclick="mw.HWMaps.Waitingtimes.uiDeleteWaitingTime('{{waiting_time_id}}', '{{id}}', '{{@keypath}}')" class="fa fa-trash hw-waiting-time-delete"></i>
           {{/if}}
         </td>
       </tr>

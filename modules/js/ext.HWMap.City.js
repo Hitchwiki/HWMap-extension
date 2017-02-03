@@ -7,7 +7,6 @@
 
   var animatedSpot = false,
       // Ractive template object
-      ractiveSpots,
       $loadSpotsSpinner,
       // When in debug mode, cache bust templates
       cacheBust = mw.config.get('debug') ? new Date().getTime() : mw.config.get('wgVersion');
@@ -20,6 +19,12 @@
   function City() {
     mw.log('mw.HWMaps::City::constructor');
   }
+
+  City.test = function(foo) {
+    mw.log('->TEST');
+    mw.log(foo);
+    mw.HWMaps.ractive.set(foo + '.waiting_time_count', 100);
+  };
 
   City.initialize = function() {
     mw.log('HWMaps::City::initialize');
@@ -251,6 +256,8 @@
       spots[i]._isCommentsVisible = false;
       spots[i]._isStatisticsVisible = false;
       spots[i]._isLongDescriptionVisible = false;
+      spots[i]._isAddingComment = false;
+      spots[i]._new_comment = '';
       spots[i]._new_waiting_time_h = 0;
       spots[i]._new_waiting_time_m = 0;
     }
@@ -281,7 +288,7 @@
 
       // Construct ractive template for spots list
       // http://www.ractivejs.org/
-      ractiveSpots = new Ractive({
+      mw.HWMaps.ractive = new Ractive({
         el: 'hw-incity-spots',
         template: templateHtml[0],
         // Sub templates
@@ -291,6 +298,11 @@
           commentsTemplate: commentsTemplateHtml[0],
           ratingsTemplate: ratingsTemplateHtml[0],
           waitingTimesTemplate: waitingTimesTemplateHtml[0]
+        },
+        test2: function(foo) {
+          mw.log('->TEST2');
+          mw.log(foo);
+          this.set(foo + '.waiting_time_count', 100);
         },
         data: {
           // Helper function to turn strings like `foo bar` to `foo_bar`
@@ -369,12 +381,6 @@
     // When clicking on spot marker
     if (data.HWtype === 'spot') {
       leafletMarker.on('click', function() {
-        // Scroll spot element on the page to the view
-        // Has a slight offset so that top part would be little bit lower
-        // than top part of the browser
-        $('html, body').animate({
-          scrollTop: $('#hw-spot_' + data.HWid).offset().top - 100
-        }, 'fast');
         City.scrollPageToSpot(data.HWid);
       });
       // Highlight spot element on page
@@ -406,6 +412,21 @@
     if (!id ) {
       return;
     }
+
+    var $elementToScroll = $('#hw-spot_' + id);
+
+    if (!$elementToScroll.length) {
+      mw.log.warn('mw.HWMaps::City::prepareCityViewMarkers: No element to scroll to.');
+      return;
+    }
+
+    // Scroll spot element on the page to the view
+    // Has a slight offset so that top part would be little bit lower
+    // than top part of the browser
+    $('html, body').animate({
+      scrollTop: $elementToScroll.offset().top - 100
+    }, 'fast');
+
     animatedSpot = false;
     City.highlightMarker(id);
     animatedSpot = id;
@@ -434,21 +455,12 @@
   };
 
   /**
-   * Toggles adding waiting time UI on/off for a spot
-   */
-  City.toggleAddingWaitingTime = function(spotObjectPath) {
-    mw.log('mw.HWMaps::City::toggleAddingWaitingTime');
-    // http://docs.ractivejs.org/latest/ractive-toggle
-    ractiveSpots.toggle(spotObjectPath + '._isAddingWaitingTimeVisible');
-  };
-
-  /**
    * Toggles visibility of long descriptions for a spot
    */
   City.toggleLongDescription = function(spotObjectPath) {
     mw.log('mw.HWMaps::City::toggleLongDescription');
     // http://docs.ractivejs.org/latest/ractive-toggle
-    ractiveSpots.toggle(spotObjectPath + '._isLongDescriptionVisible');
+    mw.HWMaps.ractive.toggle(spotObjectPath + '._isLongDescriptionVisible');
   };
 
   /**
@@ -457,7 +469,7 @@
   City.toggleComments = function(spotObjectPath) {
     mw.log('mw.HWMaps::City::toggleComments');
     // http://docs.ractivejs.org/latest/ractive-toggle
-    ractiveSpots.toggle(spotObjectPath + '._isCommentsVisible');
+    mw.HWMaps.ractive.toggle(spotObjectPath + '._isCommentsVisible');
   };
 
   /**
@@ -467,124 +479,7 @@
   City.toggleBadSpot = function(spotObjectPath) {
     mw.log('mw.HWMaps::City::toggleBadSpot');
     // http://docs.ractivejs.org/latest/ractive-toggle
-    ractiveSpots.toggle(spotObjectPath + '._isBadSpotVisible');
-  };
-
-  /**
-   *
-   */
-  City.addRating = function(newRating, pageId, spotObjectPath) {
-
-    // Validate new rating
-    newRating = parseInt(newRating, 10) || 0;
-
-    mw.log('mw.HWMaps::City::rateSpot: ' + pageId + ' (' + newRating + ')');
-
-    mw.HWMaps.Ratings.addRating(newRating, pageId).done(function(response) {
-      if (response) {
-        ractiveSpots.set(spotObjectPath + '.rating_user', newRating);
-        ractiveSpots.set(spotObjectPath + '.rating_user_label', mw.HWMaps.Spots.getRatingLabel(newRating));
-
-        if (response && response.timestamp) {
-          ractiveSpots.set(spotObjectPath + '.timestamp_user', mw.HWMaps.Spots.parseTimestamp(response.timestamp));
-        }
-
-        if (response && response.average) {
-          mw.HWMaps.Spots.updateSpotMarker(pageId, response.average);
-          ractiveSpots.set(spotObjectPath + '.rating_average', parseFloat(response.average));
-          ractiveSpots.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
-        }
-
-        if (response && response.count) {
-          ractiveSpots.set(spotObjectPath + '.rating_count', parseInt(response.count, 10));
-        }
-      }
-
-      /*
-      if (typeof ratingsLoaded[pageId] !== 'undefined') {
-        Ratings.load(pageId, true, spotObjectPath);
-      }
-      */
-    });
-
-  };
-
-  /**
-   * Remove rating
-   */
-  City.deleteRating = function(pageId, spotObjectPath) {
-
-    mw.log('mw.HWMaps::City::deleteRating: ' + pageId);
-
-    mw.HWMaps.Ratings.deleteRating(pageId).done(function(response) {
-      if (response) {
-        // Update spot with new statistics
-        ractiveSpots.set(spotObjectPath + '.timestamp_user', 0);
-        ractiveSpots.set(spotObjectPath + '.rating_user', 0);
-        ractiveSpots.set(spotObjectPath + '.rating_user_label', null);
-        ractiveSpots.set(spotObjectPath + '.rating_average', response.average || 0);
-        ractiveSpots.set(spotObjectPath + '.rating_count', response.count || 0);
-        ractiveSpots.set(spotObjectPath + '.average_label', mw.HWMaps.Spots.getRatingLabel(response.average));
-
-        // Update marker on the map
-        mw.HWMaps.Spots.updateSpotMarker(pageId, response.average || 0);
-      }
-    });
-
-  };
-
-  /**
-   * Remove comment
-   */
-  City.deleteComment = function(commentId, spotObjectPath) {
-    mw.log('mw.HWMaps::City::deleteComment: ' + commentId);
-
-    mw.HWMaps.Comments.deleteComment(commentId).done(function(data) {
-      mw.log('mw.HWMaps::City::deleteComment: done');
-      mw.log(data);
-
-      // Reload comments
-      City.loadComments(pageId, spotObjectPath);
-
-      // Update spot with real count
-      if (_.has(data, 'count')) {
-        ractiveSpots.set(spotObjectPath + '.comment_count', parseInt(data.count, 10));
-      }
-    });
-  };
-
-  /**
-   * Add comment
-   */
-  City.addComment = function(commentText, pageId, spotObjectPath) {
-    mw.log('mw.HWMaps::City::deleteComment: ' + pageId);
-    mw.log(commentText);
-
-    var commentButton = $('#hw-spot-comments-' + pageId + ' button'),
-        commentTextarea = $('#hw-spot-comments-' + pageId + ' textarea');
-
-    // Disable comment inputs
-    commentButton.prop('disabled', true);
-    commentTextarea.prop('disabled', true);
-
-    mw.HWMaps.Comments.addComment(commentText, pageId).done(function(data) {
-      mw.log('mw.HWMaps::City::addComment: done');
-      mw.log(data);
-
-      // Empty comment field and enable inputs
-      ractiveSpots.set(spotObjectPath + '.new_comment', '');
-      commentButton.prop('disabled', false);
-      commentTextarea.prop('disabled', false);
-
-      // Reload comments
-      City.loadComments(pageId, spotObjectPath);
-
-      // Update spot with real count
-      if (_.has(data, 'count')) {
-        ractiveSpots.set(spotObjectPath + '.comment_count', parseInt(data.count, 10));
-      }
-
-    });
+    mw.HWMaps.ractive.toggle(spotObjectPath + '._isBadSpotVisible');
   };
 
   /**
@@ -631,11 +526,11 @@
       $.removeSpinner('hwLoadCommentsSpinner');
 
       if (_.has(data, 'comments')) {
-        ractiveSpots.set(spotObjectPath + '.comments', data.comments);
+        mw.HWMaps.ractive.set(spotObjectPath + '.comments', data.comments);
       }
 
       // Show comments section
-      ractiveSpots.set(spotObjectPath + '._isCommentsVisible', true);
+      mw.HWMaps.ractive.set(spotObjectPath + '._isCommentsVisible', true);
 
       // Resolve promise
       dfd.resolve();
@@ -644,144 +539,6 @@
     // Return the Promise so caller can't change the Deferred
     // https://api.jquery.com/deferred.promise/
     return dfd.promise();
-  };
-
-  /**
-   * Remove waiting time from a spot at the city template
-   */
-  City.deleteWaitingTime = function(waitingTimeId, pageId, spotObjectPath) {
-    mw.log('mw.HWMaps::City::deleteWaitingTime: ' + waitingTimeId);
-    mw.HWMaps.Waitingtimes.deleteWaitingTime(waitingTimeId, pageId).done(function(data) {
-      mw.log('mw.HWMaps::City::deleteWaitingTime done:');
-      mw.log(data);
-
-      // Update spot with new average
-      if (_.has(data, 'average')) {
-        ractiveSpots.set(spotObjectPath + '.waiting_time_average', data.average);
-      }
-
-      // Update spot with new count
-      if (_.has(data, 'count')) {
-        ractiveSpots.set(spotObjectPath + '.waiting_time_count', parseInt(data.count, 10));
-      }
-    });
-  };
-
-  /**
-   * Add waiting time to spot at city template
-   */
-  City.addWaitingTime = function(newWaitingTimeHours, newWaitingTimeMins, pageId, spotObjectPath) {
-    mw.log('mw.HWMaps::City::addWaitingTime: ' + newWaitingTimeHours + 'h, ' + newWaitingTimeMins + 'm');
-
-    // Turn empty string to `0` and parse everything else as an integer.
-    // Sets `NaN` for other illegal strings
-    newWaitingTimeHours = (newWaitingTimeHours === '') ? 0 : parseInt(newWaitingTimeHours);
-    newWaitingTimeMins = (newWaitingTimeMins === '') ? 0 : parseInt(newWaitingTimeMins);
-
-    if (isNaN(newWaitingTimeHours) || isNaN(newWaitingTimeMins)) {
-      mw.log.error('mw.HWMaps::City::addWaitingTime: Invalid waiting time. #9h2jff');
-      // Bubble notification
-      // `mw.message` gets message translation, see `i18n/en.json`
-      // `tag` replaces any previous bubbles by same tag
-      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-      mw.notify(
-        mw.message('hwmap-missing-waitingtime').text(),
-        { tag: 'hwmap-error' }
-      );
-      return;
-    }
-
-    var newWaitingTime = newWaitingTimeMins + (newWaitingTimeHours * 60);
-
-    mw.HWMaps.Waitingtimes.addWaitingTime(newWaitingTime, pageId).done(function(data) {
-      mw.log('mw.HWMaps::City::addWaitingTime done:');
-      mw.log(data);
-
-      // Update spot with new average
-      if (_.has(data, 'average')) {
-        ractiveSpots.set(spotObjectPath + '.waiting_time_average', data.average);
-      } else {
-        mw.log.warn('mw.HWMaps::City::addWaitingTime: Missing `average` from API response. #pjinq5');
-      }
-
-      // Update spot with new count
-      if (_.has(data, 'count')) {
-        ractiveSpots.set(spotObjectPath + '.waiting_time_count', parseInt(data.count, 10));
-      } else {
-        mw.log.warn('mw.HWMaps::City::addWaitingTime: Missing `count` from API response. #2jafff');
-      }
-
-      // Clear out input values
-      ractiveSpots.set(spotObjectPath + '._new_waiting_time_h', 0);
-      ractiveSpots.set(spotObjectPath + '._new_waiting_time_m', 0);
-
-      // Hide adding waiting time input
-      City.toggleAddingWaitingTime(spotObjectPath);
-    });
-  };
-
-  /**
-   * Shorthand for loading waiting times and ratings for the spot on city element
-   */
-  City.loadSpotDetails = function(pageId, spotObjectPath) {
-    mw.log('mw.HWMaps::City::loadSpotDetails: ' + pageId);
-
-    var $loadSpotDetailsSpinner = $.createSpinner({
-      // ID used to refer this spinner when removing it
-      id: 'hwLoadSpotDetailsSpinner',
-
-      // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
-      size: 'small',
-
-      // Type: 'inline' or 'block'.
-      // Inline creates an inline-block with width and height
-      // equal to spinner size. Block is a block-level element
-      // with width 100%, height equal to spinner size.
-      type: 'block'
-    });
-
-    // Insert below where the spots are going to be loaded
-    $('#hw-spot_' + pageId).append($loadSpotDetailsSpinner);
-
-    var waitingTimesPromise = mw.HWMaps.Waitingtimes.loadWaitingTimes(pageId);
-    var ratingsPromise = mw.HWMaps.Ratings.loadRatings(pageId);
-
-    $.when(waitingTimesPromise, ratingsPromise).done(function(waitingTimeData, ratingsData) {
-      mw.log('mw.HWMaps::City::loadSpotDetails: done');
-      mw.log(waitingTimeData);
-      mw.log(ratingsData);
-
-      $.removeSpinner('hwLoadSpotDetailsSpinner');
-
-      // Waiting times
-      if (_.has(waitingTimeData, 'waiting_times')) {
-        ractiveSpots.set(spotObjectPath + '.waiting_times', waitingTimeData.waiting_times);
-      }
-
-      // Waiting times stats
-      if (_.has(waitingTimeData, 'distribution')) {
-        ractiveSpots.set(spotObjectPath + '.waiting_times_distribution', waitingTimeData.distribution);
-      }
-
-      // Ratings
-      if (_.has(ratingsData, 'ratings')) {
-        ractiveSpots.set(spotObjectPath + '.ratings', ratingsData.ratings);
-      }
-
-      // Ratings stats
-      if (_.has(ratingsData, 'distribution')) {
-        ractiveSpots.set(spotObjectPath + '.ratings_distribution', ratingsData.distribution);
-      }
-
-      // Show stats html
-      // http://docs.ractivejs.org/latest/ractive-toggle
-      ractiveSpots.set(spotObjectPath + '._isStatisticsVisible', true);
-    })
-    .fail(function() {
-      mw.log.error('mw.HWMaps::City::loadSpotDetails: failed');
-      $.removeSpinner('hwLoadSpotDetailsSpinner');
-    });
-
   };
 
   /**

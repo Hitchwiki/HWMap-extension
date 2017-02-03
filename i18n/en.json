@@ -23,6 +23,7 @@
   "hwmap-error-comment-add": "Failed to add comment.",
   "hwmap-error-comment-load": "Failed to load comments.",
   "hwmap-confirm-removing-waitingtime": "Remove waiting time?",
+  "hwmap-error-spot-load": "Failed to load spot.",
   "hwmap-missing-waitingtime": "Missing correct time to add...",
   "hwmap-open-cityname": "Open $1",
   "hwmap-open-city": "Open city"

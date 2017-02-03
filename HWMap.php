@@ -216,6 +216,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'hwmap-error-comment-delete',
       'hwmap-error-comment-add',
       'hwmap-error-comment-load',
+      'hwmap-error-spot-load',
       'hwmap-confirm-removing-waitingtime',
       'hwmap-missing-waitingtime',
       'hwmap-open-cityname',

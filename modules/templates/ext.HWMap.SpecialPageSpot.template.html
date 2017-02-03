@@ -34,7 +34,7 @@
           {{#if rating_count || waiting_time_count}}
             <button type="button"
                     class="hw-button hw-button-small"
-                    onclick="mw.HWMaps.SpecialPage.loadSpotDetails({{id}})">
+                    onclick="mw.HWMaps.Spots.loadStatistics({{id}}, 'hw-stats-button-{{id}}', '{{@keypath}}')">
               <i class="fa fa-bar-chart"></i>
               Stats
             </button>
@@ -86,17 +86,21 @@
       </div>
       <!-- /Spot content -->
 
-      <!-- Ratings -->
-      <div class="hw-ratings">
-        {{>ratingsTemplate}}
-      </div>
-      <!-- /Ratings -->
+      <div class="hw-ratings-and-waiting-time">
 
-      <!-- Waiting times -->
-      <div class="hw-waiting-time">
-        {{>waitingTimesTemplate}}
+        <!-- Ratings -->
+        <div class="hw-ratings">
+          {{>ratingsTemplate}}
+        </div>
+        <!-- /Ratings -->
+
+        <!-- Waiting times -->
+        <div class="hw-waiting-time">
+          {{>waitingTimesTemplate}}
+        </div>
+        <!-- /Waiting times -->
+
       </div>
-      <!-- /Waiting times -->
 
       <!-- Statistics -->
       {{#if _isStatisticsVisible}}

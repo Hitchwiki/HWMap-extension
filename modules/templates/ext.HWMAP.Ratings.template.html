@@ -29,26 +29,26 @@
         {{/if}}
       </span>
       -->
-      <span onclick="mw.HWMaps.City.addRating(5, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(5, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
         <span class="hw-bubble hw-bubble-verygood"></span> Very Good
       </span>
-      <span onclick="mw.HWMaps.City.addRating(4, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(4, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
         <span class="hw-bubble hw-bubble-good"></span> Good
       </span>
-      <span onclick="mw.HWMaps.City.addRating(3, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(3, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
         <span class="hw-bubble hw-bubble-average"></span> Average
       </span>
-      <span onclick="mw.HWMaps.City.addRating(2, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(2, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
         <span class="hw-bubble hw-bubble-bad"></span> Bad
       </span>
-      <span onclick="mw.HWMaps.City.addRating(1, {{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(1, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
         <span class="hw-bubble hw-bubble-senseless"></span> Senseless
       </span>
       {{#timestamp_user}}
         <span class="hw-rating-choice-timestamp">
           You rated {{timestamp_user}}
         </span>
-        <span onclick="mw.HWMaps.City.deleteRating({{id}}, 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="hw-rating-choice-remove">
+        <span onclick="mw.HWMaps.Ratings.uiDeleteRating({{id}}, '{{@keypath}}')" class="hw-rating-choice-remove">
           Remove my rating
         </span>
       {{/timestamp_user}}

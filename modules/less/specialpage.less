@@ -14,10 +14,10 @@
   }
   @media screen and (max-width: 767px) {
     .mw-body-content {
-      left: 0px;
+      left: 0;
     }
     .hwmap-container {
-      left: 0px;
+      left: 0;
     }
   }
 
@@ -49,7 +49,7 @@
     min-height: 300px;
     width: 100%;
     &.hw-spot-open-map {
-      width: 75%;
+      width: 65%; // See also `hw-spot-open`
     }
   }
 
@@ -128,12 +128,17 @@
     float: right;
     background-color: white;
     &.hw-spot-open {
-      width: 35%;
+      width: 35%; // See also `hw-spot-open-map`
       /*
       @media screen and (max-width: 768px) {
         width: 45%;
       }
       */
+    }
+
+    // Loading spinner
+    .mw-spinner {
+      margin-top: 40px;
     }
 
     // The main title saying "Hitchhiking spot"
@@ -206,6 +211,7 @@
   }
 
   // Hitchability, waiting times etc
+  /*
   .hw-spot-meta {
     border-right: 1px solid @hw-grey-light;
     .hw-waiting-time,
@@ -215,6 +221,19 @@
       padding-bottom: 5px;
       border-bottom: 1px solid @hw-grey-light;
     }
+  }
+  */
+
+  .hw-ratings-and-waiting-time {
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid @hw-grey-light;
+
+    display: flex;
+    flex-wrap: nowrap;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: stretch;
   }
   /*
   .hw-specialpage-spot-actions {

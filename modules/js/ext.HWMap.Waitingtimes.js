@@ -105,15 +105,6 @@
           if (data.error) {
             mw.log.error('mw.HWMaps.Waitingtimes.deleteWaitingTime: error via API when removing waiting time. #ugyfeg');
             mw.log.error(data.error);
-            // Bubble notification
-            // `mw.message` gets message translation, see `i18n/en.json`
-            // `tag` replaces any previous bubbles by same tag
-            // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-            mw.notify(
-              mw.message('hwmap-error-waitingtimes-remove').text() + ' ' +
-                mw.message('hwmap-please-try-again').text(),
-              { tag: 'hwmap-error' }
-            );
             return dfd.reject();
           }
 
@@ -129,15 +120,6 @@
         })
         .fail(function() {
           mw.log.error('mw.HWMaps.Waitingtimes.deleteWaitingTime: error via API when removing waiting time. #g38hhe');
-          // Bubble notification
-          // `mw.message` gets message translation, see `i18n/en.json`
-          // `tag` replaces any previous bubbles by same tag
-          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-          mw.notify(
-            mw.message('hwmap-error-waitingtimes-remove').text() + ' ' +
-              mw.message('hwmap-please-try-again').text(),
-            { tag: 'hwmap-error' }
-          );
           dfd.reject();
         });
       }
@@ -172,29 +154,22 @@
 
         // Post new waiting time
         $.post(mw.util.wikiScript('api') + '?action=hwaddwaitingtime&format=json', {
-          waiting_time: parseInt(newWaitingTime, 10),
+          waiting_time: parseInt(newWaitingTime, 10), // in minutes
           pageid: pageId,
           token: token
         })
         .done(function(data) {
 
+          /*
           if (!data.query) {
             mw.log.error('mw.HWMaps.Waitingtimes.addWaitingTime: did not receive any data trough API. #uudfgw');
             return dfd.reject();
           }
+          */
 
           if (data.error) {
             mw.log.error('mw.HWMaps.Waitingtimes.addWaitingTime: error via API when adding waiting time. #yetqtq');
             mw.log.error(data.error);
-            // Bubble notification
-            // `mw.message` gets message translation, see `i18n/en.json`
-            // `tag` replaces any previous bubbles by same tag
-            // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-            mw.notify(
-              mw.message('hwmap-error-waitingtimes-add').text() + ' ' +
-                mw.message('hwmap-please-try-again').text(),
-              { tag: 'hwmap-error' }
-            );
             return dfd.reject();
           }
 
@@ -203,15 +178,6 @@
         })
         .fail(function() {
           mw.log.error('mw.HWMaps.Waitingtimes.addWaitingTime: error via API when adding waiting time. #g38fgg');
-          // Bubble notification
-          // `mw.message` gets message translation, see `i18n/en.json`
-          // `tag` replaces any previous bubbles by same tag
-          // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-          mw.notify(
-            mw.message('hwmap-error-waitingtimes-add').text() + ' ' +
-              mw.message('hwmap-please-try-again').text(),
-            { tag: 'hwmap-error' }
-          );
           dfd.reject();
         });
 
@@ -221,6 +187,113 @@
     // Return the Promise so caller can't change the Deferred
     // https://api.jquery.com/deferred.promise/
     return dfd.promise();
+  };
+
+
+  /**
+   * Toggles adding waiting time UI on/off for a spot
+   */
+  Waitingtimes.uiToggleAddingWaitingTime = function(spotObjectPath) {
+    mw.log('mw.HWMaps::Waitingtimes::uiToggleAddingWaitingTime');
+    // http://docs.ractivejs.org/latest/ractive-toggle
+    mw.HWMaps.ractive.toggle(spotObjectPath + '._isAddingWaitingTimeVisible');
+  };
+
+
+  /**
+   * Add waiting time to spot at city template
+   */
+  Waitingtimes.uiAddWaitingTime = function(newWaitingTimeHours, newWaitingTimeMins, pageId, spotObjectPath) {
+    mw.log('mw.HWMaps::Waitingtimes::uiAddWaitingTime: ' + newWaitingTimeHours + 'h, ' + newWaitingTimeMins + 'm');
+
+    // Turn empty string to `0` and parse everything else as an integer.
+    // Sets `NaN` for other illegal strings
+    newWaitingTimeHours = (newWaitingTimeHours === '') ? 0 : parseInt(newWaitingTimeHours);
+    newWaitingTimeMins = (newWaitingTimeMins === '') ? 0 : parseInt(newWaitingTimeMins);
+
+    if (isNaN(newWaitingTimeHours) || isNaN(newWaitingTimeMins)) {
+      mw.log.error('mw.HWMaps::Waitingtimes::uiAddWaitingTime: Invalid waiting time. #9h2jff');
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-missing-waitingtime').text(),
+        { tag: 'hwmap-error' }
+      );
+      return;
+    }
+
+    var newWaitingTime = newWaitingTimeMins + (newWaitingTimeHours * 60);
+
+    Waitingtimes.addWaitingTime(newWaitingTime, pageId).done(function(data) {
+      mw.log('mw.HWMaps::Waitingtimes::uiAddWaitingTime done:');
+      mw.log(data);
+
+      // Update spot with new average
+      if (_.has(data, 'average')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.waiting_time_average', data.average);
+      } else {
+        mw.log.warn('mw.HWMaps::Waitingtimes::uiAddWaitingTime: Missing `average` from API response. #pjinq5');
+      }
+
+      // Update spot with new count
+      if (_.has(data, 'count')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.waiting_time_count', parseInt(data.count, 10));
+      } else {
+        mw.log.warn('mw.HWMaps::Waitingtimes::uiAddWaitingTime: Missing `count` from API response. #2jafff');
+      }
+
+      // Clear out input values
+      mw.HWMaps.ractive.set(spotObjectPath + '._new_waiting_time_h', 0);
+      mw.HWMaps.ractive.set(spotObjectPath + '._new_waiting_time_m', 0);
+
+      // Hide adding waiting time input
+      Waitingtimes.uiToggleAddingWaitingTime(spotObjectPath);
+    })
+    .fail(function() {
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-waitingtimes-add').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
+    });
+  };
+
+  /**
+   * Remove waiting time from a spot at the city template
+   */
+  Waitingtimes.uiDeleteWaitingTime = function(waitingTimeId, pageId, spotObjectPath) {
+    mw.log('mw.HWMaps::Waitingtimes::uiDeleteWaitingTime: ' + waitingTimeId);
+    Waitingtimes.deleteWaitingTime(waitingTimeId, pageId).done(function(data) {
+      mw.log('mw.HWMaps::Waitingtimes::uiDeleteWaitingTime done:');
+      mw.log(data);
+
+      // Update spot with new average
+      if (_.has(data, 'average')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.waiting_time_average', data.average);
+      }
+
+      // Update spot with new count
+      if (_.has(data, 'count')) {
+        mw.HWMaps.ractive.set(spotObjectPath + '.waiting_time_count', parseInt(data.count, 10));
+      }
+    })
+    .fail(function() {
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-waitingtimes-remove').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
+    });
   };
 
   // Export

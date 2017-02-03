@@ -3,21 +3,29 @@
   {{#comments}}
   <div class="hw-comment">
     {{#if user_id == userId}}
-      <i onclick="mw.HWMaps.City.deleteComment('{{comment_id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')" class="fa fa-trash hw-comment-delete"></i>
+      <i onclick="mw.HWMaps.Comments.uiDeleteComment('{{comment_id}}', '{{@keypath}}')" class="fa fa-trash hw-comment-delete"></i>
     {{/if}}
     {{{commenttext}}}
     <span class="hw-comment-meta">By {{user_name}}, {{timestamp_label}}</span>
   </div>
   {{/comments}}
   {{#if userId}}
-    <textarea class="hw-comment-textarea" placeholder="Write a comment..." value='{{this.new_comment}}'></textarea>
+    <textarea class="hw-comment-textarea"
+              disabled="{{_isAddingComment}}"
+              placeholder="Write a comment..."
+              value='{{_new_comment}}'></textarea>
   {{else}}
     <p><em>Please log in to add a comment</em></p>
   {{/if}}
-  {{#if this.new_comment.length}}
+  {{#if _new_comment.length}}
     <button class="hw-comment-button"
-            onclick="mw.HWMaps.City.addComment('{{this.new_comment}}', '{{id}}', 'spots.groupSpots.{{cardinalDirection}}.{{index}}')">
-      Add comment
+            disabled="{{_isAddingComment}}"
+            onclick="mw.HWMaps.Comments.uiAddComment('{{_new_comment}}', '{{id}}', '{{@keypath}}')">
+      {{#if _isAddingComment}}
+        Wait...
+      {{else}}
+        Add comment
+      {{/if}}
     </button>
   {{/if}}
 </div>
