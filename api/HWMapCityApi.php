@@ -53,7 +53,7 @@ class HWMapCityApi extends ApiBase {
     foreach ($linked_spots_data['query']['results'] as $key => $result) {
       // Add the titles together to get Ids later
       if ($titles !== '') {
-        $titles = $titles.'|';
+        $titles = $titles . '|';
       }
 
       $titles = $titles . $key;
@@ -75,6 +75,7 @@ class HWMapCityApi extends ApiBase {
       }
 
       // Get text of the article
+      // https://www.mediawiki.org/wiki/API:Query#query
       $spot_text = new DerivativeRequest(
         $this->getRequest(),
         array(
@@ -89,7 +90,6 @@ class HWMapCityApi extends ApiBase {
       $spot_text_api->execute();
       $spot_text_data = $spot_text_api->getResult()->getResultData(null, ['BC' => [], 'Types' => [], 'Strip' => 'all']);
       $spots[$index]->Description = $spot_text_data['parse']['text']['*'];
-
       $index++;
     }
 
@@ -144,9 +144,9 @@ class HWMapCityApi extends ApiBase {
       foreach ($spot_average_rating_data['query']['ratings'] as $rating_res) {
         if (array_key_exists($rating_res['pageid'], $spot_indices)) {
           $index = $spot_indices[$rating_res['pageid']];
-          $spots[$index]->rating_average = $rating_res['rating_average'];
-          $spots[$index]->rating_count = $rating_res['rating_count'];
-          $spots[$index]->rating_user = $rating_res['rating_user'];
+          $spots[$index]->rating_average = floatval($rating_res['rating_average']);
+          $spots[$index]->rating_count = intval($rating_res['rating_count'], 10);
+          $spots[$index]->rating_user = intval($rating_res['rating_user'], 10);
           $spots[$index]->timestamp_user = $rating_res['timestamp_user'];
 
           /*
@@ -179,8 +179,8 @@ class HWMapCityApi extends ApiBase {
       foreach ($spot_waiting_times_data['query']['waiting_times'] as $waiting_times_res) {
         if (array_key_exists($waiting_times_res['pageid'], $spot_indices)) {
           $index = $spot_indices[$waiting_times_res['pageid']];
-          $spots[$index]->waiting_time_average = $waiting_times_res['waiting_time_average'];
-          $spots[$index]->waiting_time_count = $waiting_times_res['waiting_time_count'];
+          $spots[$index]->waiting_time_average = intval($waiting_times_res['waiting_time_average'], 10);
+          $spots[$index]->waiting_time_count = intval($waiting_times_res['waiting_time_count'], 10);
         }
       }
     }
@@ -210,7 +210,7 @@ class HWMapCityApi extends ApiBase {
         }
         */
         if ($index < count($spots)) {
-          $spots[$index]->comment_count = $count_res['comment_count'];
+          $spots[$index]->comment_count = intval($count_res['comment_count'], 10);
         }
       }
     }
@@ -238,12 +238,7 @@ class HWMapCityApi extends ApiBase {
       'properties' => array(
         ApiBase::PARAM_TYPE => 'string',
         ApiBase::PARAM_REQUIRED => true
-      )/*
-      'user_id' => array(
-        ApiBase::PARAM_TYPE => 'integer',
-        ApiBase::PARAM_REQUIRED => true
       )
-      */
     );
   }
 
@@ -252,7 +247,6 @@ class HWMapCityApi extends ApiBase {
     return array_merge( parent::getParamDescription(), array(
       'page_title' => 'Page title',
       'properties' => 'Page propeties to query'
-      // 'user_id' => 'Current user id'
     ) );
   }
 }

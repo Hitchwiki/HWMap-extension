@@ -16,7 +16,6 @@ class HWSpotIdApi extends ApiBase {
     }
 
     $page_id = $params['page_id'];
-    //$user_id = $params['user_id'];
 
     // Make an array from properties param
     $properties = explode(',', $params['properties']);
@@ -195,12 +194,6 @@ class HWSpotIdApi extends ApiBase {
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true
 			)
-      /*
-			'user_id' => array(
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true
-			)
-			*/
 		);
 	}
 
@@ -209,7 +202,6 @@ class HWSpotIdApi extends ApiBase {
 		return array_merge( parent::getParamDescription(), array(
 			'page_title' => 'Page title',
 			'properties' => 'Page propeties to query'
-			// 'user_id' => 'Current user id'
 		) );
 	}
 }

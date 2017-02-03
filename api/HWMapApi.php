@@ -17,7 +17,8 @@ class HWMapApi extends ApiBase {
     // Send the query do the database
     $dbr = wfGetDB(DB_SLAVE);
 
-    if ( class_exists( 'HWAvgRatingApi' ) ) {
+    // Ratings API available
+    if (class_exists('HWAvgRatingApi')) {
       $res = $dbr->select(
         array(
           'geo_tags',
@@ -58,31 +59,32 @@ class HWMapApi extends ApiBase {
 
 
       // Build the api result
-      foreach( $res as $row ) {
-        if(!$params['category'] || $row->cl_to == $params['category']) {
+      foreach ($res as $row) {
+        if (!$params['category'] || $row->cl_to == $params['category']) {
           $vals = array(
-              'id' => $row->gt_page_id,
-              'location' => array(
-                  $row->gt_lat,
-                  $row->gt_lon
-              ),
-              'title' => $row->page_title,
-              'category' => $row->cl_to,
-              'average_rating' => $row->hw_average_rating
+            'id' => $row->gt_page_id,
+            'location' => array(
+              floatval($row->gt_lat),
+              floatval($row->gt_lon)
+            ),
+            'title' => $row->page_title,
+            'category' => $row->cl_to,
+            'average_rating' => floatval($row->hw_average_rating)
           );
-          $this->getResult()->addValue( array( 'query', 'spots' ), null, $vals );
+          $this->getResult()->addValue(array( 'query', 'spots' ), null, $vals);
         }
       }
 
+    // No ratings API available
     } else {
       $res = $dbr->select(
         array( 'geo_tags', 'categorylinks'),
         array( 'gt_page_id', 'gt_lat', 'gt_lon', 'cl_to'),
         array(
-            'gt_lat <'.$ne_lat,
-            'gt_lat >'.$sw_lat,
-            'gt_lon >'.$sw_lon,
-            'gt_lon <'.$ne_lon
+          'gt_lat <' . $ne_lat,
+          'gt_lat >' . $sw_lat,
+          'gt_lon >' . $sw_lon,
+          'gt_lon <' . $ne_lon
         ),
         __METHOD__,
         array(),
@@ -96,15 +98,16 @@ class HWMapApi extends ApiBase {
 
       // Build the api result
       foreach( $res as $row ) {
-          $vals = array(
-              'id' => $row->gt_page_id,
-              'location' => array(
-                  $row->gt_lat,
-                  $row->gt_lon
-              ),
-              'category' => $row->cl_to
-          );
-          $this->getResult()->addValue( array( 'query', 'spots' ), null, $vals );
+        $vals = array(
+          'id' => $row->gt_page_id,
+          'location' => array(
+            floatval($row->gt_lat),
+            floatval($row->gt_lon)
+          ),
+          'category' => $row->cl_to
+        );
+
+        $this->getResult()->addValue(array('query', 'spots'), null, $vals);
       }
 
     }
