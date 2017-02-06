@@ -127,6 +127,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
   'autosize' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/autosize/dist/autosize.js',
+      'modules/js/ext.HWMap.Autosize.binding.js'
     )
   ),
 
