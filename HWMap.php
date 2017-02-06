@@ -237,7 +237,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 function onParserInit( Parser $parser ) {
   global $wgOut;
   $parser->setHook('hw-map', 'HWMapRender');
-  $parser->setHook('hw-rate', 'HWRatingRender');
+  $parser->setHook('hw-country-rate', 'HWCountryRatingRender');
   $wgOut->addModules('ext.HWMap');
   return true;
 }
@@ -248,8 +248,8 @@ function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
   return $result;
 }
 
-function HWRatingRender( $input, array $args, Parser $parser, PPFrame $frame ) {
-  $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.Country.Rating.html');
+function HWCountryRatingRender( $input, array $args, Parser $parser, PPFrame $frame ) {
+  $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.CountryRating.html');
 
   return $result;
 }

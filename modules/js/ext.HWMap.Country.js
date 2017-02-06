@@ -17,8 +17,6 @@
   Country.initialize = function() {
     mw.log('HWMaps::Country::initialize');
 
-    $('body').addClass('hwmap-page');
-
     // Getting the coordinates for current article
     mw.HWMaps.Map.getArticleCoordinates().then(function(articleCoordinates) {
       if (articleCoordinates) {
@@ -51,14 +49,11 @@
     // Get spots when zoom is bigger than 4
     var zoom = mw.HWMaps.leafletMap.getZoom();
 
-    mw.log('HWMaps::Country::onCountryMapMoveEnd - map moveend (zoom ' + zoom + ')');
-    mw.log('HWMaps::Country::onCountryMapMoveEnd - _objectsOnMap ' + mw.HWMaps.leafletLayers.spots._objectsOnMap);
-
     if (zoom > 4) {
       mw.HWMaps.Spots.getMarkers('Cities', zoom);
     }
     // When zoom is smaller than 4 we clear the markers if not already cleared
-    else if (mw.HWMaps.leafletLayers.spots._objectsOnMap.length > 0) {
+    else {
       mw.HWMaps.Spots.clearMarkers();
       mw.HWMaps.Map.resetMapState();
     }

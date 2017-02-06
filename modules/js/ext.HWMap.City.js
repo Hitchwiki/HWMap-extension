@@ -177,8 +177,8 @@
     for (var i in spots) {
       // Build spot marker
       var marker = new PruneCluster.Marker(
-        spots[i].Location[0].lat,
-        spots[i].Location[0].lon
+        spots[i].location.lat,
+        spots[i].location.lon
       );
 
       // Add icon
@@ -476,6 +476,8 @@
     var $commentsButton = $('#hw-comments-button-' + pageId);
 
     if ($commentsButton.length) {
+      // Animated loading spinner
+      // https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/jQuery.plugin.spinner
       var $loadCommentsSpinner = $.createSpinner({
         // ID used to refer this spinner when removing it
         id: 'hwLoadCommentsSpinner',

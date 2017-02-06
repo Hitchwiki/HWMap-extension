@@ -58,13 +58,19 @@ class HWMapCityApi extends ApiBase {
 
       $titles = $titles . $key;
 
+      // Spot object
+      $spots[$index] = new stdClass();
+
       // Get title
       $spots[$index]->title = $key;
 
-      // Get the properties
+      // Get SMW properties such as `Location`, `Country`, `CardinalDirection` etc
       foreach ($properties as $property) {
+        if ($property === 'Location') {
+          $spots[$index]->location = array_values($result['printouts'][$property])[0];
+        }
         // Check if the property has multiple values
-        if (isset($result['printouts'][$property][0]['fulltext'])) {
+        elseif (isset($result['printouts'][$property][0]['fulltext'])) {
           $spots[$index]->$property = [];
           for ($i = 0; $i < count($result['printouts'][$property]); ++$i) {
             array_push($spots[$index]->$property, $result['printouts'][$property][$i]['fulltext']);
@@ -106,7 +112,8 @@ class HWMapCityApi extends ApiBase {
     $title_id_api = new ApiMain( $title_id );
     $title_id_api->execute();
     $title_id_data = $title_id_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
-    $ids = ''; $index = 0;
+    $ids = '';
+    $index = 0;
 
     foreach ($title_id_data['query']['pages'] as $key => $result) {
       if (!empty($ids)) {

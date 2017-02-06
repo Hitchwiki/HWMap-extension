@@ -102,17 +102,15 @@
         <!-- Spot content header -->
         {{#if CitiesDirection || RoadsDirection}}
         <div class="hw-spot-content-header">
-          <strong class="hw-spot-towards">
-            {{#if CitiesDirection}}
-              Towards
-              {{#CitiesDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}
-            {{/if}}
-            {{#if CitiesDirection && RoadsDirection}} &bull; {{/if}}
-            {{#if RoadsDirection}}
-              Roads
-              {{#RoadsDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
-            {{/if}}
-          </strong>
+          {{#if CitiesDirection}}
+            Towards
+            {{#CitiesDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}
+          {{/if}}
+          {{#if CitiesDirection && RoadsDirection}} &bull; {{/if}}
+          {{#if RoadsDirection}}
+            Roads
+            {{#RoadsDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
+          {{/if}}
         </div>
         {{/if}}
         <!-- /Spot content header -->

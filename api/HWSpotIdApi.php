@@ -80,7 +80,9 @@ class HWSpotIdApi extends ApiBase {
         // Don't return location as an Array
         if ($key === 'Location') {
           $spot->location = array_values($result['printouts'][$key])[0];
-        } elseif (is_array($result['printouts'][$key])) {
+        }
+        // Other properties such as `Country`, `CardinalDirection` etc
+        elseif (is_array($result['printouts'][$key])) {
           $spot->$key = array();
           for ($i = 0; $i < count($result['printouts'][$key]); ++$i) {
             if ($result['printouts'][$key][$i]['fulltext']) {

@@ -306,6 +306,8 @@
     mw.log('mw.HWMaps::City::loadSpotDetails: ' + pageId);
 
     if (loadingWrapperId) {
+      // Animated loading spinner
+      // https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/jQuery.plugin.spinner
       var $loadSpotDetailsSpinner = $.createSpinner({
         // ID used to refer this spinner when removing it
         id: 'hwLoadSpotDetailsSpinner',

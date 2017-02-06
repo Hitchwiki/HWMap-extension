@@ -174,6 +174,10 @@
     // Insert below where the spots are going to be loaded
     $hwspot.append($loadSpotSpinner);
 
+    // Open sidebar
+    $hwspot.addClass('hw-spot-open');
+    $hwmap.addClass('hw-spot-open-map');
+
     // Load data from the API
     var apiUri = new mw.Uri(mw.util.wikiScript('api'));
 
@@ -194,12 +198,18 @@
     mw.log('apiUri: ' + apiUri);
 
     $.get(apiUri, function(data) {
-      mw.log('Response from the API:');
+      mw.log('HWMaps::SpecialPage::openSpot: API Response');
       mw.log(data);
 
-      if (data.error) {
-        mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #39gy2g');
+      // Remove loading spinner
+      $.removeSpinner('hwLoadSpotSpinner');
 
+      // Handle missing API response and errors
+      if (data.error || !_.has(data, 'query.spot')) {
+        mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #39gy2g');
+        if (data.error) {
+          mw.log.error(data.error);
+        }
         // Bubble notification
         // `mw.message` gets message translation, see `i18n/en.json`
         // `tag` replaces any previous bubbles by same tag
@@ -209,17 +219,12 @@
             mw.message('hwmap-please-try-again').text(),
           { tag: 'hwmap-error' }
         );
+
+        // Close sidebar as we failed to load content for it
+        SpecialPage.closeSpecialPageSpot();
+
         return;
       }
-
-      // Handle missing API response
-      if (!_.has(data, 'query.spot')) {
-        mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #iivbh2');
-        return;
-      }
-
-      // Remove loading spinner
-      $.removeSpinner('hwLoadSpotSpinner');
 
       data.query.spot.id = pageId;
 
@@ -245,12 +250,27 @@
       mw.HWMaps.ractive.set({ spot: data.query.spot });
 
       // Set map view if we should pan to this spot
-      if (panTo && _.has(data, 'query.spot.Location')) {
-        SpecialPage.setMapView(data.query.spot.Location.lat, data.query.spot.Location.lon, 15, id);
+      if (panTo && _.has(data, 'query.spot.location.lat') && _.has(data, 'query.spot.location.lon')) {
+        SpecialPage.setMapView(data.query.spot.location.lat, data.query.spot.location.lon, 15, pageId);
+      }
+
+      // Element holding comments UI
+      var $comments = $('#hw-spot-comments-' + pageId);
+
+      if ($comments.length) {
+        // Make comment textfield expand when typing text into it
+        // Requires `autosize`
+        // https://github.com/jackmoore/autosize
+        var $commentsTextarea = $comments.find('textarea.hw-comment-textarea');
+        if ($commentsTextarea.length && !$commentsTextarea.hasClass('hw-autosize')) {
+          $commentsTextarea.addClass('hw-autosize');
+          autosize($commentsTextarea);
+        }
       }
 
       // Initialize rating widget
       mw.HWMaps.Ratings.initRatingWidgets();
+
     })
     .fail(function() {
       mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #g84303');
@@ -267,10 +287,11 @@
 
       // Remove loading spinner
       $.removeSpinner('hwLoadSpotSpinner');
+
+      // Close sidebar as we failed to load content for it
+      SpecialPage.closeSpecialPageSpot();
     })
 
-    $hwspot.addClass('hw-spot-open');
-    $hwmap.addClass('hw-spot-open-map');
   };
 
   /**

@@ -20,67 +20,76 @@
     // When in debug mode, cache bust templates
     var cacheBust = mw.config.get('debug') ? new Date().getTime() : mw.config.get('wgVersion');
 
-    var templateUrl = mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMap.Country.Rating.Widget.html?v=' + cacheBust;
+    var getTatingTemplate = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Ratings.template.html?v=' + cacheBust);
 
-    $.get(templateUrl).then(function(template) {
-      ractiveCountryRating = new Ractive({
-        el: 'hw-country-rating',
-        template: template,
-        data: {
-          userId: mw.config.get('wgUserId')
+    // Get average rating for the current article
+    var getCountryRating = $.getJSON(mw.util.wikiScript('api'), {
+      action: 'hwavgrating',
+      format: 'json',
+      pageid: mw.config.get('wgArticleId')
+      // user_id: userId
+    });
+
+    $.when(getTatingTemplate, getCountryRating)
+     .always(function(ratingTemplateHtml, countryRating) {
+
+        if (!ratingTemplateHtml[0]) {
+          mw.log.error('mw.HWMaps::CountryRating::initialize failed to load rating template. #j38ghg');
+          return;
         }
-      });
 
-      // Get average rating for the current article
-      $.getJSON(mw.util.wikiScript('api'), {
-        action: 'hwavgrating',
-        format: 'json',
-        pageid: mw.config.get('wgArticleId')
-        // user_id: userId
-      }).done( function(data) {
+        if (countryRating[0].error) {
+          mw.log.error('mw.HWMaps::CountryRating::initialize failed to load country ratings. #9hghbh');
+          mw.log.error(countryRating[0].error);
+          return;
+        }
 
-        // @TODO: Check for `data.error`
+        mw.log('mw.HWMaps::CountryRating::initialize data: #ug83hg');
+        mw.log(countryRating[0]);
 
-        if (data.query.ratings[0]) {
-          data.query.ratings[0].average_label = mw.HWMaps.Spots.getRatingLabel(data.query.ratings[0].rating_average);
-          if (data.query.ratings[0].timestamp_user) {
-            data.query.ratings[0].timestamp_user = mw.HWMaps.Spots.parseTimestamp(data.query.ratings[0].timestamp_user);
-            data.query.ratings[0].rating_user_label = mw.HWMaps.Spots.getRatingLabel(data.query.ratings[0].rating_user);
+        var ractiveData = {
+          userId: mw.config.get('wgUserId')
+        };
+
+        if (_.has(countryRating[0], 'query.ratings[0]')) {
+          if (_.has(countryRating[0], 'query.ratings[0].rating_average')) {
+            countryRating[0].query.ratings[0].average_label = mw.HWMaps.Spots.getRatingLabel(countryRating[0].query.ratings[0].rating_average);
+          }
+          if (_.has(countryRating[0], 'query.ratings[0].timestamp_user')) {
+            countryRating[0].query.ratings[0].timestamp_user = mw.HWMaps.Spots.parseTimestamp(countryRating[0].query.ratings[0].timestamp_user);
+          }
+          if (_.has(countryRating[0], 'query.ratings[0].rating_user')) {
+            countryRating[0].query.ratings[0].rating_user_label = mw.HWMaps.Spots.getRatingLabel(countryRating[0].query.ratings[0].rating_user);
           }
         } else {
-          data.query.ratings[0] = { 'average_label': 'Unknown' };
+          mw.log('mw.HWMaps::CountryRating::initialize no country ratings available. #gj93hv');
+          countryRating[0].query.ratings[0] = {
+            'average_label': 'Unknown'
+          };
         }
 
-        data.query.ratings[0].id = mw.config.get('wgArticleId');
+        countryRating[0].query.ratings[0].id = mw.config.get('wgArticleId');
 
-        ractiveCountryRating.set({
-          countryRating: data.query.ratings[0]
+        ractiveData = _.merge(ractiveData, countryRating[0].query.ratings[0]);
+
+        // Construct ractive template for rating widget
+        // http://www.ractivejs.org/
+        mw.HWMaps.ractive = new Ractive({
+          el: 'hw-country-rating',
+          template: ratingTemplateHtml[0],
+          data: ractiveData
         });
 
-        $('.hw-your-rate').hide();
-
-        $('.hw-rating-widget .hw-rate').click(function(evt) {
-          $('.hw-your-rate').hide();
-          $('.hw-rate').show();
-          evt.preventDefault();
-          $(this).hide();
-          var id = $(this).attr('id').replace(/hw-rate_/, '');
-
-          $('#hw-your_rate_' + id).show();
+        /*
+        mw.HWMaps.ractive.set({
+          average_label: countryRating[0].query.ratings[0].average_label,
+          average_label: countryRating[0].query.ratings[0].average_label,
         });
+        */
 
-        $(document).mouseup(function(e) {
-          var $container = $('.hw-rating-widget .hw-rate');
-
-          if (!$container.is(e.target) // if the target of the click isn't the container...
-              && $container.has(e.target).length === 0) // ... nor a descendant of the container
-          {
-            $('.hw-your-rate').hide();
-            $('.hw-rate').show();
-          }
-        });
+        // Initialize rating widgets on above template
+        mw.HWMaps.Ratings.initRatingWidgets();
       });
-    });
   };
 
   // Export

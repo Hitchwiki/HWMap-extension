@@ -148,11 +148,6 @@
       font-size: 1.4em;
     }
 
-    // Towards / Directions
-    .hw-spot-towards {
-      font-size: 13px;
-    }
-
     // Close sidebar "X"
     .hw-close-special-spot {
       display: none;
@@ -233,7 +228,13 @@
     flex-wrap: nowrap;
     flex-flow: row;
     justify-content: space-between;
-    align-items: stretch;
+    align-items: flex-start;
+    .hw-ratings,
+    .hw-waiting-time {
+      display: flex;
+      flex-grow: 1;
+      margin: 10px;
+    }
   }
   /*
   .hw-specialpage-spot-actions {

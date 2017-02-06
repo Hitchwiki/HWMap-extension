@@ -10,24 +10,6 @@
       <!-- Spot content -->
       <div class="hw-spot-content">
 
-        <!-- Spot content header -->
-        {{#if CitiesDirection || RoadsDirection}}
-        <div class="hw-spot-content-header">
-          <strong class="hw-spot-towards">
-            {{#if CitiesDirection}}
-              Towards
-              {{#CitiesDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}
-            {{/if}}
-            {{#if CitiesDirection && RoadsDirection}} &bull; {{/if}}
-            {{#if RoadsDirection}}
-              Roads
-              {{#RoadsDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
-            {{/if}}
-          </strong>
-        </div>
-        {{/if}}
-        <!-- /Spot content header -->
-
         <!-- Spot actions -->
         <div class="hw-specialpage-spot-actions">
 
@@ -43,14 +25,14 @@
 
           <button type="button"
                   class="hw-button hw-button-small"
-                  onclick="mw.HWMaps.SpecialPage.setMapView('{{Location.0.lat}}', '{{Location.0.lon}}', 15, '{{id}}')">
+                  onclick="mw.HWMaps.SpecialPage.setMapView('{{location.lat}}', '{{location.lon}}', 15, '{{id}}')">
             <i class="fa fa-map-marker"></i>
             Show on map
           </button>
 
           <button type="button"
                   class="hw-button hw-button-small"
-                  onclick="mw.HWMaps.Spots.openStreetView('{{Location.0.lat}}', '{{Location.0.lon}}')">
+                  onclick="mw.HWMaps.Spots.openStreetView('{{location.lat}}', '{{location.lon}}')">
             <i class="fa fa-map-marker"></i>
             Street view
           </button>
@@ -66,6 +48,22 @@
 
         </div>
         <!-- /Spot actions -->
+
+        <!-- Spot content header -->
+        {{#if CitiesDirection || RoadsDirection}}
+        <div class="hw-spot-content-header">
+          {{#if CitiesDirection}}
+            Towards
+            {{#CitiesDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/CitiesDirection}}
+          {{/if}}
+          {{#if CitiesDirection && RoadsDirection}} &bull; {{/if}}
+          {{#if RoadsDirection}}
+            Roads
+            {{#RoadsDirection:i}}{{#if i > 0}},&nbsp;{{/if}}<a href="{{this}}">{{this}}</a>{{/RoadsDirection}}
+          {{/if}}
+        </div>
+        {{/if}}
+        <!-- /Spot content header -->
 
         <!-- Spot description -->
         <div class="hw-spot-description">
