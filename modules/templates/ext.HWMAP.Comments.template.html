@@ -18,7 +18,7 @@
     <p><em>Please log in to add a comment</em></p>
   {{/if}}
   {{#if _new_comment.length}}
-    <button class="hw-comment-button"
+    <button class="hw-button hw-button-big"
             disabled="{{_isAddingComment}}"
             onclick="mw.HWMaps.Comments.uiAddComment('{{_new_comment}}', '{{id}}', '{{@keypath}}')">
       {{#if _isAddingComment}}

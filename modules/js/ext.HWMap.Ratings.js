@@ -106,9 +106,9 @@
           mw.log.error(data.error);
           return dfd.reject();
         }
-
         dfd.resolve(data.query);
       })
+      // https://api.jquery.com/deferred.fail/
       .fail(function() {
         mw.log.error('mw.HWMaps.Ratings::addRating: Error while accessing rating API. #g23igh');
         dfd.reject();
@@ -175,6 +175,11 @@
     mw.log('mw.HWMaps::Ratings::uiAddRating: ' + pageId + ' (' + newRating + ')');
 
     Ratings.addRating(newRating, pageId).done(function(response) {
+
+      // Ensure that even if average rating goes bad after deleting rating,
+      // Spot info won't be toggled hidden
+      mw.HWMaps.ractive.toggle(spotObjectPath + '._isBadSpotVisible');
+
       mw.HWMaps.ractive.set(spotObjectPath + '.rating_user', newRating);
       mw.HWMaps.ractive.set(spotObjectPath + '.rating_user_label', mw.HWMaps.Spots.getRatingLabel(newRating));
 
@@ -213,6 +218,11 @@
 
     Ratings.deleteRating(pageId).done(function(response) {
       if (response) {
+
+        // Ensure that even if average rating goes bad after deleting rating,
+        // Spot info won't be toggled hidden
+        mw.HWMaps.ractive.toggle(spotObjectPath + '._isBadSpotVisible');
+
         // Update spot with new statistics
         mw.HWMaps.ractive.set(spotObjectPath + '.timestamp_user', 0);
         mw.HWMaps.ractive.set(spotObjectPath + '.rating_user', 0);

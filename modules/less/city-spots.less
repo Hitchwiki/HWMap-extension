@@ -253,6 +253,15 @@
     margin: 1px 0;
     padding-top: 5px;
     padding-bottom: 5px;
+    // Loading spinner in stats and comments buttons
+    .mw-spinner {
+      margin-left: 5px;
+      // Make animation smaller so it'll fit into buttons
+      height: 14px;
+      width: 14px;
+      min-width: 14px;
+      background-size: contain;
+    }
   }
 
   //!------ Detail list ------!//
@@ -260,36 +269,10 @@
   .hw-spot-waiting-times {
     max-width: 320px;
     margin: 5px;
-  }
 
-  .hw-list-ratings,
-  .hw-list-waiting-times {
-    margin-top: 6px;
-    font-size: 12px;
-    background-color: @hw-grey-light;
-    border: 1px solid @hw-grey-medium;
-    padding: 7px 5px 7px 5px;
-    max-height: 200px;
-    overflow-y: auto;
-    table {
-      text-align: left;
-      width: 100%;
-      tr {
-        border-bottom: 1px solid @hw-grey-medium;
-        height: 20px;
-        td, th {
-          margin: 0 3px 0 3px;
-          line-height: 0;
-        }
-      }
-    }
-    .hw-waiting-time-delete {
-      cursor: pointer;
-      margin-left: 2px;
-      &:hover {
-        color: @hw-color-senseless;
-      }
-    }
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
   }
 
 }

@@ -1,11 +1,11 @@
 <!-- Ratings -->
 <div class="hw-rating-widget hw-average-{{rating_average || 0}}">
   <span class="hw-average {{#if rating_average > 0}}hw-average-{{Math.round(rating_average)}}{{/if}}"
-        class-average-null="{{ rating_average === 0 }}"
-        class-average-no-user="{{ !userId }}">
+        class-average-null="{{rating_average === 0}}"
+        class-average-no-user="{{!userId}}">
     {{average_label}}
     {{#if rating_count > 0}}
-      <small>({{rating_count}})</small>
+      <span class="hw-average-count">{{rating_count}}</span>
     {{/if}}
   </span>
   {{#if userId}}
@@ -20,19 +20,29 @@
       <i class="fa fa-caret-down"></i>
     </span>
     <span id="hw-your_rate_{{id}}" class="hw-your-rate">
-      <span onclick="mw.HWMaps.Ratings.uiAddRating(5, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(5, {{id}}, '{{@keypath}}')"
+            class="hw-rating-choice"
+            class-hw-rating-choice-user="{{rating_user === 5}}">
         <span class="hw-bubble hw-bubble-verygood"></span> Very Good
       </span>
-      <span onclick="mw.HWMaps.Ratings.uiAddRating(4, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(4, {{id}}, '{{@keypath}}')"
+            class="hw-rating-choice"
+            class-hw-rating-choice-user="{{rating_user === 4}}">
         <span class="hw-bubble hw-bubble-good"></span> Good
       </span>
-      <span onclick="mw.HWMaps.Ratings.uiAddRating(3, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(3, {{id}}, '{{@keypath}}')"
+            class="hw-rating-choice"
+            class-hw-rating-choice-user="{{rating_user === 3}}">
         <span class="hw-bubble hw-bubble-average"></span> Average
       </span>
-      <span onclick="mw.HWMaps.Ratings.uiAddRating(2, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(2, {{id}}, '{{@keypath}}')"
+            class="hw-rating-choice"
+            class-hw-rating-choice-user="{{rating_user === 2}}">
         <span class="hw-bubble hw-bubble-bad"></span> Bad
       </span>
-      <span onclick="mw.HWMaps.Ratings.uiAddRating(1, {{id}}, '{{@keypath}}')" class="hw-rating-choice">
+      <span onclick="mw.HWMaps.Ratings.uiAddRating(1, {{id}}, '{{@keypath}}')"
+            class="hw-rating-choice"
+            class-hw-rating-choice-user="{{rating_user === 1}}">
         <span class="hw-bubble hw-bubble-senseless"></span> Senseless
       </span>
       {{#timestamp_user}}

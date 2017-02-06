@@ -454,15 +454,6 @@
   };
 
   /**
-   * Toggles comments UI on/off for a spot
-   */
-  City.toggleComments = function(spotObjectPath) {
-    mw.log('mw.HWMaps::City::toggleComments');
-    // http://docs.ractivejs.org/latest/ractive-toggle
-    mw.HWMaps.ractive.toggle(spotObjectPath + '._isCommentsVisible');
-  };
-
-  /**
    * Toggles bad spot open/closed
    * By default we show only minimal info about bad spots
    */
@@ -482,37 +473,34 @@
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
 
-    var $loadCommentsSpinner = $.createSpinner({
-      // ID used to refer this spinner when removing it
-      id: 'hwLoadCommentsSpinner',
+    var $commentsButton = $('#hw-comments-button-' + pageId);
 
-      // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
-      size: 'small',
+    if ($commentsButton.length) {
+      var $loadCommentsSpinner = $.createSpinner({
+        // ID used to refer this spinner when removing it
+        id: 'hwLoadCommentsSpinner',
 
-      // Type: 'inline' or 'block'.
-      // Inline creates an inline-block with width and height
-      // equal to spinner size. Block is a block-level element
-      // with width 100%, height equal to spinner size.
-      type: 'block'
-    });
+        // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
+        size: 'small',
 
-    // Insert below where the spots are going to be loaded
-    $('#hw-spot_' + pageId).append($loadCommentsSpinner);
+        // Type: 'inline' or 'block'.
+        // Inline creates an inline-block with width and height
+        // equal to spinner size. Block is a block-level element
+        // with width 100%, height equal to spinner size.
+        type: 'inline'
+      });
 
-    // Scroll comments element on the page to the view
-    // Has a slight offset so that top part would be little bit lower
-    // than top part of the browser
-    /*
-    $('html, body').animate({
-      scrollTop: $('#hw-spot-comments-' + pageId).offset().top - 100
-    }, 'fast');
-    */
+      // Insert loading animation into comments toggle button
+      $commentsButton.append($loadCommentsSpinner);
+    }
 
-    mw.HWMaps.Comments.loadComments(pageId).always(function(data) {
+    mw.HWMaps.Comments.loadComments(pageId).done(function(data) {
       mw.log('mw.HWMaps::City::loadComments done:');
       mw.log(data);
 
-      $.removeSpinner('hwLoadCommentsSpinner');
+      if ($commentsButton.length) {
+        $.removeSpinner('hwLoadCommentsSpinner');
+      }
 
       if (_.has(data, 'comments')) {
         mw.HWMaps.ractive.set(spotObjectPath + '.comments', data.comments);
@@ -520,6 +508,47 @@
 
       // Show comments section
       mw.HWMaps.ractive.set(spotObjectPath + '._isCommentsVisible', true);
+
+      // Element holding comments UI
+      var $comments = $('#hw-spot-comments-' + pageId);
+
+      if ($comments.length) {
+        // Scroll comments element on the page to the view
+        // Has a slight offset so that top part would be little bit lower
+        // than top part of the browser
+        $('html, body').animate({
+          scrollTop: $comments.offset().top - 100
+        }, 'fast');
+
+        // Make comment textfield expand when typing text into it
+        // Requires `autosize`
+        // https://github.com/jackmoore/autosize
+        var $commentsTextarea = $comments.find('textarea.hw-comment-textarea');
+        if ($commentsTextarea.length && !$commentsTextarea.hasClass('hw-autosize')) {
+          $commentsTextarea.addClass('hw-autosize');
+          autosize($commentsTextarea);
+        }
+      }
+
+      // Resolve promise
+      dfd.resolve();
+    })
+    .fail(function() {
+      mw.log('mw.HWMaps::City::loadComments fail');
+
+      if ($commentsButton.length) {
+        $.removeSpinner('hwLoadCommentsSpinner');
+      }
+
+      // Bubble notification
+      // `mw.message` gets message translation, see `i18n/en.json`
+      // `tag` replaces any previous bubbles by same tag
+      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
+      mw.notify(
+        mw.message('hwmap-error-comment-load').text() + ' ' +
+          mw.message('hwmap-please-try-again').text(),
+        { tag: 'hwmap-error' }
+      );
 
       // Resolve promise
       dfd.resolve();

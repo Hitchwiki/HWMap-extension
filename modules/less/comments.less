@@ -17,36 +17,23 @@
 
 .hw-spot-comments {
   margin-top: 10px;
-  /*
-  display: none;
-  height: 0px;
-  overflow: hidden;
-  */
   margin-top: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
   border-top: 1px solid @hw-grey-light;
-  /*
-  box-shadow:
-    inset 0px 11px 8px -10px @hw-grey-medium,
-    inset 0px -11px 8px -10px @hw-grey-medium;
-  */
-  //background-color: @hw-grey-lighter;
   .hw-comment-textarea {
-    //border: 1px solid @hw-grey-dark;
+    border: 1px solid @hw-grey-dark;
     padding: 5px;
-    margin: 0 0 5px 0;
+    margin: 5px 0;
     font-size: 13px;
     line-height: 18px;
-    //&:focus {
-    //  outline: none;
-    //  border-color: @hw-orange-border;
-    //}
-  }
-  .hw-comment-button {
-    //.hwbutton();
-    //.hwbutton-secondary();
-    //.hwbutton-small();
+    vertical-align: top;
+    // Textarea won't autogrow bigger than this while typing more text into it
+    max-height: 300px;
+    &:focus {
+      outline: none;
+      border-color: @hw-orange-border;
+    }
   }
   .hw-comment {
     border-bottom: 1px solid @hw-grey-medium;

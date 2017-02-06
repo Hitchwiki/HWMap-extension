@@ -2,11 +2,11 @@
 <div id="hw-spot-ratings-{{id}}" class="hw-spot-ratings">
   {{#if ratings && ratings_distribution}}
   <div class="hw-bar-graph-details">
-    <span class="hw-bar-5 hw-graph-bar" style="width: {{Math.floor(ratings_distribution.5.percentage) || 0}}%;"></span>
-    <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.floor(ratings_distribution.4.percentage) || 0}}%;"></span>
-    <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.floor(ratings_distribution.3.percentage) || 0}}%;"></span>
-    <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.floor(ratings_distribution.2.percentage) || 0}}%;"></span>
-    <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.floor(ratings_distribution.1.percentage) || 0}}%;"></span>
+    <span class="hw-bar-5 hw-graph-bar" style="width: {{Math.floor10(ratings_distribution.5.percentage, -2) || 0}}%;"></span>
+    <span class="hw-bar-4 hw-graph-bar" style="width: {{Math.floor10(ratings_distribution.4.percentage, -2) || 0}}%;"></span>
+    <span class="hw-bar-3 hw-graph-bar" style="width: {{Math.floor10(ratings_distribution.3.percentage, -2) || 0}}%;"></span>
+    <span class="hw-bar-2 hw-graph-bar" style="width: {{Math.floor10(ratings_distribution.2.percentage, -2) || 0}}%;"></span>
+    <span class="hw-bar-1 hw-graph-bar" style="width: {{Math.floor10(ratings_distribution.1.percentage, -2) || 0}}%;"></span>
     <table class="hw-distribution-details">
       <tr>
         <td><span class="hw-bubble hw-bubble-verygood"></span> Very good</td>
@@ -30,8 +30,8 @@
       </tr>
     </table>
   </div>
-  <div class="hw-list-ratings">
-    <table class="hw-list-table">
+  <div class="hw-stats-list">
+    <table class="hw-stats-list-table">
       {{#ratings}}
       <tr>
         <td>{{rating_label}}</td>

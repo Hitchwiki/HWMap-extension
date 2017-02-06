@@ -33,15 +33,6 @@
       if (data.error) {
         mw.log.error('mw.HWMaps.Comments::loadComments: Error while accessing comments API. #j39235');
         mw.log.error(data.error);
-        // Bubble notification
-        // `mw.message` gets message translation, see `i18n/en.json`
-        // `tag` replaces any previous bubbles by same tag
-        // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-        mw.notify(
-          mw.message('hwmap-error-rating-load').text() + ' ' +
-            mw.message('hwmap-please-try-again').text(),
-          { tag: 'hwmap-error' }
-        );
         return dfd.reject();
       }
 
@@ -54,17 +45,8 @@
       dfd.resolve(data.query);
     }).fail(function() {
       mw.log.error('mw.HWMaps.Comments::loadComments: Error while accessing comments API. #ig8ryb');
-      // Bubble notification
-      // `mw.message` gets message translation, see `i18n/en.json`
-      // `tag` replaces any previous bubbles by same tag
-      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-      mw.notify(
-        mw.message('hwmap-error-rating-load').text() + ' ' +
-          mw.message('hwmap-please-try-again').text(),
-        { tag: 'hwmap-error' }
-      );
       return dfd.reject();
-    })
+    });
 
     // Return the Promise so caller can't change the Deferred
     // https://api.jquery.com/deferred.promise/

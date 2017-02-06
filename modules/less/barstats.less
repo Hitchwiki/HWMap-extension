@@ -30,7 +30,7 @@
       line-height: 25px;
     }
     &:before {
-      content: "";
+      content: '';
       display: block; /* reduce the damage in FF3.0 */
       position: relative;
       top: -15px;
@@ -55,20 +55,6 @@
   }
 }
 
-.hw-list-table {
-  width: 100%;
-  tr {
-    /*
-    &:nth-child(even) {
-
-    }
-    */
-    &:nth-child(odd) {
-      background: @hw-grey-light;
-    }
-  }
-}
-
 // Graph bar colors
 .hw-spot-waiting-times {
   .hw-bar-4 { background-color: @hw-color-senseless; }
@@ -82,4 +68,40 @@
   .hw-bar-3 { background-color: @hw-color-average; }
   .hw-bar-2 { background-color: @hw-color-bad; }
   .hw-bar-1 { background-color: @hw-color-senseless; }
+}
+
+// Stats table listing entries
+.hw-stats-list {
+  margin-top: 6px;
+  font-size: 12px;
+  background-color: @hw-grey-light;
+  border: 1px solid @hw-grey-medium;
+  padding: 7px 5px 7px 5px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.hw-stats-list-table {
+  text-align: left;
+  width: 100%;
+  tr {
+    //border-bottom: 1px solid @hw-grey-medium;
+    min-height: 20px;
+    &:nth-child(odd) {
+      background: lighten(rgba(red(@hw-grey-light), green(@hw-grey-light), blue(@hw-grey-light), 1%);
+    }
+    /*
+    &:nth-child(even) { }
+    */
+    td, th {
+      margin: 0 3px 0 3px;
+      line-height: 0;
+    }
+  }
+}
+.hw-stats-list-delete {
+  cursor: pointer;
+  margin-left: 2px;
+  &:hover {
+    color: @hw-color-senseless;
+  }
 }

@@ -104,8 +104,8 @@
   /**
    *
    */
-  SpecialPage.animateSpot = function(HWid) {
-    mw.log('HWMaps::SpecialPage::animateSpot');
+  SpecialPage.animateSpot = function(articleId) {
+    mw.log('HWMaps::SpecialPage::animateSpot: ' + articleId);
   };
 
   /**
@@ -117,12 +117,12 @@
 
   /**
    *
-   * @param {Float} lat
-   * @param {Float} lng
-   * @param {Int} zoom
-   * @param {Int} HWid
+   * @param {Float} lat Latitude
+   * @param {Float} lng Longitude
+   * @param {Integer} zoom Map zoom level
+   * @param {Integer} HWid MediaWiki article id of the spot
    */
-  SpecialPage.setMapView = function(lat, lon, zoom, HWid) {
+  SpecialPage.setMapView = function(lat, lon, zoom, pageId) {
     mw.log('HWMaps::SpecialPage::setMapView');
 
     // Validate vars
@@ -134,13 +134,14 @@
     mw.HWMaps.leafletMap.setView([lat, lon], zoom);
 
     // If marker ID was passed, animate it
-    if (HWid) {
-      SpecialPage.animateSpot(HWid);
+    if (pageId) {
+      SpecialPage.animateSpot(pageId);
     }
   };
 
   /**
-   *
+   * @param {Integer}  pageId   MediaWiki article id of the spot
+   * @param {Boolean}   panTo   Pan map to the spot
    */
   SpecialPage.openSpot = function(pageId, panTo) {
     mw.log('HWMaps::SpecialPage::openSpot');
@@ -274,7 +275,7 @@
 
   /**
    * Edit spot article by title
-   * @param title
+   * @param {String}   title   Spot's title
    */
   SpecialPage.editSpot = function(title) {
     mw.log('HWMaps::SpecialPage::editSpot: ' + title);

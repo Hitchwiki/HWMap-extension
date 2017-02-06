@@ -297,29 +297,35 @@
 
   /**
    * Load statistics for "waiting times" and "ratings"
+   *
+   * @param {Integer}  pageId  MediaWiki page id of the spot.
+   * @param {String}   loadingWrapperId ID of the element where loading animation will be appended (set false to disable)
+   * @param {String}   spotObjectPath   RactiveJS object path
    */
   Spots.loadStatistics = function(pageId, loadingWrapperId, spotObjectPath) {
     mw.log('mw.HWMaps::City::loadSpotDetails: ' + pageId);
 
-    var $loadSpotDetailsSpinner = $.createSpinner({
-      // ID used to refer this spinner when removing it
-      id: 'hwLoadSpotDetailsSpinner',
+    if (loadingWrapperId) {
+      var $loadSpotDetailsSpinner = $.createSpinner({
+        // ID used to refer this spinner when removing it
+        id: 'hwLoadSpotDetailsSpinner',
 
-      // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
-      size: 'small',
+        // Size: 'small' or 'large' for a 20-pixel or 32-pixel spinner.
+        size: 'small',
 
-      // Type: 'inline' or 'block'.
-      // Inline creates an inline-block with width and height
-      // equal to spinner size. Block is a block-level element
-      // with width 100%, height equal to spinner size.
-      type: 'block'
-    });
+        // Type: 'inline' or 'block'.
+        // Inline creates an inline-block with width and height
+        // equal to spinner size. Block is a block-level element
+        // with width 100%, height equal to spinner size.
+        type: 'inline'
+      });
 
-    var $loadingWrapper = $(loadingWrapperId);
+      var $loadingWrapper = $('#' + loadingWrapperId);
 
-    if ($loadingWrapper.length) {
-      // Insert below where the spots are going to be loaded
-      $loadingWrapper.append($loadSpotDetailsSpinner);
+      if ($loadingWrapper.length) {
+        // Insert below where the spots are going to be loaded
+        $loadingWrapper.append($loadSpotDetailsSpinner);
+      }
     }
 
     var waitingTimesPromise = mw.HWMaps.Waitingtimes.loadWaitingTimes(pageId);
@@ -330,7 +336,7 @@
       mw.log(waitingTimeData);
       mw.log(ratingsData);
 
-      if ($loadingWrapper.length) {
+      if (loadingWrapperId && $loadingWrapper.length) {
         $.removeSpinner('hwLoadSpotDetailsSpinner');
       }
 

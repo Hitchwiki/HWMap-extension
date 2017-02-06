@@ -124,9 +124,9 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     )
   ),
 
-  'autogrow' => $wgHWMapResourceBoilerplate + array(
+  'autosize' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
-      'modules/vendor/autogrow/autogrow.js',
+      'modules/vendor/autosize/dist/autosize.js',
     )
   ),
 
@@ -180,11 +180,12 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'bootstrap-grid',
       'prunecluster',
       'ractive',
-      'autogrow',
+      'autosize',
       'lodash'
     ),
     'scripts' => array(
       'modules/js/ext.HWMap.js',
+      'modules/js/ext.HWMap.DecimalAdjust.js',
       'modules/js/ext.HWMap.GeoPoint.js',
       'modules/js/ext.HWMap.Spots.js',
       'modules/js/ext.HWMap.Comments.js',

@@ -2,14 +2,15 @@
  * Rating widget
  */
 .hw-rating-widget {
-  font-size: 12px;
-  display: inline-block;
   position: relative;
-  width: 100%;
-  line-height: @hw-rating-height;
-  margin-top: 10px;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
+  width: 100%;
+  font-size: 13px;
+  line-height: @hw-rating-height;
+  margin-top: 10px;
+  border-radius: 4px;
   .hw-average,
   .hw-rate {
     padding: 0 5px;
@@ -20,11 +21,27 @@
     display: inline-block;
   }
   .hw-average {
-    border: 1px solid @hw-grey-dark;
-    border-radius: 2px 0 0 2px;
+    // border: 1px solid @hw-grey-dark;
+    border-radius: 4px 4px 0 0;
     color: #fff;
     display: flex;
+    align-items: center;
     flex-grow: 1;
+  }
+  .hw-average-count {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    margin: 0 5px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: rgba(255, 255, 255, .3);
+    border-radius: 10px;
   }
   .hw-average-no-user {
     border-radius: 2px;
@@ -58,24 +75,42 @@
     background-color: @hw-color-verygood;
     color: #fff;
   }
+  .hw-rate-0:hover {
+    background-color: lighten(rgba(red(@hw-grey-light), green(@hw-grey-light), blue(@hw-grey-light), 1), @hw-rating-hover-lightness);
+  }
+  .hw-rate-1:hover {
+    background-color: lighten(rgba(red(@hw-color-senseless), green(@hw-color-senseless), blue(@hw-color-senseless), 1), @hw-rating-hover-lightness);
+  }
+  .hw-rate-2:hover {
+    background-color: lighten(rgba(red(@hw-color-bad), green(@hw-color-bad), blue(@hw-color-bad), 1), @hw-rating-hover-lightness);
+  }
+  .hw-rate-3:hover {
+    background-color: lighten(rgba(red(@hw-color-average), green(@hw-color-average), blue(@hw-color-average), 1), @hw-rating-hover-lightness);
+  }
+  .hw-rate-4:hover {
+    background-color: lighten(rgba(red(@hw-color-good), green(@hw-color-good), blue(@hw-color-good), 1), @hw-rating-hover-lightness);
+  }
+  .hw-rate-5:hover {
+    background-color: lighten(rgba(red(@hw-color-verygood), green(@hw-color-verygood), blue(@hw-color-verygood), 1), @hw-rating-hover-lightness);
+  }
   .hw-rate {
     display: block;
     cursor: pointer;
-    border: 1px solid @hw-grey-dark;
-    border-left: 0;
-    border-radius: 0 2px 2px 0;
+    border-top: 1px solid @hw-grey-dark;
+    border-radius: 0 0 4px 4px;
   }
   // Dropdown
   .hw-your-rate {
     display: none; // Bring it visible using `.is-active`
     position: absolute;
-    right: 0;
-    top: 22px;
+    right: 5px;
+    left: 5px;
+    top: (@hw-rating-height + @hw-rating-height + 1px); //1px for the border
     z-index: 20;
-    border: 1px solid @hw-grey-medium;
-    border-top: 0;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .5);
+    // border-top: 1px solid @hw-grey-medium;
     background-color: @hw-grey-lighter;
-    border-radius: 0 2px 2px;
+    border-radius: 0 0 4px 4px;
     text-align: left;
     .hw-rating-choice-head {
       border-bottom: 1px solid @hw-grey-medium;
@@ -96,21 +131,23 @@
         background: @hw-grey-light;
       }
     }
+    // User's own previous rating highlighted
+    .hw-rating-choice-user {
+      font-weight: bold;
+    }
     .hw-rating-choice-timestamp {
       display: block;
       border-top: 1px solid @hw-grey-medium;
-      color: @hw-grey-medium;
+      color: @hw-grey-dark;
       margin: 2px 7px 1px 7px;
       padding: 2px 0 0 0;
-      font-size: 11px;
-      line-height: 13px;
+      font-size: 12px;
+      line-height: 16px;
     }
     .hw-rating-choice-remove {
       display: block;
-      color: @hw-grey-medium;
+      color: @hw-grey-dark;
       margin: 1px 7px 2px 7px;
-      font-size: 11px;
-      line-height: 13px;
       line-height: @hw-rating-height;
       cursor: pointer;
       &:hover {

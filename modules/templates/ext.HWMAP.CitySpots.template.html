@@ -7,7 +7,12 @@
 
   <!-- Cardinal direction title (North, South...) -->
   <div class="visualClear" id="{{slugify(cardinalDirection)}}">
-    <h3 class="hw-cardinal-direction"><a href="#{{slugify(cardinalDirection)}}"><i class="fa fa-location-arrow"></i> {{cardinalDirection}}</a></h3>
+    <h3 class="hw-cardinal-direction">
+      <a href="#{{slugify(cardinalDirection)}}">
+        <i class="fa fa-location-arrow"></i>
+        {{cardinalDirection}}
+      </a>
+    </h3>
   </div>
 
   {{#this:index}}
@@ -52,6 +57,7 @@
 
             <button type="button"
                     class="hw-button hw-button-small"
+                    id="hw-comments-button-{{id}}"
                     onclick="mw.HWMaps.City.loadComments('{{id}}', '{{@keypath}}')">
               <i class="fa fa-comment-o"></i>
               {{#if comment_count > 0}}
@@ -158,8 +164,8 @@
     <!-- Statistics -->
     {{#if _isStatisticsVisible}}
     <div class="hw-spot-statistics">
-      {{>waitingtimesTemplate}}
-      {{>ratingsTemplate}}
+      {{>statsWaitingtimesTemplate}}
+      {{>statsRatingsTemplate}}
     </div>
     {{/if}}
     <!-- /Statistics -->
