@@ -133,7 +133,8 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
   'lodash' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
-      'modules/vendor/lodash/dist/lodash.js'
+      'modules/vendor/lodash/dist/lodash.js',
+      'modules/js/ext.HWMap.Lodash.binding.js'
     )
   ),
 
