@@ -20,6 +20,9 @@ class HWSpotIdApi extends ApiBase {
     // Make an array from properties param
     $properties = explode(',', $params['properties']);
 
+    // `$spot` will be returned from API
+    $spot = new stdClass();
+
     // Get title of the spot
     $get_title = new DerivativeRequest(
       $this->getRequest(),
@@ -37,37 +40,6 @@ class HWSpotIdApi extends ApiBase {
     $title = $get_title_data['query']['pages'][$first_key]['title'];
     $spot->title = $title;
 
-    // Get data of the spot via Semantic-MediaWiki Ask API
-    $get_spotdata = new DerivativeRequest(
-      $this->getRequest(),
-      array(
-        'action' => 'ask',
-        'query' => '[['.$title.']]' .
-                   '|?' . join('|?', $properties)
-      ),
-      true
-    );
-
-    $get_spotdata_api = new ApiMain( $get_spotdata );
-    $get_spotdata_api->execute();
-    $get_spotdata_data = $get_spotdata_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
-    $first_key = key($get_spotdata_data['query']['results']);
-    $result = $get_spotdata_data['query']['results'][$first_key];
-
-    // Get the properties
-    foreach ($properties_array as $propertie) {
-      // Check if the propertie have multiple value
-      if ($result['printouts'][$propertie][0]['fulltext']) {
-        $spot->$propertie = [];
-        for ($i = 0; $i < count($result['printouts'][$propertie]); ++$i) {
-          array_push($spot->$propertie, $result['printouts'][$propertie][$i]['fulltext']);
-        }
-      }
-      else{
-        $spot->$propertie =  $result['printouts'][$propertie];
-      }
-    }
-
     // Get parsed description
     $spot_text = new DerivativeRequest(
       $this->getRequest(),
@@ -83,6 +55,45 @@ class HWSpotIdApi extends ApiBase {
     $spot_text_api->execute();
     $spot_text_data = $spot_text_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
     $spot->Description = $spot_text_data['parse']['text']['*'];
+
+    // Get data of the spot via Semantic-MediaWiki Ask API
+    // https://www.semantic-mediawiki.org/wiki/Ask_API
+    $get_spotdata = new DerivativeRequest(
+      $this->getRequest(),
+      array(
+        'action' => 'ask',
+        'query' => '[[' . $title . ']]' .
+                   '|?' . join('|?', $properties)
+      ),
+      true
+    );
+    $get_spotdata_api = new ApiMain($get_spotdata);
+    $get_spotdata_api->execute();
+    $get_spotdata_data = $get_spotdata_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
+    $first_key = key($get_spotdata_data['query']['results']);
+    $result = $get_spotdata_data['query']['results'][$first_key];
+
+    // Get SMW properties such as `Location`, `Country`, `CardinalDirection` etc
+    if (is_array($result['printouts'])) {
+      foreach ($result['printouts'] as $key => $property) {
+
+        // Don't return location as an Array
+        if ($key === 'Location') {
+          $spot->location = array_values($result['printouts'][$key])[0];
+        } elseif (is_array($result['printouts'][$key])) {
+          $spot->$key = array();
+          for ($i = 0; $i < count($result['printouts'][$key]); ++$i) {
+            if ($result['printouts'][$key][$i]['fulltext']) {
+              array_push($spot->$key, $result['printouts'][$key][$i]['fulltext']);
+            } else {
+              array_push($spot->$key, $result['printouts'][$key][$i]);
+            }
+          }
+        } else {
+          $spot->$key = $result['printouts'][$key];
+        }
+      }
+    }
 
     // If the rating extension is set
     if ( class_exists( 'HWAvgRatingApi' ) ) {

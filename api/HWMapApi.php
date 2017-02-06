@@ -57,7 +57,6 @@ class HWMapApi extends ApiBase {
         )
       );
 
-
       // Build the api result
       foreach ($res as $row) {
         if (!$params['category'] || $row->cl_to == $params['category']) {
