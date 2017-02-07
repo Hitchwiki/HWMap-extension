@@ -135,9 +135,9 @@
         <!-- Spot description -->
         <div class="hw-spot-description">
         {{#if Description}}
-          {{#if Description.length > 300 && !_isLongDescriptionVisible}}
+          {{#if Description.length > 500 && !_isLongDescriptionVisible}}
             <div class="hw-spot-description-long">
-              {{{Description}}} …
+              {{{Description}}}
             </div>
             <button type="button"
                     class="hw-button hw-button-small"

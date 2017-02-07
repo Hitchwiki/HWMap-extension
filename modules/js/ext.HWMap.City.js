@@ -613,7 +613,6 @@
     */
   };
 
-
   /**
    * Generic function to animate element at City page
    * @TODO: consider using Ractive for this?

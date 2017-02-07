@@ -54,12 +54,14 @@
     padding: @spot-spacing;
     flex: 3 1 30%;
     order: 2;
+    max-width: 30%;
   }
   .hw-spot-content {
     margin: 0 @spot-spacing;
     padding: @spot-spacing;
     flex: 1 6 70%;
     order: 3;
+    max-width: 70%;
   }
   .hw-spot-comments,
   .hw-spot-statistics {
@@ -69,6 +71,9 @@
   }
   .hw-spot-description {
     flex-grow: 1;
+    p {
+      word-wrap: break-word;
+    }
   }
 
   /* Too narrow to support all columns */
@@ -103,7 +108,7 @@
     // Long descriptions are cut short
     .hw-spot-description-long {
       display: block;
-      max-height: 230px;
+      max-height: 200px;
       overflow: hidden;
       position: relative;
 
