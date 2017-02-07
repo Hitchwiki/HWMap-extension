@@ -10,6 +10,7 @@
       $zoomInfoOverlay,
       $hwspot,
       $hwmap,
+      spotLoading = false,
       // When in debug mode, cache bust templates
       cacheBust = mw.config.get('debug') ? new Date().getTime() : mw.config.get('wgVersion');
 
@@ -146,6 +147,12 @@
   SpecialPage.openSpot = function(pageId, panTo) {
     mw.log('HWMaps::SpecialPage::openSpot');
 
+    if (spotLoading) {
+      return;
+    }
+
+    spotLoading = true;
+
     if (!pageId) {
       mw.log.error('HWMaps::SpecialPage::openSpot: No ID defined for loading a spot. #fj902j');
       return;
@@ -200,6 +207,8 @@
     $.get(apiUri, function(data) {
       mw.log('HWMaps::SpecialPage::openSpot: API Response');
       mw.log(data);
+
+      spotLoading = false;
 
       // Remove loading spinner
       $.removeSpinner('hwLoadSpotSpinner');
@@ -275,6 +284,8 @@
     .fail(function() {
       mw.log.error('HWMaps::SpecialPage::openSpot: Could not load spot details from the API. #g84303');
 
+      spotLoading = false;
+
       // Bubble notification
       // `mw.message` gets message translation, see `i18n/en.json`
       // `tag` replaces any previous bubbles by same tag
@@ -290,6 +301,7 @@
 
       // Close sidebar as we failed to load content for it
       SpecialPage.closeSpecialPageSpot();
+
     })
 
   };
