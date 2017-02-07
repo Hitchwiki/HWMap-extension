@@ -230,7 +230,7 @@ class HWMapCityApi extends ApiBase {
     return true;
   }
 
-	// API endpoint description
+  // API endpoint description
   public function getDescription() {
     return 'Get the linked spots of a page.';
   }

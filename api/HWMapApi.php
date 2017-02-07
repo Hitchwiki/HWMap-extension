@@ -114,7 +114,7 @@ class HWMapApi extends ApiBase {
     return true;
   }
 
-	// API endpoint description
+  // API endpoint description
   public function getDescription() {
     return 'Get pages located in a specified bounding box.';
   }

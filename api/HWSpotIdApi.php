@@ -4,7 +4,7 @@
  * (average ratings and location) of the spot of given id
  */
 class HWSpotIdApi extends ApiBase {
-	public function execute() {
+  public function execute() {
     global $wgUser;
 
     // Get parameters
@@ -188,32 +188,32 @@ class HWSpotIdApi extends ApiBase {
     $this->getResult()->addValue('query', 'spot',  $spot);
 
     return true;
-	}
+  }
 
-	// API endpoint description
-	public function getDescription() {
-		return 'Get the linked spots of a page.';
-	}
+  // API endpoint description
+  public function getDescription() {
+    return 'Get the linked spots of a page.';
+  }
 
-	// Parameters.
-	public function getAllowedParams() {
-		return array(
-			'page_id' => array(
-				ApiBase::PARAM_TYPE => 'integer',
-				ApiBase::PARAM_REQUIRED => true
-			),
-			'properties' => array(
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true
-			)
-		);
-	}
+  // Parameters.
+  public function getAllowedParams() {
+    return array(
+      'page_id' => array(
+        ApiBase::PARAM_TYPE => 'integer',
+        ApiBase::PARAM_REQUIRED => true
+      ),
+      'properties' => array(
+        ApiBase::PARAM_TYPE => 'string',
+        ApiBase::PARAM_REQUIRED => true
+      )
+    );
+  }
 
-	// Describe the parameter
-	public function getParamDescription() {
-		return array_merge( parent::getParamDescription(), array(
-			'page_title' => 'Page title',
-			'properties' => 'Page propeties to query'
-		) );
-	}
+  // Describe the parameter
+  public function getParamDescription() {
+    return array_merge( parent::getParamDescription(), array(
+      'page_title' => 'Page title',
+      'properties' => 'Page propeties to query'
+    ) );
+  }
 }
