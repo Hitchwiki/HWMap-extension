@@ -7,14 +7,20 @@ class HWFindNearbyCityApi extends ApiBase {
            $wgHwMapBigCityMinPopulation,
            $hwConfig;
 
+    // If Geonames username isn't set, return error
+    if (empty($hwConfig['vendor']['geonames_username'])) {
+      $this->geocoderUnavailableAPIError();
+      return true;
+    }
+
     // Get parameters
     $params = $this->extractRequestParams();
+
+    // Get coordinates
+    // @TODO: validate lat and lng ranges to avoid unnecessary queries
     $lat = (double) $params['lat'];
     $lng = (double) $params['lng'];
 
-    // @TODO: validate lat and lng ranges to avoid unnecessary queries
-
-    // @TODO: yeld error when missing `$hwConfig['vendor']['geonames_username']`
 
     /*
      * Compute a bounding rectangle (LatLngBounds instance) from a point and a given radius.
@@ -240,6 +246,33 @@ class HWFindNearbyCityApi extends ApiBase {
     $this->getResult()->addValue('cities', array(), $city);
 
     return true;
+  }
+
+  /**
+   * Produce API error when geocoder API isn't available
+   */
+  public geocoderUnavailableAPIError() {
+    global $wgVersion;
+
+    $msg = 'Geocoder is currently unavailable. Try again later.';
+    $code = 'geocoderUnavailable';
+
+    $mwSupportsDieWithError = version_compare($wgVersion, '1.29', '>=');
+
+    if ($mwSupportsDieWithError) {
+      // MediaWiki 1.29 and newer
+      // https://doc.wikimedia.org/mediawiki-core/master/php/classApiBase.html#a66ea5959af0a75c62c90be5dff929d6
+      $this->dieWithError(
+        $msg,
+ 	      $code,
+ 	      null, // data
+ 	      503 // http code 503 "service unavailable" (implies it's temporary)
+      );
+    } else {
+      // MediaWiki 1.28 and older
+      // `dieUsageMsg` is deprecated
+      $this->dieUsageMsg(array($code, $msg));
+    }
   }
 
   // API endpoint description

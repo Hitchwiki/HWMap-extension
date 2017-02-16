@@ -110,7 +110,7 @@
 
     // Getting spots related to this (city) article
     $.getJSON(mw.util.wikiScript('api'), {
-      action: 'hwmapcityapi',
+      action: 'hwmapcity',
       properties: [
         'Location',
         'Country',

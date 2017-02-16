@@ -99,7 +99,7 @@
     // Build the API URL
     var queryUri = new mw.Uri(mw.util.wikiScript('api'));
     queryUri.extend({
-      action: 'hwmapapi',
+      action: 'hwmap',
       category: category,
       SWlat: mw.HWMaps.lastBounds.SWlat,
       SWlon: mw.HWMaps.lastBounds.SWlng,

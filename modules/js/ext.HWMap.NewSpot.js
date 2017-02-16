@@ -5,8 +5,7 @@
   var newSpotMarker,
       $newSpotWrap,
       $newSpotForm,
-      $newSpotInitButton,
-      geonamesUsername = _.get(mw, 'HWMaps.config.vendor.geonames_username');
+      $newSpotInitButton;
 
   /**
    * @class mw.HWMaps.NewSpot
@@ -188,7 +187,7 @@
 
   /**
    * Reverse geocode (lat,lon => place name)
-   * @todo: needs refactoring. Move GeoCoder stuff to a separate class?
+   * @todo refactor, it's quite messy...
    * @param latLng Leaflet latLng object (http://leafletjs.com/reference-1.0.0.html#latlng)
    */
   function newSpotReverseGeocode(latLng) {
@@ -200,23 +199,11 @@
       return;
     }
 
-    // No Geonames username?
-    if (!geonamesUsername) {
-      clearAddNewSpotUI();
-      mw.log.error('HWMaps::NewSpot::newSpotReverseGeocode: No GeoNames username #j8h233');
-      // Bubble notification
-      // `mw.message` gets message translation, see `i18n/en.json`
-      // `tag` replaces any previous bubbles by same tag
-      // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mediawiki.notify
-      mw.notify(mw.message('hwmap-error-geocoder').text(), { tag: 'hwmap-error' });
-      return;
-    }
-
     var city = '',
         country = '',
         isBigCity = false,
         // Get this value from config, but default to 500K
-        geonamesMinPopulationNonCapital = _.get(mw, 'HWMaps.config.geonamesMinPopulationNonCapital', 500000);
+        geocoderMinPopulationNonCapital = _.get(mw, 'HWMaps.config.geocoderMinPopulationNonCapital', 500000);
 
     // Cache jQuery elements
     var $inputCity = $newSpotForm.find('input[name="Spot[Cities]"]'),
@@ -277,70 +264,78 @@
     var point = new mw.HWMaps.GeoPoint(latLng.lat, latLng.lng);
     var bbox = point.boundingCoordinates(20, null, true);
 
-    // Spot name
-    // @TODO: HTTPS!
-    $.ajax({
-      url: 'http://api.geonames.org/citiesJSON',
-      dataType: 'jsonp',
-      data: {
-        // `latitude()` and `longitude()` are `mw.HWMaps.GeoPoint` methods
-        north: bbox[1].latitude(),
-        east: bbox[1].longitude(),
-        south: bbox[0].latitude(),
-        west: bbox[0].longitude(),
-        style: 'full',
-        maxRows: 1,
-        lang: 'en',
-        username: geonamesUsername
-      },
-      success: function(data) {
-        if (_.isArray(data.geonames) && data.geonames.length > 0) {
-          place = data.geonames[0];
+    // Produce a `title` for the spot
+    $.getJSON(mw.util.wikiScript('api'), {
+      action: 'hwgeocoder',
+      format: 'json',
+      // `latitude()` and `longitude()` are `mw.HWMaps.GeoPoint` methods
+      NElat: bbox[1].latitude(), // north
+      NElon: bbox[1].longitude(), // east
+      SWlat: bbox[0].latitude(), // south
+      SWlon: bbox[0].longitude(), // west
+      style: 'FULL',
+      maxRows: 1,
+      geocodingService: 'cities',
+      // lang: 'en', // Gets set by default at the backend to `en`
+    }).done(function(data) {
 
-          isBigCity = (
-            (place.fcode && $.inArray(place.fcode, ['PPLC', 'PPLA']) !== -1) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
-            (place.population && place.population >= geonamesMinPopulationNonCapital) // populated city (eg. Rotterdam)
-          );
+      mw.log('HWMaps::NewSpot::newSpotReverseGeocode: got hwgeocoderapi cities response');
+      mw.log(data);
 
-          if (place.name) {
-            city = place.name;
-          }
+      if (data.error) {
+        mw.log.warn('HWMaps::NewSpot::newSpotReverseGeocode: Geocoder returned an error');
+        mw.log.warn(data.error);
+      }
 
-          var countryCode = data.geonames[0].countrycode;
-          if (countryCode && countryCode !== '') {
-            $.ajax({
-              url: 'http://api.geonames.org/countryInfoJSON',
-              dataType: 'jsonp',
-              data: {
-                country: countryCode,
-                style: 'full',
-                maxRows: 1,
-                lang: 'en',
-                username: geonamesUsername
-              },
-              success: function(data) {
-                if (_.isArray(data.geonames) && data.geonames.length > 0) {
-                  var countryInfo = data.geonames[0];
-                  if (countryInfo && countryInfo.countryName) {
-                    country = countryInfo.countryName;
-                  }
-                }
-                fillSpotForm();
-              },
-              error: function() { // country info lookup request failed
-                fillSpotForm();
-              }
-            });
-          } else { // no country code in city search response
-            fillSpotForm();
-          }
-        } else { // no closeby cities found
-            fillSpotForm();
+      if (data.query && _.isArray(data.query) && data.query.length > 0) {
+        place = data.query[0];
+
+        isBigCity = (
+          (place.fcode && $.inArray(place.fcode, ['PPLC', 'PPLA']) !== -1) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
+          (place.population && place.population >= geocoderMinPopulationNonCapital) // populated city (eg. Rotterdam)
+        );
+
+        if (place.name) {
+          city = place.name;
         }
-      },
-      error: function() { // city search request failed
+
+        if (place.countrycode) {
+          $.getJSON(mw.util.wikiScript('api'), {
+            action: 'hwgeocoder',
+            format: 'json',
+            country: place.countrycode,
+            style: 'FULL',
+            maxRows: 1,
+            geocodingService: 'countryInfo',
+            // lang: 'en', // Gets set by default at the backend to `en`
+          }).done(function(data) {
+
+            mw.log('HWMaps::NewSpot::newSpotReverseGeocode: got hwgeocoderapi countryInfo response');
+            mw.log(data);
+
+            if (_.isArray(data.query) && data.query.length > 0) {
+              var countryInfo = data.query[0];
+              if (countryInfo && countryInfo.countryName) {
+                country = countryInfo.countryName;
+              }
+            }
+
+            fillSpotForm();
+          })
+          .fail(function() {
+            // country info lookup request failed
+            fillSpotForm();
+          });
+        } else { // no country code in city search response
+          fillSpotForm();
+        }
+      } else { // no closeby cities found
         fillSpotForm();
       }
+    })
+    .fail(function() {
+      // city search request failed
+      fillSpotForm();
     });
   }
 

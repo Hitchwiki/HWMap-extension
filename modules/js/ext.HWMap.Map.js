@@ -5,24 +5,10 @@
 
 (function(mw, $, L) {
 
-  mw.log('HWMaps::Map');
-
   var apiToken;
 
-  // Private variables
-  /*
-  var newSpotMarker,
-      newSpotLayer,
-      spotsData = {
-        groupSpots: {}
-      },
-      spots,
-      extensionRoot = mw.config.get('wgExtensionAssetsPath') + '/HWMap/',
-      userId = mw.config.get('wgUserId'),
-      token,
-      ractive,
-      animatedSpot = false;
-  */
+  // Path for our images
+  var extensionRoot = mw.config.get('wgExtensionAssetsPath') + '/HWMap/';
 
   /**
    * @class mw.HWMaps.Map
@@ -30,8 +16,11 @@
    * @constructor
    */
   function Map() {
-    mw.log('HWMaps::Map::constructor');
+    mw.log('mw.HWMaps::Map::constructor');
   }
+
+  // This initializes Hitchwiki Maps extension UI when DOM is ready
+  initializeUIOnDocumentReady();
 
   /**
    * Get edit token for MediaWiki API
@@ -82,7 +71,7 @@
    * @return instance of jQuery.Promise
    */
   Map.getArticleCoordinates = function() {
-    mw.log('mw.HWMaps.Map::getArticleCoordinates');
+    mw.log('HWMaps::Map::getArticleCoordinates');
 
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
@@ -94,17 +83,17 @@
       titles: mw.config.get('wgTitle'),
       format: 'json'
     }).done(function(data) {
-      mw.log('mw.HWMaps.Map::getArticleCoordinates - got coordinates:');
+      mw.log('HWMaps::Map::getArticleCoordinates - got coordinates:');
       mw.log(data);
 
       if (data && data.error) {
-        mw.log.warn('mw.HWMaps::City::initCityMapSpots: Spots API returned error. #3ijhgf');
+        mw.log.warn('mw.HWMaps::Map::getArticleCoordinates: Spots API returned error. #gi337g');
         mw.log.warn(data.error);
         return dfd.reject();
       }
 
       if (!_.has(data, 'query.pages')) {
-        mw.log.warn('mw.HWMaps.Map::getArticleCoordinates: No such page. #zfhgh8');
+        mw.log.warn('HWMaps::Map::getArticleCoordinates: No such page. #zfhgh8');
         return dfd.reject();
       }
 
@@ -119,7 +108,7 @@
 
       // Ensure we have coordinates
       if (!_.has(page, 'coordinates[0].lat') && !_.has(page, 'coordinates[0].lon')) {
-        mw.log.warn('mw.HWMaps.Map::getArticleCoordinates: No coordinates. #yyfG39');
+        mw.log.warn('HWMaps::Map::getArticleCoordinates: No coordinates. #yyfG39');
         return dfd.reject();
       }
 
@@ -127,7 +116,7 @@
           lon = parseFloat(_.get(page, 'coordinates[0].lon'));
 
       if (isNaN(lat) || isNaN(lon)) {
-        mw.log.error('mw.HWMaps.Map::getArticleCoordinates: Invalid coordinates. #gj93h2');
+        mw.log.error('HWMaps::Map::getArticleCoordinates: Invalid coordinates. #gj93h2');
         return dfd.reject();
       }
 
@@ -137,7 +126,7 @@
     })
     // https://api.jquery.com/deferred.fail/
     .fail(function() {
-      mw.log.warn('mw.HWMaps::City::initCityMapSpots: Spots API cannot be reached. #g2871f');
+      mw.log.warn('mw.HWMaps::Map::initCityMapSpots: Spots API cannot be reached. #382rgv');
       dfd.reject();
     });
 
@@ -146,19 +135,6 @@
     return dfd.promise();
   };
 
-  /**
-   * Reset previous bounds and zoom so that any movement on map will load fresh spots
-   */
-  Map.resetMapState = function() {
-    mw.log('HWMaps::Map::resetMapState');
-    mw.HWMaps.lastBounds = {
-      NElat: 0,
-      NElng: 0,
-      SWlat: 0,
-      SWlng: 0
-    };
-    mw.HWMaps.lastZoom = 0;
-  };
 
   /**
    * Clear map from markers
@@ -181,71 +157,19 @@
   };
 
   /**
-   * @static
+   * Reset previous bounds and zoom so that any movement on map will load fresh spots
    */
-  function initialize() {
-    mw.log('mw.HWMaps.Map.initialize');
-
-    // Give up if no map element on the page
-    if (!document.getElementById('hwmap') || ($.inArray(mw.config.get('wgAction'), ['view', 'purge', 'submit']) === -1)) {
-      mw.log('mw.HWMaps.Map.initialize -> No map element, aborting.');
-      return;
-    }
-
-    // Initializes global variables
-    // `mw.HWMaps.lastBounds` and `mw.HWMaps.lastZoom`
-    Map.resetMapState();
-
-    configure().then(function() {
-      mw.log('mw.HWMaps.Map::configure -> done');
-      mw.log(mw.HWMaps.config);
-      initializeLeafletIcons().then(function() {
-        mw.log('mw.HWMaps.Map::initializeLeafletIcons -> done');
-        initializeLeafletElement().then(function() {
-          mw.log('mw.HWMaps.Map::initializeLeafletElement -> done');
-
-          // Check if map is called from the special page (full page map)
-          if (mw.config.get('wgCanonicalSpecialPageName') === 'HWMap') {
-            mw.log('mw.HWMaps.Map::initialize -> Script initialized from the SpecialPage');
-            mw.loader.using(['ext.HWMap.NewSpot', 'ext.HWMap.SpecialPage']).then( function () {
-              mw.HWMaps.SpecialPage.initialize();
-            });
-          }
-          // Check if map is called from a city article
-          // `Cities` category is set by the template
-          else if (mw.config.get('wgIsArticle') === true &&
-                   mw.config.exists('wgCategories') &&
-                   $.inArray('Cities', mw.config.get('wgCategories')) != -1) {
-            mw.log('mw.HWMaps.Map::initialize -> Script initialized from a city article');
-            // Loader first loads these scripts, and then executes function
-            // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.using
-            mw.loader.using(['ext.HWMap.City', 'ext.HWMap.Toolbar']).then(function() {
-              // Initializes functionality required for the city page
-              mw.HWMaps.City.initialize();
-              // Adds button toolbar on top of the sidebar map:
-              mw.HWMaps.Toolbar.initialize();
-            });
-          }
-          // Check if map is called from a country article
-          // `Countries` category is set by the template
-          else if (mw.config.get('wgIsArticle') === true &&
-                   mw.config.exists('wgCategories') &&
-                   $.inArray('Countries', mw.config.get('wgCategories')) != -1) {
-            mw.log('mw.HWMaps.Map::initialize -> Script initialized from a country article');
-            mw.loader.using(['ext.HWMap.Country', 'ext.HWMap.CountryRating', 'ext.HWMap.Toolbar']).then(function() {
-              // Initializes basic functionality required for the country page
-              mw.HWMaps.Country.initialize();
-              // Initializes country rating widget
-              mw.HWMaps.CountryRating.initialize();
-              // Adds button toolbar on top of the sidebar map:
-              mw.HWMaps.Toolbar.initialize();
-            });
-          }
-        });
-      });
-    });
-
+  function resetMapState() {
+    mw.log('HWMaps::Map::resetMapState');
+    mw.HWMaps.lastBounds = {
+      NElat: 0,
+      NElng: 0,
+      SWlat: 0,
+      SWlng: 0
+    };
+    mw.HWMaps.lastZoom = 0;
   }
+  Map.resetMapState = resetMapState;
 
   /**
    * Fill `mw.HWMaps.config`
@@ -255,7 +179,7 @@
    * @return instance of jQuery.Promise
    */
   function configure() {
-    mw.log('mw.HWMaps.Map::configure');
+    mw.log('HWMaps::Map::configure');
 
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
@@ -267,9 +191,9 @@
         defaultCenter: [48.6908333333, 9.14055555556], // Europe
         defaultZoom: 5,
 
-        // Geonames settings
-        geonamesSpotCityDistance: 30, // in kilometers
-        geonamesMinPopulationNonCapital: 500000,
+        // Geocoder settings
+        //geocoderSpotCityDistance: 30, // in kilometers
+        geocoderMinPopulationNonCapital: 500000,
 
         // Base URL of the page, without URL params
         pageLocation: window.history.location || window.location,
@@ -281,7 +205,6 @@
        * ```
        * {
        *   vendor: {
-       *     geonames_username: '',
        *     mapbox_username: '',
        *     mapbox_mapkey_streets: '',
        *     mapbox_mapkey_satellite: '',
@@ -308,7 +231,7 @@
    * @return instance of jQuery.Promise
    */
   function initializeLeafletIcons() {
-    mw.log('mw.HWMaps.Map::initializeLeafletIcons');
+    mw.log('HWMaps::Map::initializeLeafletIcons');
 
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
@@ -317,9 +240,9 @@
     var leafletOriginalInitIcon = L.Marker.prototype._initIcon,
         leafletOriginalSetIcon = L.Marker.prototype.setIcon;
 
-    // Path for our images
-    var extensionRoot = mw.config.get('wgExtensionAssetsPath') + '/HWMap/';
+    mw.log('HWMaps::Map::initializeLeafletIcons: extension root is `' + extensionRoot + '`');
 
+    // Sets custom id and and title for markers
     L.Marker.include({
       setIcon: function(icon, id, title) {
         this.options.id = id;
@@ -338,8 +261,10 @@
     // Define icons object and make it global
     mw.HWMaps.icons = {};
 
+    // Country icon
     mw.HWMaps.icons.country = L.icon({
-      iconUrl: extensionRoot + 'modules/img/icons/city.svg',
+      iconUrl: extensionRoot + 'modules/img/icons/country.svg',
+      className: 'hw-country-icon', // See `cluster.less`
       iconSize: [24, 24],
       iconAnchor: [12, 12]
     });
@@ -351,6 +276,7 @@
       iconSize: [24, 24],
       iconAnchor: [12, 12]
     });
+
     mw.HWMaps.icons.citySmall = L.icon({
       iconUrl: extensionRoot + 'modules/img/icons/city.svg',
       className: 'hw-city-icon', // See `cluster.less`
@@ -421,7 +347,7 @@
    * @return instance of jQuery.Promise
    */
   function initializeLeafletElement() {
-    mw.log('mw.HWMaps.Map::initializeLeafletElement');
+    mw.log('HWMaps::Map::initializeLeafletElement');
 
     // https://api.jquery.com/deferred.promise/
     var dfd = $.Deferred();
@@ -432,11 +358,27 @@
         mapbox_mapkey_satellite = _.get(mw, 'HWMaps.config.vendor.mapbox_mapkey_satellite', false);
 
     // OSM layer
-    var mapLayerOSM = L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/">OSM</a>. <strong><a href="https://www.openstreetmap.org/login#map=' + mw.HWMaps.config.defaultZoom + '/' + mw.HWMaps.config.defaultCenter[0] + '/' + mw.HWMaps.config.defaultCenter[1] + '">Improve this map</a></strong>',
-      maxZoom: 18,
-      continuousWorld: true
-    });
+    // These tiles work trough https
+    // https://github.com/Hitchwiki/hitchwiki/issues/148
+    var mapLayerOSM = L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        subdomains: ['a', 'b', 'c'],
+        errorTileUrl: extensionRoot + 'modules/img/tile-error.png',
+        // If `true` and user is on a retina display, it will request four tiles
+        // of half the specified size and a bigger zoom level in place of one
+        // to utilize the high resolution.
+        //detectRetina: true,
+        attribution: '© <a href="https://www.openstreetmap.org/">OSM</a>. ' +
+                     '<strong>' +
+                     '<a href="https://www.openstreetmap.org/#map=' +
+                       mw.HWMaps.config.defaultZoom + '/' +
+                       mw.HWMaps.config.defaultCenter[0] + '/' +
+                       mw.HWMaps.config.defaultCenter[1] + '">' +
+                     'Improve this map</a>' +
+                     '</strong>'
+      }
+    );
 
     // `defaultLayer` is shown at map init.
     // This gets changed to MapBox below if it's configured
@@ -447,22 +389,35 @@
       'OpenStreetMap': mapLayerOSM
     };
 
-    // Using Mapbox tiles developed for Trustroots+Hitchwiki
+    // MapBox tiles
+    // Prettier than OSM
+    // These tiles work trough https
+    // https://github.com/Hitchwiki/hitchwiki/issues/148
     var mapBoxUrl = (mapbox_username && mapbox_access_token) ?
-      '//{s}.tiles.mapbox.com/v4/{user}.{map}/{z}/{x}/{y}.png' + L.Util.getParamString({
+      'https://{s}.tiles.mapbox.com/v4/{user}.{map}/{z}/{x}/{y}.png' + L.Util.getParamString({
         secure: 1,
         access_token: mapbox_access_token
       }) : false;
 
-    var mapBoxAttribution = '© <a href="https://www.openstreetmap.org/" target="_blank">OSM</a> &amp; <a href="https://www.mapbox.com/" target="_blank">MapBox</a>.';
+    var mapBoxAttribution =
+      '© <a href="https://www.openstreetmap.org/" target="_blank">OSM</a> ' +
+      '& <a href="https://www.mapbox.com/" target="_blank">MapBox</a>. ' +
+      '<strong>' +
+      '<a href="https://www.mapbox.com/map-feedback/#' +
+        mapbox_username + '.' +
+        '$1/' + // Will be replaced by map key
+        mw.HWMaps.config.defaultCenter[1] + '/' +
+        mw.HWMaps.config.defaultCenter[0] + '/' +
+        mw.HWMaps.config.defaultZoom +
+      '">Improve this map</a>' +
+      '</strong>';
 
     // Streets layer
     // https://github.com/Trustroots/Trustroots-map-styles/tree/master/Trustroots-Hitchmap.tm2
     if (mapBoxUrl && mapbox_mapkey_streets) {
       var mapLayerStreets = L.tileLayer(mapBoxUrl, {
-        attribution: mapBoxAttribution + ' <strong><a href="https://www.mapbox.com/map-feedback/#' + mapbox_username + '.' + mapbox_mapkey_streets + '/' + mw.HWMaps.config.defaultCenter[1] + '/' + mw.HWMaps.config.defaultCenter[0] + '/' + mw.HWMaps.config.defaultZoom + '">Improve this map</a></strong>',
-        maxZoom: 18,
-        continuousWorld: true,
+        errorTileUrl: extensionRoot + 'modules/img/tile-error.png',
+        attribution: mw.format(mapBoxAttribution, mapbox_mapkey_streets),
         user: mapbox_username,
         map: mapbox_mapkey_streets
       });
@@ -473,9 +428,8 @@
     // Satellite layer
     if (mapBoxUrl && mapbox_mapkey_satellite) {
       var mapLayerSatellite = L.tileLayer(mapBoxUrl, {
-        attribution: mapBoxAttribution + ' <strong><a href="https://www.mapbox.com/map-feedback/#' + mapbox_username + '.' + mapbox_mapkey_satellite + '/' + mw.HWMaps.config.defaultCenter[1] + '/' + mw.HWMaps.config.defaultCenter[0] + '/' + mw.HWMaps.config.defaultZoom + '">Improve this map</a></strong>',
-        maxZoom: 18,
-        continuousWorld: true,
+        errorTileUrl: extensionRoot + 'modules/img/tile-error.png',
+        attribution: mw.format(mapBoxAttribution, mapbox_mapkey_satellite),
         user: mapbox_username,
         map: mapbox_mapkey_satellite
       });
@@ -551,13 +505,85 @@
     return dfd.promise();
   }
 
+  /**
+   * Initialise extension UI
+   * This will in turn call all the other functions depending on page we are loading
+   * @static
+   */
+  function initializeUI() {
+    mw.log('HWMaps::Map::initializeUI');
+
+    // Give up if no map element on the page
+    if (!document.getElementById('hwmap') || ($.inArray(mw.config.get('wgAction'), ['view', 'purge', 'submit']) === -1)) {
+      mw.log('HWMaps::Map::initializeUI: No map element, aborting.');
+      return;
+    }
+
+    // Initializes global map state variables
+    // `mw.HWMaps.lastBounds` and `mw.HWMaps.lastZoom`
+    resetMapState();
+
+    configure().then(function() {
+      mw.log('HWMaps::Map::initializeUI: configure done');
+      mw.log(mw.HWMaps.config);
+      initializeLeafletIcons().then(function() {
+        mw.log('HWMaps::Map::initializeUI: initializeLeafletIcons done');
+        initializeLeafletElement().then(function() {
+          mw.log('HWMaps::Map::initializeUI: initializeLeafletElement done');
+
+          // Check if map is called from the special page (i.e. load full page map)
+          if (mw.config.get('wgCanonicalSpecialPageName') === 'HWMap') {
+            mw.log('HWMaps::Map::initializeUI: Script initialized from `Special:HWMap` -page.');
+            mw.loader.using(['ext.HWMap.NewSpot', 'ext.HWMap.SpecialPage']).then( function () {
+              mw.HWMaps.SpecialPage.initialize();
+            });
+          }
+          // Check if map is called from a city article
+          // `Cities` category is set by the template
+          else if (mw.config.get('wgIsArticle') === true &&
+                   mw.config.exists('wgCategories') &&
+                   $.inArray('Cities', mw.config.get('wgCategories')) > -1) {
+            mw.log('HWMaps::Map::initializeUI: Script initialized from a city article');
+            // Loader first loads these scripts, and then executes function
+            // https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.using
+            mw.loader.using(['ext.HWMap.City', 'ext.HWMap.Toolbar']).then(function() {
+              // Initializes functionality required for the city page
+              mw.HWMaps.City.initialize();
+              // Adds button toolbar on top of the sidebar map:
+              mw.HWMaps.Toolbar.initialize();
+            });
+          }
+          // Check if map is called from a country article
+          // `Countries` category is set by the template
+          else if (mw.config.get('wgIsArticle') === true &&
+                   mw.config.exists('wgCategories') &&
+                   $.inArray('Countries', mw.config.get('wgCategories')) > -1) {
+            mw.log('HWMaps::Map::initializeUI: Script initialized from a country article');
+            mw.loader.using(['ext.HWMap.Country', 'ext.HWMap.CountryRating', 'ext.HWMap.Toolbar']).then(function() {
+              // Initializes basic functionality required for the country page
+              mw.HWMaps.Country.initialize();
+              // Initializes country rating widget
+              mw.HWMaps.CountryRating.initialize();
+              // Adds button toolbar on top of the sidebar map:
+              mw.HWMaps.Toolbar.initialize();
+            });
+          }
+        });
+      });
+    });
+  }
+
+  /**
+   * Wait for DOM to finish loading before initializing the extension UI
+   * @static
+   */
+  function initializeUIOnDocumentReady() {
+    mw.log('HWMaps::Map::initializeUIOnDocumentReady');
+    // https://learn.jquery.com/using-jquery-core/document-ready/
+    $(document).ready(initializeUI);
+  }
+
   // Export
   mw.HWMaps.Map = Map;
-
-  // Wait for DOM to finish loading before initializing the extension
-  $(document).ready(function() {
-    mw.log('HWMaps::Map -> $document ready');
-    initialize();
-  });
 
 }(mediaWiki, jQuery, L));

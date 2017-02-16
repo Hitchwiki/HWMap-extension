@@ -48,6 +48,8 @@ $wgHwMapBigCityMinPopulation = 500000;
 /* ------------------------------------------------------------------------ */
 
 // Kudos
+// deprecated
+// https://www.mediawiki.org/wiki/Manual:$wgExtensionCredits
 $wgExtensionCredits['HWMap'][] = array(
   'path' => __FILE__,
   'name' => 'HWMap',
@@ -72,16 +74,18 @@ $wgExtensionMessagesFiles['HWMapAlias'] = __DIR__ . '/HWMap.alias.php';
 $wgAutoloadClasses['SpecialHWMap'] = $IP . '/extensions/HWMap/SpecialHWMap.php';
 $wgSpecialPages['HWMap'] = 'SpecialHWMap';
 
-//Register API
+// Register API
 $wgAutoloadClasses['SphericalGeometry'] = __DIR__ . '/lib/SphericalGeometry/spherical-geometry.class.php';
 $wgAutoloadClasses['HWMapApi'] = __DIR__ . '/api/HWMapApi.php';
 $wgAutoloadClasses['HWMapCityApi'] = __DIR__ . '/api/HWMapCityApi.php';
 $wgAutoloadClasses['HWSpotIdApi'] = __DIR__ . '/api/HWSpotIdApi.php';
 $wgAutoloadClasses['HWFindNearbyCityApi'] = __DIR__ . '/api/HWFindNearbyCityApi.php';
-$wgAPIModules['hwmapapi'] = 'HWMapApi';
-$wgAPIModules['hwmapcityapi'] = 'HWMapCityApi';
-$wgAPIModules['hwspotidapi'] = 'HWSpotIdApi';
-$wgAPIModules['hwfindnearbycityapi'] = 'HWFindNearbyCityApi';
+$wgAutoloadClasses['HWGeocoderApi'] = __DIR__ . '/api/HWGeocoderApi.php';
+$wgAPIModules['hwmap'] = 'HWMapApi';
+$wgAPIModules['hwmapcity'] = 'HWMapCityApi';
+$wgAPIModules['hwspotid'] = 'HWSpotIdApi';
+$wgAPIModules['hwfindnearbycity'] = 'HWFindNearbyCityApi';
+$wgAPIModules['hwgeocoder'] = 'HWGeocoderApi';
 
 // Register assets
 $wgHWMapResourceBoilerplate = array(
@@ -259,7 +263,6 @@ function onResourceLoaderGetConfigVars( array &$vars ) {
 
   // Explicit list to avoid private tokens ending up in JS vars
   $varNames = array(
-    'geonames_username',
     'mapbox_username',
     'mapbox_access_token',
     'mapbox_mapkey_streets',
