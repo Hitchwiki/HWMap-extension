@@ -18,7 +18,7 @@
     mw.log('HWMaps::CountryRating::initialize');
 
     // When in debug mode, cache bust templates
-    var cacheBust = mw.config.get('debug') ? new Date().getTime() : mw.config.get('wgVersion');
+    var cacheBust = mw.config.get('debug') ? mw.now() : mw.config.get('wgVersion');
 
     var getTatingTemplate = $.get(mw.config.get('wgExtensionAssetsPath') + '/HWMap/modules/templates/ext.HWMAP.Ratings.template.html?v=' + cacheBust);
 

@@ -9,7 +9,7 @@
       // Ractive template object
       $loadSpotsSpinner,
       // When in debug mode, cache bust templates
-      cacheBust = mw.config.get('debug') ? new Date().getTime() : mw.config.get('wgVersion');
+      cacheBust = mw.config.get('debug') ? mw.now() : mw.config.get('wgVersion');
 
   /**
    * @class mw.HWMaps.Country
