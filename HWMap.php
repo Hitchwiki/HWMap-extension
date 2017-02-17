@@ -203,7 +203,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'modules/less/ext.HWMap.less',
     ),
     // These the language strings passed on to the frontend so that they can
-    // be used like this in JS: `mw.message('key')`
+    // be used like this in JS: `mw.message('key').text()`
     // https://www.mediawiki.org/wiki/Manual:Messages_API#Using_messages_in_JavaScript
     'messages' => array(
       'hwmap-hitchability-very-good',
@@ -227,7 +227,9 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'hwmap-confirm-removing-waitingtime',
       'hwmap-missing-waitingtime',
       'hwmap-open-cityname',
-      'hwmap-open-city'
+      'hwmap-open-city',
+      'hwmap-wait',
+      'hwmap-continue'
     ),
     // `other` ensures this loads after the Vector skin styles
     'group' => 'other',

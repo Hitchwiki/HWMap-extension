@@ -26,5 +26,11 @@
   "hwmap-error-spot-load": "Failed to load spot.",
   "hwmap-missing-waitingtime": "Missing correct time to add...",
   "hwmap-open-cityname": "Open $1",
-  "hwmap-open-city": "Open city"
+  "hwmap-open-city": "Open city",
+  "hwmap-cancel": "Cancel",
+  "hwmap-continue": "Continue",
+  "hwmap-wait": "Wait...",
+  "hwmap-zoom-closer-to-see-spots": "Zoom closer to see hitchhiking spots.",
+  "hwmap-adding-new-spot-marker-instruction": "Drag marker to the hitchhiking spot. Zoom in closer to see better and use satellite maps to confirm location.",
+  "hwmap-add-new-spot": "Add new spot"
 }

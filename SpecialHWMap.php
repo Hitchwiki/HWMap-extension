@@ -20,9 +20,9 @@ class SpecialHWMap extends SpecialPage {
     // Add new spot HTML
     // `class` variable is to fix bug caused by `ext.headertabs.core.js`:
     // `Uncaught TypeError: Cannot read property 'indexOf' of undefined at tabEditTabLink`
-    $output->addHTML('<a href="#" id="hwmap-add" class="section-0" style="display:none;">Add new spot</a>');
+    $output->addHTML('<a href="#" id="hwmap-add" class="section-0" style="display:none;">' . wfMessage('hwmap-add-new-spot')->text() . '</a>');
     $output->addHTML('<div id="hwmap-add-wrap" style="display:none;">');
-    $output->addHTML('<p>Drag marker to the hitchhiking spot. Zoom in closer to see better and use satellite maps to confirm location.</p>');
+    $output->addHTML('<p>' . wfMessage('hwmap-adding-new-spot-marker-instruction')->text() . '</p>');
 
     // Semantic form for adding new spot
     // https://www.mediawiki.org/wiki/Extension:Page_Forms/Linking_to_forms#Using_.23forminput
@@ -39,7 +39,7 @@ class SpecialHWMap extends SpecialPage {
     $output->addWikiText('{{#' . implode('|', $formVars) . '}}');
 
     // More add new spot HTML...
-    $output->addHTML('<a href="#" id="hwmap-cancel-adding">Cancel</a>');
+    $output->addHTML('<a href="#" id="hwmap-cancel-adding">' . wfMessage('hwmap-cancel')->text() . '</a>');
     $output->addHTML('</div><!--#hwmap-add-wrap-->');
     $output->addHTML('</div></div>');
 
@@ -52,7 +52,7 @@ class SpecialHWMap extends SpecialPage {
 
     // The zoom info overlay
     // Toggled visible on high zoom levels
-    $output->addHTML('<div id="hw-zoom-info-overlay">Zoom closer to see hitchhiking spots.</div>');
+    $output->addHTML('<div id="hw-zoom-info-overlay">' . wfMessage('hwmap-zoom-closer-to-see-spots')->text() . '</div>');
 
 
   }

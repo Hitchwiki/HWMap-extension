@@ -210,7 +210,9 @@
         $inputCountry = $newSpotForm.find('input[name="Spot[Country]"]'),
         $inputPageName = $newSpotForm.find('input[name="page_name"]'),
         $inputLocation = $newSpotForm.find('input[name="Spot[Location]"]'),
-        $submitButton = $newSpotForm.find('input[type="submit"]');
+        $submitButton = $newSpotForm.find('input[type="submit"]'),
+        submitButtonValContinue = mw.message('hwmap-continue').text(),
+        submitButtonValWait = mw.message('hwmap-wait').text();
 
     // Empty previously set input values
     $inputCity.val('');
@@ -218,6 +220,7 @@
     $inputPageName.val('');
 
     function fillSpotForm() {
+      mw.log('HWMaps::NewSpot::newSpotReverseGeocode.fillSpotForm');
       var placeName = '';
 
       // Prefill city input at the form
@@ -252,10 +255,13 @@
       $inputPageName.val(placeName);
 
       // Enable the form again
-      $submitButton.removeAttr('disabled');
+      $submitButton.prop('disabled', false);
+      $submitButton.val(submitButtonValContinue);
     }
 
-    $submitButton.attr('disabled', 'disabled');
+    // Disable submit button
+    $submitButton.prop('disabled', true);
+    $submitButton.val(submitButtonValWait);
 
     // Spot coordinates
     $inputLocation.val(latLng.lat + ',' + latLng.lng);
