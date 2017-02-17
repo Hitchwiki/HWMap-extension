@@ -102,11 +102,6 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'modules/vendor/leaflet/dist/leaflet.css',
     ),
   ),
-  'bootstrap-grid' => $wgHWMapResourceBoilerplate + array(
-    'styles' => array(
-      'modules/vendor/bootstrap-grid/dist/bootstrap-grid.css',
-    ),
-  ),
 
   'prunecluster' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
@@ -183,7 +178,6 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'jquery.tipsy', // @TODO: deprecated in MW 1.28
       'jquery.spinner',
       'leaflet',
-      'bootstrap-grid',
       'prunecluster',
       'ractive',
       'autosize',

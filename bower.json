@@ -11,7 +11,6 @@
     "leaflet": "~0.7.7",
     "PruneCluster": "~1.1.0",
     "ractive": "~0.8.9",
-    "bootstrap-grid": "https://github.com/simison/bootstrap-grid.git",
     "HTML5-History-API": "https://github.com/devote/HTML5-History-API",
     "lodash": "~4.17.3",
     "autosize": "~3.0.20"
