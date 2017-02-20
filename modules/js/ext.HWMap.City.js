@@ -214,51 +214,56 @@
       groupSpots: {}
     };
 
-    // Groups different spots by cardinal direction
-    var otherDirections = [];
-    for (var i = 0; i < spots.length; i++) {
+    // Boolean, exposed to the Ractive template
+    var hasSpots = Boolean(spots.length);
 
-      // Rating label
-      spots[i].average_label = mw.HWMaps.Spots.getRatingLabel(spots[i].rating_average);
+    if (hasSpots) {
+      // Groups different spots by cardinal direction
+      var otherDirections = [];
+      for (var i = 0; i < spots.length; i++) {
 
-      // User's timestamp
-      if (spots[i].timestamp_user) {
-        spots[i].timestamp_user = mw.HWMaps.Spots.parseTimestamp(spots[i].timestamp_user);
-      }
+        // Rating label
+        spots[i].average_label = mw.HWMaps.Spots.getRatingLabel(spots[i].rating_average);
 
-      // User's rating
-      if (spots[i].rating_user) {
-        spots[i].rating_user_label = mw.HWMaps.Spots.getRatingLabel(spots[i].rating_user);
-      }
-
-      // Cardinal direction
-      if (spots[i].CardinalDirection[0]) {
-        var cardinalDirection = spots[i].CardinalDirection.join(', ');
-        if (!spotsByDirections.groupSpots[cardinalDirection]) {
-          spotsByDirections.groupSpots[cardinalDirection] = [];
+        // User's timestamp
+        if (spots[i].timestamp_user) {
+          spots[i].timestamp_user = mw.HWMaps.Spots.parseTimestamp(spots[i].timestamp_user);
         }
-        spotsByDirections.groupSpots[cardinalDirection].push(spots[i]);
-      }
-      // No cardinal direction, group to "other"
-      else {
-        otherDirections.push(spots[i])
+
+        // User's rating
+        if (spots[i].rating_user) {
+          spots[i].rating_user_label = mw.HWMaps.Spots.getRatingLabel(spots[i].rating_user);
+        }
+
+        // Cardinal direction
+        if (spots[i].CardinalDirection[0]) {
+          var cardinalDirection = spots[i].CardinalDirection.join(', ');
+          if (!spotsByDirections.groupSpots[cardinalDirection]) {
+            spotsByDirections.groupSpots[cardinalDirection] = [];
+          }
+          spotsByDirections.groupSpots[cardinalDirection].push(spots[i]);
+        }
+        // No cardinal direction, group to "other"
+        else {
+          otherDirections.push(spots[i])
+        }
+
+        // Visual toggles at the UI used by Ractive
+        spots[i]._isBadSpotVisible = false;
+        spots[i]._isAddingWaitingTimeVisible = false;
+        spots[i]._isCommentsVisible = false;
+        spots[i]._isStatisticsVisible = false;
+        spots[i]._isLongDescriptionVisible = false;
+        spots[i]._isAddingComment = false;
+        spots[i]._new_comment = '';
+        spots[i]._new_waiting_time_h = 0;
+        spots[i]._new_waiting_time_m = 0;
       }
 
-      // Visual toggles at the UI used by Ractive
-      spots[i]._isBadSpotVisible = false;
-      spots[i]._isAddingWaitingTimeVisible = false;
-      spots[i]._isCommentsVisible = false;
-      spots[i]._isStatisticsVisible = false;
-      spots[i]._isLongDescriptionVisible = false;
-      spots[i]._isAddingComment = false;
-      spots[i]._new_comment = '';
-      spots[i]._new_waiting_time_h = 0;
-      spots[i]._new_waiting_time_m = 0;
-    }
-
-    // Spots without cardinal directions
-    if (otherDirections.length) {
-      spotsByDirections.groupSpots['Other directions'] = otherDirections;
+      // Spots without cardinal directions
+      if (otherDirections.length) {
+        spotsByDirections.groupSpots['Other directions'] = otherDirections;
+      }
     }
 
     mw.log('mw.HWMaps::City::initCityTemplate: grouped by directions:');
@@ -311,6 +316,7 @@
           slugify: mw.util.wikiUrlencode,
 
           // Data exposed to the template
+          hasSpots: hasSpots,
           spots: spotsByDirections,
           userId: mw.config.get('wgUserId'),
           hwMapUrl: hwMapUrl,
