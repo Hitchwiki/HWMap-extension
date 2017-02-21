@@ -97,7 +97,8 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
   'leaflet' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/leaflet/dist/leaflet.js',
-    )       ,
+      'modules/js/bindings/ext.HWMap.Leaflet.binding.js'
+    ),
     'styles' => array(
       'modules/vendor/leaflet/dist/leaflet.css',
     ),
@@ -105,11 +106,11 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
 
   'prunecluster' => $wgHWMapResourceBoilerplate + array(
     'dependencies' => array(
-      'leaflet',
+      'leaflet'
     ),
     'scripts' => array(
       'modules/vendor/PruneCluster/dist/PruneCluster.js',
-      'modules/js/ext.HWMap.PruneCluster.binding.js'
+      'modules/js/bindings/ext.HWMap.PruneCluster.binding.js'
     ),
     'styles' => array(
       'modules/vendor/PruneCluster/dist/LeafletStyleSheet.css',
@@ -119,21 +120,21 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
   'ractive' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/ractive/ractive.js',
-      'modules/js/ext.HWMap.Ractive.binding.js'
+      'modules/js/bindings/ext.HWMap.Ractive.binding.js'
     )
   ),
 
   'autosize' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/autosize/dist/autosize.js',
-      'modules/js/ext.HWMap.Autosize.binding.js'
+      'modules/js/bindings/ext.HWMap.Autosize.binding.js'
     )
   ),
 
   'lodash' => $wgHWMapResourceBoilerplate + array(
     'scripts' => array(
       'modules/vendor/lodash/dist/lodash.js',
-      'modules/js/ext.HWMap.Lodash.binding.js'
+      'modules/js/bindings/ext.HWMap.Lodash.binding.js'
     )
   ),
 
