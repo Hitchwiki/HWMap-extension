@@ -5,10 +5,10 @@ class HWFindNearbyCityApi extends ApiBase {
     global $wgHwMapCityRelevanceRadius,
            $wgHwMapCityCloseDistance,
            $wgHwMapBigCityMinPopulation,
-           $hwConfig;
+           $hwGeonamesUsername;
 
     // If Geonames username isn't set, return error
-    if (empty($hwConfig['vendor']['geonames_username'])) {
+    if (empty($hwGeonamesUsername)) {
       $this->geocoderUnavailableAPIError();
       return true;
     }
@@ -53,7 +53,7 @@ class HWFindNearbyCityApi extends ApiBase {
       http_build_query(array(
         'lat' => $lat,
         'lng' => $lng,
-        'username' => $hwConfig['vendor']['geonames_username']
+        'username' => $hwGeonamesUsername
       ))
     );
 
@@ -170,7 +170,7 @@ class HWFindNearbyCityApi extends ApiBase {
         'style' => 'full',
         'maxRows' => 2,
         'lang' => 'en',
-        'username' => $hwConfig['vendor']['geonames_username']
+        'username' => $hwGeonamesUsername
       ))
     );
 

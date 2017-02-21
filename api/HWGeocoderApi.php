@@ -23,10 +23,10 @@
 class HWGeocoderApi extends ApiBase {
 
   public function execute() {
-    global $hwConfig;
+    global $hwGeonamesUsername;
 
     // If Geonames username isn't set, return error
-    if (empty($hwConfig['vendor']['geonames_username'])) {
+    if (empty($hwGeonamesUsername)) {
       $this->geocoderUnavailableAPIError();
       return true;
     }
@@ -48,7 +48,7 @@ class HWGeocoderApi extends ApiBase {
       'style' => $geonames_style,
       'lang' => $geonames_lang,
       'maxRows' => $geonames_maxRows,
-      'username' => $hwConfig['vendor']['geonames_username']
+      'username' => $hwGeonamesUsername
     );
 
     /**

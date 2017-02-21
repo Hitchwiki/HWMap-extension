@@ -203,7 +203,8 @@
         country = '',
         isBigCity = false,
         // Get this value from config, but default to 500K
-        geocoderMinPopulationNonCapital = _.get(mw, 'HWMaps.config.geocoderMinPopulationNonCapital', 500000);
+        // Defined at `HWMap.php`
+        geocoderMinPopulationNonCapital = mw.config.get('wgHwMapBigCityMinPopulation', 500000);
 
     // Cache jQuery elements
     var $inputCity = $newSpotForm.find('input[name="Spot[Cities]"]'),

@@ -43,7 +43,8 @@
     if (!isNaN(urlParamLat) && !isNaN(urlParamLng)) {
 
       // Because `0` is falsy, we have to check with `isNaN`
-      var zoom = !isNaN(urlParamZoom) ? urlParamZoom : mw.HWMaps.config.defaultZoom;
+      // `$hwDefaultZoom` is configured from MediaWiki configuration (aka `LocalSettings.php`)
+      var zoom = (!isNaN(urlParamZoom) && urlParamZoom >= 0 && urlParamZoom <= 18) ? urlParamZoom : parseInt(mw.config.get('hwDefaultZoom', 5), 10); // 5=default, 10=radix;
 
       // http://leafletjs.com/reference-1.0.0.html#map-setview
       mw.HWMaps.leafletMap.setView(
