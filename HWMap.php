@@ -173,6 +173,7 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
     'dependencies' => array(
       'mediawiki.page.startup',
       'mediawiki.jqueryMsg', // https://www.mediawiki.org/wiki/Manual:Messages_API#Using_messages_in_JavaScript
+      'mediawiki.notify',
       'mediawiki.util',
       'oojs-ui-core',
       'oojs-ui-widgets',
@@ -243,12 +244,18 @@ function onParserInit( Parser $parser ) {
   return true;
 }
 
+/**
+ * Render `[hw-map]` tag
+ */
 function HWMapRender( $input, array $args, Parser $parser, PPFrame $frame ) {
   $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.City.template.html');
 
   return $result;
 }
 
+/**
+ * Render `[hw-country-rate]` tag
+ */
 function HWCountryRatingRender( $input, array $args, Parser $parser, PPFrame $frame ) {
   $result = file_get_contents(__DIR__ .'/modules/templates/ext.HWMap.CountryRating.html');
 

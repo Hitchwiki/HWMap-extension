@@ -365,7 +365,7 @@
   }
 
   /**
-   *
+   * Prepare spot marker
    */
   function prepareSpotMarker(leafletMarker, data) {
     mw.log('HWMaps::SpecialPage::prepareSpotMarker');
@@ -381,7 +381,7 @@
   }
 
   /**
-   *
+   * Prepare city marker
    */
   function prepareCityMarker(leafletMarker, data) {
     mw.log('HWMaps::SpecialPage::prepareCityMarker');
@@ -394,7 +394,9 @@
   }
 
   /**
-   *
+   * Determines if map should be populated by city+spot markers
+   * shows also "zoom closer" sign if user is zoomed too high
+   * to see markers.
    */
   function loadMarkers() {
     mw.log('HWMaps::SpecialPage::loadMarkers');
@@ -426,6 +428,7 @@
       showZoomInfoOverlay();
     }
 
+    // Updates URL with lat+lng+zoom parameters
     updateSpecialPageURL();
   }
 
@@ -455,7 +458,7 @@
   }
 
   /**
-   *
+   * Initialize RactiveJS tempalte for different parts of the SpecialPage UI
    */
   function initSpecialPageTemplate() {
     mw.log('HWMaps::SpecialPage::initSpecialPageTemplate');

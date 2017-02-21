@@ -30,9 +30,6 @@
     // Place marker to the middle of the map
     var newMarkerLocation = mw.HWMaps.leafletMap.getCenter();
 
-    mw.log('hide $newSpotInitButton:');
-    mw.log($newSpotInitButton);
-
     // Hide "add new spot" button
     $newSpotInitButton.hide();
 

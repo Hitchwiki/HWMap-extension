@@ -108,18 +108,17 @@ class HWMapCityApi extends ApiBase {
       ),
       true
     );
-
-    $title_id_api = new ApiMain( $title_id );
+    $title_id_api = new ApiMain($title_id);
     $title_id_api->execute();
     $title_id_data = $title_id_api->getResult()->getResultData( null, ['BC' => [], 'Types' => [], 'Strip' => 'all'] );
-    $ids = '';
+    $spot_ids = ''; // Will hold an array of spot ids
     $index = 0;
 
     foreach ($title_id_data['query']['pages'] as $key => $result) {
-      if (!empty($ids)) {
-        $ids .= '|';
+      if (!empty($spot_ids)) {
+        $spot_ids .= '|';
       }
-      $ids .= $key;
+      $spot_ids .= $key;
       $spots[$index]->id = $key;
       $index++;
     }
@@ -130,7 +129,7 @@ class HWMapCityApi extends ApiBase {
     }
 
     // If the rating extension is set, get the rating average
-    if (class_exists( 'HWAvgRatingApi' )) {
+    if (!empty($spot_ids) && class_exists( 'HWAvgRatingApi' )) {
 
       // MWDebug::log('HWMapCityApi::execute: HWAvgRatingApi is enabled. Querying it...');
 
@@ -138,9 +137,9 @@ class HWMapCityApi extends ApiBase {
         $this->getRequest(),
         array(
           'action' => 'hwavgrating',
-          'pageid' => $ids,
+          'pageid' => $spot_ids
           // https://www.mediawiki.org/wiki/Manual:$wgUser
-          'user_id' => $wgUser->getId()
+          //'user_id' => $wgUser->getId()
         ),
         true
       );
@@ -170,12 +169,12 @@ class HWMapCityApi extends ApiBase {
     }
 
     // If the waiting time extension is set, get the waiting count and median
-    if (class_exists( 'HWAvgWaitingTimeApi' )) {
+    if (!empty($spot_ids) && class_exists( 'HWAvgWaitingTimeApi' )) {
       $spot_waiting_times = new DerivativeRequest(
         $this->getRequest(),
         array(
           'action' => 'hwavgwaitingtime',
-          'pageid' => $ids
+          'pageid' => $spot_ids
         ),
         true
       );
@@ -193,7 +192,7 @@ class HWMapCityApi extends ApiBase {
     }
 
     // If the comment extension is set, get the comments count
-    if (class_exists( 'HWGetCommentsCountApi' )) {
+    if (!empty($spot_ids) && class_exists( 'HWGetCommentsCountApi' )) {
 
       // MWDebug::log('HWMapCityApi::execute: HWGetCommentsCountApi is enabled. Querying it...');
 
@@ -201,7 +200,7 @@ class HWMapCityApi extends ApiBase {
         $this->getRequest(),
         array(
           'action' => 'hwgetcommentscount',
-          'pageid' => $ids
+          'pageid' => $spot_ids
         ),
         true
       );
@@ -223,8 +222,10 @@ class HWMapCityApi extends ApiBase {
     }
 
     // Build the api result
-    for ($index = 0; $index < count($spots); $index++) {
-      $this->getResult()->addValue( array( 'query', 'spots' ), null, $spots[$index]);
+    if (count($spots)) {
+      for ($index = 0; $index < count($spots); $index++) {
+        $this->getResult()->addValue( array( 'query', 'spots' ), null, $spots[$index]);
+      }
     }
 
     return true;

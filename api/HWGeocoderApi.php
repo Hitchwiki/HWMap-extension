@@ -16,6 +16,18 @@
  * Country information : Capital, Population, Area in square km,
  * Bounding Box of mainland (excluding offshore islands)
  *
+ * Example how to query `countryInfo` from MediaWiki JavaScript:
+ * ```
+ * $.getJSON(mw.util.wikiScript('api'), {
+ *   action: 'hwgeocoder',
+ *   format: 'json',
+ *   country: 'FI',
+ *   style: 'FULL',
+ *   maxRows: 1,
+ *   geocodingService: 'countryInfo',
+ *   // lang: 'en' // Gets set by default at the backend to `en`
+ * }).done(function(country) { console.log(country); });
+ * ```
  *
  * http://www.geonames.org/export/JSON-webservices.html
  * http://www.geonames.org/export/web-services.html
@@ -72,7 +84,7 @@ class HWGeocoderApi extends ApiBase {
           'Missing one of the required parameters: NElat, NElon, SWlat or SWlon.', // error msg
           'missingparam', // error code
           array(
-            '*' => 'See http://www.geonames.org/export/JSON-webservices.html for API usage.'
+            '*' => 'See http://www.geonames.org/export/JSON-webservices.html for detailed API usage.'
           ), // data
           200 // http status code
         );

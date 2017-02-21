@@ -96,12 +96,3 @@
   mw.HWMaps.CountryRating = CountryRating;
 
 }(mediaWiki, jQuery));
-
-
-/*
-var countryRating = {};
-
-var initCountryRatingsTemplate = function initCountryRatingsTemplate() {
-
-};
-*/
