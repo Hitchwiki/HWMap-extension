@@ -202,7 +202,7 @@
       // `jQuery.tipsy` got deprecated in MW 1.28 and should
       // thus be replaced with something else, e.g. OOjs UI:
       // https://www.mediawiki.org/wiki/OOjs_UI
-      if ($.fn.tipsy) {
+      if (typeof $.fn.tipsy === 'function') {
         $('.tipsy').remove();
         $('.hw-city-icon').tipsy({
           title: function() {
