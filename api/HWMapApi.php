@@ -34,10 +34,10 @@ class HWMapApi extends ApiBase {
           'page_title'
         ),
         array(
-            'gt_lat <' . $ne_lat,
-            'gt_lat >' . $sw_lat,
-            'gt_lon >' . $sw_lon,
-            'gt_lon <' . $ne_lon,
+          'gt_lat <' . $ne_lat,
+          'gt_lat >' . $sw_lat,
+          'gt_lon >' . $sw_lon,
+          'gt_lon <' . $ne_lon,
         ),
         __METHOD__,
         array(),
