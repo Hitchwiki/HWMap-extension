@@ -320,7 +320,11 @@
           spots: spotsByDirections,
           userId: mw.config.get('wgUserId'),
           hwMapUrl: hwMapUrl,
-          hwMapAddUrl: hwMapUrl + '#hwmap-add'
+          hwMapAddUrl: hwMapUrl + '#hwmap-add',
+          strings: {
+            readMore: mw.message('hwmap-read-more').text(),
+            noSpots: mw.message('hwmap-city-no-spots').text()
+          }
         }
       });
 

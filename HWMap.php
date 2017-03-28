@@ -225,7 +225,9 @@ $wgResourceModules = array_merge( $wgResourceModules, array(
       'hwmap-open-cityname',
       'hwmap-open-city',
       'hwmap-wait',
-      'hwmap-continue'
+      'hwmap-continue',
+      'hwmap-read-more',
+      'hwmap-city-no-spots'
     ),
     // `other` ensures this loads after the Vector skin styles
     'group' => 'other',

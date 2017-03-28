@@ -140,7 +140,7 @@
             <button type="button"
                     class="hw-button hw-button-small"
                     onclick="mw.HWMaps.City.toggleLongDescription('{{@keypath}}')">
-              Read more…
+              {{../../strings.readmore}}
             </button>
           {{else}}
             {{{Description}}}
@@ -182,7 +182,12 @@
 {{else}}
   <div class="hw-spots-none">
   <p>
-    <em>This city does not have any hitchhiking spots attached to it yet. You might want to check the <a href="{{hwMapUrl}}">main map</a> in case or <a href="{{hwMapAddUrl}}">add new hitchhiking spots</a>.</em>
+    <em>
+      {{../strings.noSpots}}
+      <br><br>
+      You might want to check the <a href="{{hwMapUrl}}">main map</a> in case
+      or <a href="{{hwMapAddUrl}}">add new hitchhiking spots</a>.
+    </em>
   </p>
   </div>
 {{/if}}
