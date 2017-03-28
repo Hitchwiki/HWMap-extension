@@ -56,12 +56,6 @@
       );
     }
 
-    // If URL had '#hwmap-add' in it, it means we should initiate adding new spot
-    // unlike `window.location.hash`, this one's IE-friendly
-    if (document.URL.substr(document.URL.indexOf('#') + 1) === 'hwmap-add') {
-      mw.HWMaps.NewSpot.setupNewSpot();
-    }
-
     // Setup event listeners
     mw.HWMaps.leafletMap.on('click', SpecialPage.closeSpecialPageSpot);
     mw.HWMaps.leafletMap.on('moveend', loadMarkers);
@@ -74,6 +68,13 @@
 
     initSpecialPageTemplate();
     initNewPlaceButton();
+
+    // If URL had '#hwmap-add' in it, it means we should initiate adding new spot
+    // unlike `window.location.hash`, this one's IE-friendly
+    if (document.URL.substr(document.URL.indexOf('#') + 1) === 'hwmap-add') {
+      // This will hide `#hwmap-add` button so it has to be below `initNewPlaceButton()`
+      mw.HWMaps.NewSpot.setupNewSpot();
+    }
   };
 
   /**
