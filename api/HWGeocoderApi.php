@@ -123,7 +123,7 @@ class HWGeocoderApi extends ApiBase {
       // Api result:
       $response = json_decode($response);
       if ($response && isset($response->geonames)) {
-        $this->getResult()->addValue(array('query'), null, $response->geonames);
+		    $this->getResult()->addValue(null, 'query', $response->geonames);
       } else {
         // Api error:
         $this->geocoderAPIError(

@@ -5,7 +5,8 @@
   var newSpotMarker,
       $newSpotWrap,
       $newSpotForm,
-      $newSpotInitButton;
+      $newSpotInitButton,
+      geocoderQuery;
 
   /**
    * @class mw.HWMaps.NewSpot
@@ -79,6 +80,7 @@
     // Since marker is at the beginning placed in the middle
     newSpotReverseGeocode(newMarkerLocation);
 
+    /*
     // Modifying Mediawiki SemanticForms popup to please our needs
     $newSpotWrap.find('form.popupforminput').submit(function(evt) {
       var iframeTimer,
@@ -120,6 +122,7 @@
         needsRender = true;
       });
     });
+    */
 
   };
 
@@ -153,16 +156,34 @@
    */
   function clearAddNewSpotUI() {
     mw.log('HWMaps::NewSpot::clearAddNewSpotUI');
+
+    // Hide UI buttons
     $newSpotWrap.fadeOut('fast');
     $newSpotInitButton.fadeIn('fast');
+
+    // Clear UI button references
+    $newSpotWrap = null;
+    $newSpotForm = null;
+    $newSpotInitButton = null;
+
+    // Remove Leaflet layer
     if (mw.HWMaps.leafletMap.hasLayer(mw.HWMaps.leafletLayers.newSpot)) {
       mw.HWMaps.leafletMap.removeLayer(mw.HWMaps.leafletLayers.newSpot);
     }
+
+    // Remove event listener
     mw.HWMaps.leafletMap.off('click', setNewSpotMarkerLocation);
+
     // Clear out the marker object
     newSpotMarker = null;
+
     // Clear out layer where that marker was placed
     mw.HWMaps.leafletLayers.newSpot = null;
+
+    // Clear any on-going geocoder queries
+    if (geocoderQuery) {
+      geocoderQuery.abort();
+    }
   }
 
   /**
@@ -196,6 +217,15 @@
       return;
     }
 
+    // Abort any previous geocoding instances
+    // Prevents multiple geocoders finishing up when user moves the marker fast
+    mw.log('geocoderQuery:');
+    mw.log(geocoderQuery);
+    if (geocoderQuery) {
+      mw.log('HWMaps::NewSpot::newSpotReverseGeocode: clear out previous geocoding query #g93hgf');
+      geocoderQuery.abort();
+    }
+
     var city = '',
         country = '',
         isBigCity = false,
@@ -206,7 +236,6 @@
     // Cache jQuery elements
     var $inputCity = $newSpotForm.find('input[name="Spot[Cities]"]'),
         $inputCountry = $newSpotForm.find('input[name="Spot[Country]"]'),
-        $inputPageName = $newSpotForm.find('input[name="page_name"]'),
         $inputLocation = $newSpotForm.find('input[name="Spot[Location]"]'),
         $submitButton = $newSpotForm.find('input[type="submit"]'),
         submitButtonValContinue = mw.message('hwmap-continue').text(),
@@ -215,15 +244,13 @@
     // Empty previously set input values
     $inputCity.val('');
     $inputCountry.val('');
-    $inputPageName.val('');
 
     function fillSpotForm() {
       mw.log('HWMaps::NewSpot::newSpotReverseGeocode.fillSpotForm');
-      var placeName = '';
 
       // Prefill city input at the form
       if (city !== '') {
-        placeName += city;
+        //placeName += city;
         if (isBigCity) {
           $inputCity.val(city);
         }
@@ -231,26 +258,8 @@
 
       // Prefill country input at the form
       if (country !== '') {
-        if (placeName !== '') {
-          placeName += ', ';
-        }
-        placeName += country;
         $inputCountry.val(country);
       }
-
-      // Add coordinates to the spot title to ensure its uniqueness
-      var titleCoordinates = Number((latLng.lat).toFixed(6)) + ', ' + Number((latLng.lng).toFixed(6));
-      if (placeName !== '') {
-        // Append coordinates to title in brackets
-        placeName += ' ';
-        placeName += '(' + titleCoordinates + ')';
-      } else {
-        // If place name was empty, it'll be just coordinates without brackets
-        placeName += titleCoordinates;
-      }
-
-      // Prefill name input at the form
-      $inputPageName.val(placeName);
 
       // Enable the form again
       $submitButton.prop('disabled', false);
@@ -266,10 +275,10 @@
 
     // See GeoPoint `ext.HWMap.GeoPoint.js` for `GeoPoint` class
     var point = new mw.HWMaps.GeoPoint(latLng.lat, latLng.lng);
-    var bbox = point.boundingCoordinates(20, null, true);
+    var bbox = point.boundingCoordinates(20, null, true),
+        queryingGeocoder;
 
-    // Produce a `title` for the spot
-    $.getJSON(mw.util.wikiScript('api'), {
+    var geocoderQuery = $.getJSON(mw.util.wikiScript('api'), {
       action: 'hwgeocoder',
       format: 'json',
       // `latitude()` and `longitude()` are `mw.HWMaps.GeoPoint` methods
@@ -283,6 +292,8 @@
       // lang: 'en', // Gets set by default at the backend to `en`
     }).done(function(data) {
 
+      geocoderQuery = null;
+
       mw.log('HWMaps::NewSpot::newSpotReverseGeocode: got hwgeocoderapi cities response');
       mw.log(data);
 
@@ -294,17 +305,18 @@
       if (data.query && _.isArray(data.query) && data.query.length > 0) {
         place = data.query[0];
 
+        mw.log(place);
+
         isBigCity = (
           (place.fcode && $.inArray(place.fcode, ['PPLC', 'PPLA']) !== -1) || // country capital (eg. Warsaw) or regional capital (eg. Lviv)
           (place.population && place.population >= geocoderMinPopulationNonCapital) // populated city (eg. Rotterdam)
         );
 
-        if (place.name) {
-          city = place.name;
-        }
+        city = place.name ? place.name : '';
+        country = place.countryName ? place.countryName : '';
 
-        if (place.countrycode) {
-          $.getJSON(mw.util.wikiScript('api'), {
+        if (!place.countryName && place.countrycode) {
+          var geocoderQuery = $.getJSON(mw.util.wikiScript('api'), {
             action: 'hwgeocoder',
             format: 'json',
             country: place.countrycode,
@@ -316,6 +328,8 @@
 
             mw.log('HWMaps::NewSpot::newSpotReverseGeocode: got hwgeocoderapi countryInfo response');
             mw.log(data);
+
+            geocoderQuery = null;
 
             if (_.isArray(data.query) && data.query.length > 0) {
               var countryInfo = data.query[0];
@@ -333,6 +347,7 @@
         } else { // no country code in city search response
           fillSpotForm();
         }
+
       } else { // no closeby cities found
         fillSpotForm();
       }
